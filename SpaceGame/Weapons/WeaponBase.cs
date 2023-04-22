@@ -1,37 +1,33 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.Projectiles;
 using System;
 
 namespace SpaceGame.Weapons
 {
-    public class WeaponBase : Entity
+    public class WeaponBase
     {
         protected float _cooldown;
         protected float _speed;
         protected float _accuracy;
         protected Type _projectileType;
 
+        private Vector2 _relativePosition;
         private float _cooldownRemaining;
         private static Random _random = new Random();
 
         public WeaponBase(
-            Vector2 position,
+            Vector2 relativePosition,
             float cooldown,
             float speed,
             float accuracy,
             Type projectileType)
         {
-            Position = position;
+            _relativePosition = relativePosition;
             _cooldown = cooldown;
             _speed = speed;
             _accuracy = accuracy;
             _projectileType = projectileType;
         }
-
-        public override void Update(GameTime gameTime, Matrix parentTransform) { }
-
-        public override void Draw(SpriteBatch spriteBatch, Matrix parentTransform) { }
 
         public void Fire(float heading, Vector2 relativeVelocity, Vector2 shipLocation)
         {
@@ -44,7 +40,7 @@ namespace SpaceGame.Weapons
                 float randomSpread = _random.NextFloat(-jitter, jitter) + _random.NextFloat(-jitter, jitter);
                 Vector2 vel = MathUtilities.FromPolar(heading + randomSpread, _speed);
 
-                Vector2 offset = Vector2.Transform(Position, aimQuat);
+                Vector2 offset = Vector2.Transform(_relativePosition, aimQuat);
                 EntityManager.Add((ProjectileBase)Activator.CreateInstance(_projectileType, shipLocation + offset, vel + relativeVelocity));
             }
 

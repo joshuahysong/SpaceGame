@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using SpaceGame.Contracts;
+using SpaceGame.Entities;
 
 namespace SpaceGame
 {
@@ -22,13 +22,13 @@ namespace SpaceGame
         public void Update(IFocusable focus)
         {
             Focus = focus;
-            Transform = Matrix.CreateTranslation(new Vector3(-focus.Position.X, -focus.Position.Y, 0)) *
+            Transform = Matrix.CreateTranslation(new Vector3(-focus.WorldPosition.X, -focus.WorldPosition.Y, 0)) *
                 Matrix.CreateRotationZ(Rotation) *
                 Matrix.CreateScale(new Vector3(Scale, Scale, 1)) *
                 Matrix.CreateTranslation(new Vector3(MainGame.ScreenCenter.X, MainGame.ScreenCenter.Y, 0));
 
             Origin = MainGame.ScreenCenter / Scale;
-            Position = focus.Position;
+            Position = focus.WorldPosition;
         }
 
         public void HandleInput()

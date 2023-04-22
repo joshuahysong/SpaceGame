@@ -1,14 +1,21 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SpaceGame.Entities;
 
 namespace SpaceGame.Projectiles
 {
-    public class ProjectileBase : Entity
+    public class ProjectileBase : IEntity
     {
+        public bool IsExpired { get; set; }
+
+        public Vector2 _position;
+        public Vector2 _velocity;
+        private float _heading;
         private Texture2D _image;
         private long _timeToLiveInSeconds;
         private double _timeAlive;
         private float _scale;
+        private Color _color;
 
         private Vector2 _size => _image == null ? Vector2.Zero : new Vector2(_image.Width, _image.Height);
 
@@ -17,25 +24,27 @@ namespace SpaceGame.Projectiles
             Vector2 velocity,
             Texture2D image,
             long timeToLiveInSeconds,
-            float scale = 1f)
+            float scale = 1f,
+            Color? color = null)
         {
-            Position = position;
+            _position = position;
             _velocity = velocity;
-            Heading = _velocity.ToAngle();
+            _heading = velocity.ToAngle();
             _image = image;
             _timeToLiveInSeconds = timeToLiveInSeconds;
             _scale = scale;
+            _color = color ?? Color.White;
         }
 
-        public override void Update(GameTime gameTime, Matrix parentTransform)
+        public void Update(GameTime gameTime, Matrix parentTransform)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (_velocity.LengthSquared() > 0)
             {
-                Heading = _velocity.ToAngle();
+                _heading = _velocity.ToAngle();
             }
 
-            Position += _velocity * deltaTime;
+            _position += _velocity * deltaTime;
 
             _timeAlive += gameTime.ElapsedGameTime.TotalSeconds;
             if (_timeAlive > _timeToLiveInSeconds)
@@ -44,9 +53,9 @@ namespace SpaceGame.Projectiles
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
+        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            spriteBatch.Draw(_image, Position, null, _color, Heading, _size / 2f, _scale, 0, 0);
+            spriteBatch.Draw(_image, _position, null, _color, _heading, _size / 2f, _scale, 0, 0);
         }
     }
 }

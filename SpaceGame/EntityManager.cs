@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SpaceGame.Entities;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,13 +8,13 @@ namespace SpaceGame
 {
     public static class EntityManager
     {
-        private static List<Entity> _entities = new List<Entity>();
-        private static List<Entity> _addedEntities = new List<Entity>();
+        private static List<IEntity> _entities = new List<IEntity>();
+        private static List<IEntity> _addedEntities = new List<IEntity>();
         private static bool _isUpdating;
 
         public static int Count => _entities.Count;
 
-        public static void Add(Entity entity)
+        public static void Add(IEntity entity)
         {
             if (!_isUpdating)
             {
@@ -25,7 +26,7 @@ namespace SpaceGame
             }
         }
 
-        private static void AddEntity(Entity entity)
+        private static void AddEntity(IEntity entity)
         {
             _entities.Add(entity);
         }
@@ -34,14 +35,14 @@ namespace SpaceGame
         {
             _isUpdating = true;
 
-            foreach (Entity entity in _entities)
+            foreach (IEntity entity in _entities)
             {
                 entity.Update(gameTime, parentTransform);
             }
 
             _isUpdating = false;
 
-            foreach (Entity entity in _addedEntities)
+            foreach (IEntity entity in _addedEntities)
             {
                 AddEntity(entity);
             }
@@ -54,7 +55,7 @@ namespace SpaceGame
 
         public static void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            foreach (Entity entity in _entities)
+            foreach (IEntity entity in _entities)
             {
                 entity.Draw(spriteBatch, parentTransform);
             }

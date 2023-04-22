@@ -16,7 +16,7 @@ namespace SpaceGame.Ships
                 scale: 0.5f,
                 imageRotationOverride: MathHelper.ToRadians(90))
         {
-            _weapons.Add(new TestWeapon(Vector2.Zero + new Vector2(_image.Width / 2, 0)));
+            _weapons.Add(new TestWeapon(Vector2.Zero + new Vector2(_image.Width / 2, 0) * _scale));
         }
     }
 }

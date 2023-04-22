@@ -3,32 +3,30 @@ using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.Ships;
 using System.Collections.Generic;
 
-namespace SpaceGame
+namespace SpaceGame.Entities
 {
-    public class Enemy : Entity
+    public class Enemy : IEntity
     {
         public ShipBase Ship { get; set; }
-        public Entity Target { get; set; }
-        public override Vector2 Position => Ship.Position;
+        public ShipBase Target { get; set; }
+        public bool IsExpired { get; set; }
 
         private readonly List<IEnumerator<int>> _behaviours = new();
 
         public Enemy(ShipBase ship)
         {
             Ship = ship;
-            Position = ship.Position;
-            Target = MainGame.Player;
+            Target = MainGame.Player.Ship;
             AddBehavior(HuntPlayer());
         }
 
-        public override void Update(GameTime gameTime, Matrix parentTransform)
+        public void Update(GameTime gameTime, Matrix parentTransform)
         {
             ApplyBehaviours();
-            Position = Ship.Position;
             Ship.Update(gameTime, parentTransform);
         }
 
-        public override void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
+        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
             Ship.Draw(spriteBatch, parentTransform);
         }
@@ -53,7 +51,7 @@ namespace SpaceGame
         {
             while (true && Target != null)
             {
-                float distanceToTarget = (Position - Target.Position).Length();
+                float distanceToTarget = (Ship.Position - Target.Position).Length();
                 double degreesToTarget = GetDegreesToTarget();
                 if (distanceToTarget > 100)
                 {
@@ -81,10 +79,10 @@ namespace SpaceGame
 
         private double GetDegreesToTarget()
         {
-            float angleToTarget = (Position - Target.Position).ToAngle();
+            float angleToTarget = (Ship.Position - Target.Position).ToAngle();
             double degreesToTarget = angleToTarget.ToDegrees();
             double headingDegrees = Ship.Heading.ToDegrees();
-            return headingDegrees < degreesToTarget ? (headingDegrees + 360) - degreesToTarget : headingDegrees - degreesToTarget;
+            return headingDegrees < degreesToTarget ? headingDegrees + 360 - degreesToTarget : headingDegrees - degreesToTarget;
         }
     }
 }

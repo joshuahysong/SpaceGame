@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SpaceGame.Entities;
 using SpaceGame.Ships;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace SpaceGame
     {
         public static MainGame Instance { get; private set; }
         public static Camera Camera { get; set; }
-        public static ShipBase Player { get; set; }
+        public static Player Player { get; set; }
         public static bool IsDebugging { get; set; }
 
         public static Viewport Viewport => Instance.GraphicsDevice.Viewport;
@@ -21,6 +22,7 @@ namespace SpaceGame
         public const int WorldTileSize = 4000;
 
         public Dictionary<string, string> PlayerDebugEntries { get; set; }
+        public Dictionary<string, string> EnemyDebugEntries { get; set; }
         public Dictionary<string, string> SystemDebugEntries { get; set; }
 
         private Texture2D _debugTile;
@@ -31,8 +33,8 @@ namespace SpaceGame
             var graphics = new GraphicsDeviceManager(this)
             {
                 IsFullScreen = false,
-                PreferredBackBufferHeight = 1080,
-                PreferredBackBufferWidth = 1920,
+                PreferredBackBufferHeight = 900,
+                PreferredBackBufferWidth = 1440,
             };
             Window.IsBorderless = true;
             graphics.ApplyChanges();
@@ -47,12 +49,13 @@ namespace SpaceGame
         {
             Camera = new Camera();
             PlayerDebugEntries = new Dictionary<string, string>();
+            EnemyDebugEntries = new Dictionary<string, string>();
             SystemDebugEntries = new Dictionary<string, string>();
             _debugTile = Art.CreateRectangle(WorldTileSize, WorldTileSize, Color.Transparent, Color.DimGray * 0.5f);
 
             base.Initialize();
 
-            Player = new TestPlayerShip(Vector2.Zero, 0);
+            Player = new Player(new TestPlayerShip(Vector2.Zero, 0));
             Camera.Focus = Player;
             EntityManager.Add(Player);
 
@@ -109,6 +112,15 @@ namespace SpaceGame
                 var yTextOffset = 5;
                 _spriteBatch.DrawString(Art.DebugFont, "Player", new Vector2(xTextOffset, yTextOffset), Color.White);
                 foreach (KeyValuePair<string, string> debugEntry in PlayerDebugEntries)
+                {
+                    yTextOffset += 15;
+                    _spriteBatch.DrawString(Art.DebugFont, $"{debugEntry.Key}: {debugEntry.Value}", new Vector2(xTextOffset, yTextOffset), Color.White);
+                }
+
+                xTextOffset = Viewport.Width / 2 - 200;
+                yTextOffset = 5;
+                _spriteBatch.DrawString(Art.DebugFont, "Ship", new Vector2(xTextOffset, yTextOffset), Color.White);
+                foreach (KeyValuePair<string, string> debugEntry in EnemyDebugEntries)
                 {
                     yTextOffset += 15;
                     _spriteBatch.DrawString(Art.DebugFont, $"{debugEntry.Key}: {debugEntry.Value}", new Vector2(xTextOffset, yTextOffset), Color.White);

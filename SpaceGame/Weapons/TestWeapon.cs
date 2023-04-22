@@ -5,8 +5,8 @@ namespace SpaceGame.Weapons
 {
     public class TestWeapon : WeaponBase
     {
-        public TestWeapon(Vector2 position)
-            : base(position,
+        public TestWeapon(Vector2 relativePosition)
+            : base(relativePosition,
                 cooldown: 25f,
                 speed: 2000f,
                 accuracy: 99f,
