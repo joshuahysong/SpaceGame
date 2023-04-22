@@ -10,6 +10,8 @@ namespace SpaceGame.Ships
 {
     public class ShipBase : Entity, IFocusable
     {
+        public bool IsManeuvering;
+
         protected Texture2D _image;
         protected float _thrust;
         protected float _maneuveringThrust;
@@ -20,14 +22,13 @@ namespace SpaceGame.Ships
 
         private Vector2 _acceleration;
         private float _currentTurnRate;
-        private bool _isManeuvering;
 
         private Vector2 _size => _image == null ? Vector2.Zero : new Vector2(_image.Width, _image.Height);
 
         public ShipBase(Vector2 spawnPosition, float spawnHeading)
         {
             Position = spawnPosition;
-            _heading = spawnHeading;
+            Heading = spawnHeading;
             _weapons = new List<WeaponBase>();
         }
 
@@ -58,20 +59,20 @@ namespace SpaceGame.Ships
             _acceleration.Y = 0;
             Position += _velocity * deltaTime;
 
-            if (!_isManeuvering)
+            if (!IsManeuvering)
             {
                 if (_currentTurnRate != 0)
                 {
                     SlowDownManueveringThrust();
                 }
             }
-            _isManeuvering = false;
+            IsManeuvering = false;
 
             if (MainGame.IsDebugging)
             {
                 MainGame.Instance.PlayerDebugEntries["Position"] = $"{Math.Round(Position.X)}, {Math.Round(Position.Y)}";
                 MainGame.Instance.PlayerDebugEntries["Velocity"] = $"{Math.Round(_velocity.X)}, {Math.Round(_velocity.Y)}";
-                MainGame.Instance.PlayerDebugEntries["Heading"] = $"{Math.Round(_heading, 2)}";
+                MainGame.Instance.PlayerDebugEntries["Heading"] = $"{Math.Round(Heading, 2)}";
                 MainGame.Instance.PlayerDebugEntries["Velocity Heading"] = $"{Math.Round(_velocity.ToAngle(), 2)}";
                 MainGame.Instance.PlayerDebugEntries["World Tile"] = $"{Math.Floor(Position.X / MainGame.WorldTileSize)}, {Math.Floor(Position.Y / MainGame.WorldTileSize)}";
                 MainGame.Instance.PlayerDebugEntries["Current Turn Rate"] = $"{Math.Round(_currentTurnRate, 2)}";
@@ -80,7 +81,7 @@ namespace SpaceGame.Ships
 
         public override void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            spriteBatch.Draw(_image, Position, null, _color, _heading + _imageRotationOverride, _size / 2f, 1f, SpriteEffects.None, 0);
+            spriteBatch.Draw(_image, Position, null, _color, Heading + _imageRotationOverride, _size / 2f, 1f, SpriteEffects.None, 0);
         }
 
         private void HandleInput(float deltaTime)
@@ -111,55 +112,60 @@ namespace SpaceGame.Ships
             }
         }
 
-        private void ApplyForwardThrust()
+        public void FireWeapons()
         {
-            _acceleration.X += _thrust * (float)Math.Cos(_heading);
-            _acceleration.Y += _thrust * (float)Math.Sin(_heading);
+            _weapons.ForEach(weapon => weapon.Fire(Heading, _velocity, Position));
         }
 
-        private void ApplyPortManeuveringThrusters()
+        public void ApplyForwardThrust()
+        {
+            _acceleration.X += _thrust * (float)Math.Cos(Heading);
+            _acceleration.Y += _thrust * (float)Math.Sin(Heading);
+        }
+
+        public void ApplyPortManeuveringThrusters()
         {
             _currentTurnRate = _currentTurnRate + _maneuveringThrust > _maxTurnRate
                 ? _maxTurnRate
                 : _currentTurnRate + _maneuveringThrust;
-            _isManeuvering = true;
+            IsManeuvering = true;
         }
 
-        private void ApplyStarboardManeuveringThrusters()
+        public void ApplyStarboardManeuveringThrusters()
         {
             _currentTurnRate = _currentTurnRate - _maneuveringThrust < -_maxTurnRate
                 ? -_maxTurnRate
                 : _currentTurnRate - _maneuveringThrust;
-            _isManeuvering = true;
+            IsManeuvering = true;
         }
 
         private void RotateClockwise(float deltaTime)
         {
-            _heading += _currentTurnRate * deltaTime;
-            if (_heading > Math.PI)
+            Heading += _currentTurnRate * deltaTime;
+            if (Heading > Math.PI)
             {
-                _heading = (float)-Math.PI;
+                Heading = (float)-Math.PI;
             }
         }
 
         private void RotateCounterClockwise(float deltaTime)
         {
-            _heading += _currentTurnRate * deltaTime;
-            if (_heading < -Math.PI)
+            Heading += _currentTurnRate * deltaTime;
+            if (Heading < -Math.PI)
             {
-                _heading = (float)Math.PI;
+                Heading = (float)Math.PI;
             }
         }
 
         private void RotateToRetro(float deltaTime, bool IsBraking)
         {
-            _isManeuvering = true;
+            IsManeuvering = true;
             float movementHeading = _velocity.ToAngle();
             float retroHeading = movementHeading < 0 ? movementHeading + (float)Math.PI : movementHeading - (float)Math.PI;
-            if (_heading != retroHeading && !IsWithinBrakingRange())
+            if (Heading != retroHeading && !IsWithinBrakingRange())
             {
                 double retroDegrees = (retroHeading + Math.PI) * (180.0 / Math.PI);
-                double headingDegrees = (_heading + Math.PI) * (180.0 / Math.PI);
+                double headingDegrees = (Heading + Math.PI) * (180.0 / Math.PI);
                 double turnRateDegrees = Math.PI * 2 * (_currentTurnRate * deltaTime) / 100 * 360 * 2;
                 turnRateDegrees = turnRateDegrees < 0 ? turnRateDegrees * -1 : turnRateDegrees;
                 double retroOffset = headingDegrees < retroDegrees ? (headingDegrees + 360) - retroDegrees : headingDegrees - retroDegrees;
@@ -169,7 +175,7 @@ namespace SpaceGame.Ships
 
                 if (retroOffset >= 360 - turnRateDegrees || retroOffset <= turnRateDegrees)
                 {
-                    _heading = retroHeading;
+                    Heading = retroHeading;
                     _currentTurnRate = 0;
                 }
                 else if (retroOffset > thrustMagnitude && 360 - retroOffset > thrustMagnitude)
@@ -196,10 +202,10 @@ namespace SpaceGame.Ships
                 {
                     _velocity = Vector2.Zero;
                 }
-                else if (_heading == retroHeading)
+                else if (Heading == retroHeading)
                 {
-                    _acceleration.X += _thrust * (float)Math.Cos(_heading);
-                    _acceleration.Y += _thrust * (float)Math.Sin(_heading);
+                    _acceleration.X += _thrust * (float)Math.Cos(Heading);
+                    _acceleration.Y += _thrust * (float)Math.Sin(Heading);
                 }
             }
         }
@@ -220,11 +226,6 @@ namespace SpaceGame.Ships
         {
             double brakingRange = _maxVelocity / 100;
             return _velocity.X < brakingRange && _velocity.X > -brakingRange && _velocity.Y < brakingRange && _velocity.Y > -brakingRange;
-        }
-
-        private void FireWeapons()
-        {
-            _weapons.ForEach(weapon => weapon.Fire(_heading, _velocity, Position));
         }
     }
 }

@@ -16,7 +16,7 @@ namespace SpaceGame.Projectiles
         {
             Position = position;
             _velocity = velocity;
-            _heading = _velocity.ToAngle();
+            Heading = _velocity.ToAngle();
         }
 
         public override void Update(GameTime gameTime, Matrix parentTransform)
@@ -24,7 +24,7 @@ namespace SpaceGame.Projectiles
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (_velocity.LengthSquared() > 0)
             {
-                _heading = _velocity.ToAngle();
+                Heading = _velocity.ToAngle();
             }
 
             Position += _velocity * deltaTime;
@@ -39,7 +39,7 @@ namespace SpaceGame.Projectiles
         public override void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
             // TODO Only draw if on screen
-            spriteBatch.Draw(_image, Position, null, _color, _heading, _size / 2f, 1f, 0, 0);
+            spriteBatch.Draw(_image, Position, null, _color, Heading, _size / 2f, 1f, 0, 0);
         }
     }
 }

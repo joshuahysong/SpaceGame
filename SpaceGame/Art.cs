@@ -12,7 +12,8 @@ namespace SpaceGame
         #endregion
 
         #region Ships
-        public static Texture2D TestShip { get; set; }
+        public static Texture2D TestPlayerShip { get; set; }
+        public static Texture2D TestEnemyShip { get; set; }
         #endregion
 
         #region Projectiles
@@ -26,7 +27,8 @@ namespace SpaceGame
 
         public static void Load(ContentManager content)
         {
-            TestShip = content.Load<Texture2D>("Ships/TestShip");
+            TestPlayerShip = content.Load<Texture2D>("Ships/TestPlayerShip");
+            TestEnemyShip = content.Load<Texture2D>("Ships/TestEnemyShip");
             DebugFont = content.Load<SpriteFont>("Fonts/Debug");
             Background = content.Load<Texture2D>("starfield2");
             Bullet = CreateRectangle(10, 10, Color.White, Color.White);

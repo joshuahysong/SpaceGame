@@ -5,10 +5,10 @@ namespace SpaceGame
 {
     public abstract class Entity
     {
-        public Vector2 Position { get; set; }
+        public virtual Vector2 Position { get; set; }
         public bool IsExpired { get; set; }
+        public float Heading { get; set; }
 
-        protected float _heading;
         protected Vector2 _velocity;
         protected Color _color = Color.White;
 

@@ -11,6 +11,7 @@ namespace SpaceGame
     {
         public static MainGame Instance { get; private set; }
         public static Camera Camera { get; set; }
+        public static ShipBase Player { get; set; }
         public static bool IsDebugging { get; set; }
 
         public static Viewport Viewport => Instance.GraphicsDevice.Viewport;
@@ -51,10 +52,15 @@ namespace SpaceGame
 
             base.Initialize();
 
-            var player = new TestShip(Vector2.Zero, 0);
-            Camera.Focus = player;
-            
-            EntityManager.Add(player);
+            Player = new TestPlayerShip(Vector2.Zero, 0);
+            Camera.Focus = Player;
+            EntityManager.Add(Player);
+
+            for (var i = 1; i <= 2; i++)
+            {
+                var enemy = new Enemy(new TestEnemyShip(new Vector2(i * 100, (i % 2 == 0 ? 1 : -1) * 100), 0));
+                EntityManager.Add(enemy);
+            }
         }
 
         protected override void LoadContent()
