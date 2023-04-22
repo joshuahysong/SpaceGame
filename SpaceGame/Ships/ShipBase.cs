@@ -12,7 +12,8 @@ namespace SpaceGame.Ships
     {
         public bool IsManeuvering;
 
-        protected Texture2D _image;
+        protected Texture2D _image = Art.TestPlayerShip;
+        protected float _scale;
         protected float _thrust;
         protected float _maneuveringThrust;
         protected float _maxTurnRate;
@@ -25,10 +26,26 @@ namespace SpaceGame.Ships
 
         private Vector2 _size => _image == null ? Vector2.Zero : new Vector2(_image.Width, _image.Height);
 
-        public ShipBase(Vector2 spawnPosition, float spawnHeading)
+        public ShipBase(
+            Vector2 spawnPosition,
+            float spawnHeading,
+            Texture2D image,
+            float thrust,
+            float maneuveringThrust,
+            float maxTurnRate,
+            float maxVelocity,
+            float scale = 1f,
+            float imageRotationOverride = 0f)
         {
             Position = spawnPosition;
             Heading = spawnHeading;
+            _image = image;
+            _thrust = thrust;
+            _maneuveringThrust = maneuveringThrust;
+            _maxTurnRate = maxTurnRate;
+            _maxVelocity = maxVelocity;
+            _scale = scale;
+            _imageRotationOverride = imageRotationOverride;
             _weapons = new List<WeaponBase>();
         }
 
@@ -81,12 +98,12 @@ namespace SpaceGame.Ships
 
         public override void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            spriteBatch.Draw(_image, Position, null, _color, Heading + _imageRotationOverride, _size / 2f, 1f, SpriteEffects.None, 0);
+            spriteBatch.Draw(_image, Position, null, _color, Heading + _imageRotationOverride, _size / 2f, _scale, SpriteEffects.None, 0);
 
             if (MainGame.IsDebugging)
             {
                 Art.DrawLine(spriteBatch, Position, Position + _velocity, Color.Red);
-                Art.DrawLine(spriteBatch, Position, 1000f, Heading, Color.Green);
+                Art.DrawLine(spriteBatch, Position, _maxVelocity, Heading, Color.Green);
             }
         }
 

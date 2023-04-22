@@ -15,9 +15,18 @@ namespace SpaceGame.Weapons
         private float _cooldownRemaining;
         private static Random _random = new Random();
 
-        public WeaponBase(Vector2 position)
+        public WeaponBase(
+            Vector2 position,
+            float cooldown,
+            float speed,
+            float accuracy,
+            Type projectileType)
         {
             Position = position;
+            _cooldown = cooldown;
+            _speed = speed;
+            _accuracy = accuracy;
+            _projectileType = projectileType;
         }
 
         public override void Update(GameTime gameTime, Matrix parentTransform) { }

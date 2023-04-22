@@ -5,12 +5,13 @@ namespace SpaceGame.Weapons
 {
     public class TestWeapon : WeaponBase
     {
-        public TestWeapon(Vector2 position) : base(position)
+        public TestWeapon(Vector2 position)
+            : base(position,
+                cooldown: 25f,
+                speed: 2000f,
+                accuracy: 99f,
+                projectileType: typeof(TestProjectile))
         {
-            _cooldown = 25f;
-            _speed = 2000f;
-            _accuracy = 99f;
-            _projectileType = typeof(TestProjectile);
         }
     }
 }

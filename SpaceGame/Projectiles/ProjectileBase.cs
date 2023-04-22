@@ -5,18 +5,26 @@ namespace SpaceGame.Projectiles
 {
     public class ProjectileBase : Entity
     {
-        protected Texture2D _image;
-        protected long _timeToLiveInSeconds;
-
+        private Texture2D _image;
+        private long _timeToLiveInSeconds;
         private double _timeAlive;
+        private float _scale;
 
         private Vector2 _size => _image == null ? Vector2.Zero : new Vector2(_image.Width, _image.Height);
 
-        public ProjectileBase(Vector2 position, Vector2 velocity)
+        public ProjectileBase(
+            Vector2 position,
+            Vector2 velocity,
+            Texture2D image,
+            long timeToLiveInSeconds,
+            float scale = 1f)
         {
             Position = position;
             _velocity = velocity;
             Heading = _velocity.ToAngle();
+            _image = image;
+            _timeToLiveInSeconds = timeToLiveInSeconds;
+            _scale = scale;
         }
 
         public override void Update(GameTime gameTime, Matrix parentTransform)
@@ -38,8 +46,7 @@ namespace SpaceGame.Projectiles
 
         public override void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            // TODO Only draw if on screen
-            spriteBatch.Draw(_image, Position, null, _color, Heading, _size / 2f, 1f, 0, 0);
+            spriteBatch.Draw(_image, Position, null, _color, Heading, _size / 2f, _scale, 0, 0);
         }
     }
 }

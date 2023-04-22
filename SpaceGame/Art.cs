@@ -33,7 +33,7 @@ namespace SpaceGame
             TestEnemyShip = content.Load<Texture2D>("Ships/TestEnemyShip");
             DebugFont = content.Load<SpriteFont>("Fonts/Debug");
             Background = content.Load<Texture2D>("starfield2");
-            Bullet = CreateRectangle(10, 10, Color.White, Color.White);
+            Bullet = CreateRectangle(5, 5, Color.White, Color.White);
 
             _pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             _pixel.SetData(new[] { Color.White });
