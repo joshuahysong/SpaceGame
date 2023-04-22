@@ -15,6 +15,10 @@ namespace SpaceGame
         public static Texture2D TestShip { get; set; }
         #endregion
 
+        #region Projectiles
+        public static Texture2D Bullet { get; set; }
+        #endregion
+
         #region Fonts
         public static SpriteFont DebugFont { get; private set; }
         public static SpriteFont UIFont { get; private set; }
@@ -25,6 +29,7 @@ namespace SpaceGame
             TestShip = content.Load<Texture2D>("Ships/TestShip");
             DebugFont = content.Load<SpriteFont>("Fonts/Debug");
             Background = content.Load<Texture2D>("starfield2");
+            Bullet = CreateRectangle(10, 10, Color.White, Color.White);
         }
 
         public static Texture2D CreateRectangle(int width, int height, Color fillColor, Color borderColor)

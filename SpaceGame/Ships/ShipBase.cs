@@ -6,38 +6,29 @@ using SpaceGame.Weapons;
 using System;
 using System.Collections.Generic;
 
-namespace SpaceGame
+namespace SpaceGame.Ships
 {
-    public class Player : Entity, IFocusable
+    public class ShipBase : Entity, IFocusable
     {
-        private Vector2 _size => _image == null ? Vector2.Zero : new Vector2(_image.Width, _image.Height);
+        protected Texture2D _image;
+        protected float _thrust;
+        protected float _maneuveringThrust;
+        protected float _maxTurnRate;
+        protected float _maxVelocity;
+        protected float _imageRotationOverride;
+        protected List<WeaponBase> _weapons;
 
         private Vector2 _acceleration;
         private float _currentTurnRate;
         private bool _isManeuvering;
 
-        private readonly Texture2D _image;
-        private readonly float _thrust;
-        private readonly float _maneuveringThrust;
-        private readonly float _maxTurnRate;
-        private readonly float _maxVelocity;
-        private readonly float _imageRotationOverride;
-        private List<WeaponBase> _weapons;
+        private Vector2 _size => _image == null ? Vector2.Zero : new Vector2(_image.Width, _image.Height);
 
-        public Player(Vector2 spawnPosition, float spawnHeading)
+        public ShipBase(Vector2 spawnPosition, float spawnHeading)
         {
             Position = spawnPosition;
-            _image = Art.TestShip;
             _heading = spawnHeading;
-            _thrust = 300f;
-            _maxTurnRate = 1f;
-            _maneuveringThrust = 0.05f;
-            _maxVelocity = 500f;
-            _imageRotationOverride = MathHelper.ToRadians(90);
-            _weapons = new List<WeaponBase>
-            {
-                new TestWeapon(new Vector2(100, 0) - new Vector2(_image.Width / 2, 0))
-            };
+            _weapons = new List<WeaponBase>();
         }
 
         public override void Update(GameTime gameTime, Matrix parentTransform)

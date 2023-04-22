@@ -1,10 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace SpaceGame
 {
@@ -13,6 +8,11 @@ namespace SpaceGame
         public static float ToAngle(this Vector2 vector)
         {
             return (float)Math.Atan2(vector.Y, vector.X);
+        }
+
+        public static float NextFloat(this Random random, float minValue, float maxValue)
+        {
+            return (float)random.NextDouble() * (maxValue - minValue) + minValue;
         }
     }
 }

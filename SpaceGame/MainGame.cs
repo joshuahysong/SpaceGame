@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SpaceGame.Ships;
 using System;
 using System.Collections.Generic;
 
@@ -30,8 +31,9 @@ namespace SpaceGame
             {
                 IsFullScreen = false,
                 PreferredBackBufferHeight = 1080,
-                PreferredBackBufferWidth = 1920
+                PreferredBackBufferWidth = 1920,
             };
+            Window.IsBorderless = true;
             graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
@@ -49,7 +51,7 @@ namespace SpaceGame
 
             base.Initialize();
 
-            var player = new Player(Vector2.Zero, 0);
+            var player = new TestShip(Vector2.Zero, 0);
             Camera.Focus = player;
             
             EntityManager.Add(player);
