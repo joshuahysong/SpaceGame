@@ -82,6 +82,12 @@ namespace SpaceGame.Ships
         public override void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
             spriteBatch.Draw(_image, Position, null, _color, Heading + _imageRotationOverride, _size / 2f, 1f, SpriteEffects.None, 0);
+
+            if (MainGame.IsDebugging)
+            {
+                Art.DrawLine(spriteBatch, Position, Position + _velocity, Color.Red);
+                Art.DrawLine(spriteBatch, Position, 1000f, Heading, Color.Green);
+            }
         }
 
         private void HandleInput(float deltaTime)

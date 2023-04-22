@@ -25,6 +25,8 @@ namespace SpaceGame
         public static SpriteFont UIFont { get; private set; }
         #endregion
 
+        private static Texture2D _pixel { get; set; }
+
         public static void Load(ContentManager content)
         {
             TestPlayerShip = content.Load<Texture2D>("Ships/TestPlayerShip");
@@ -32,6 +34,9 @@ namespace SpaceGame
             DebugFont = content.Load<SpriteFont>("Fonts/Debug");
             Background = content.Load<Texture2D>("starfield2");
             Bullet = CreateRectangle(10, 10, Color.White, Color.White);
+
+            _pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            _pixel.SetData(new[] { Color.White });
         }
 
         public static Texture2D CreateRectangle(int width, int height, Color fillColor, Color borderColor)
@@ -51,6 +56,20 @@ namespace SpaceGame
             }
             tile.SetData(data);
             return tile;
+        }
+
+        public static void DrawLine(this SpriteBatch spriteBatch, Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
+        {
+            var distance = Vector2.Distance(point1, point2);
+            var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+            DrawLine(spriteBatch, point1, distance, angle, color, thickness);
+        }
+
+        public static void DrawLine(this SpriteBatch spriteBatch, Vector2 point, float length, float angle, Color color, float thickness = 1f)
+        {
+            var origin = new Vector2(0f, 0.5f);
+            var scale = new Vector2(length, thickness);
+            spriteBatch.Draw(_pixel, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
         }
 
         public static Texture2D CreateCircle(int radius, Color borderColor)
