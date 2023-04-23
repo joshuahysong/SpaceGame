@@ -58,20 +58,6 @@ namespace SpaceGame
             return tile;
         }
 
-        public static void DrawLine(this SpriteBatch spriteBatch, Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
-        {
-            var distance = Vector2.Distance(point1, point2);
-            var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
-            DrawLine(spriteBatch, point1, distance, angle, color, thickness);
-        }
-
-        public static void DrawLine(this SpriteBatch spriteBatch, Vector2 point, float length, float angle, Color color, float thickness = 1f)
-        {
-            var origin = new Vector2(0f, 0.5f);
-            var scale = new Vector2(length, thickness);
-            spriteBatch.Draw(_pixel, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
-        }
-
         public static Texture2D CreateCircle(int radius, Color borderColor)
         {
             int outerRadius = radius * 2 + 2; // So circle doesn't go out of bounds
@@ -97,6 +83,33 @@ namespace SpaceGame
 
             texture.SetData(data);
             return texture;
+        }
+
+        public static void DrawLine(this SpriteBatch spriteBatch, Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
+        {
+            var distance = Vector2.Distance(point1, point2);
+            var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+            DrawLine(spriteBatch, point1, distance, angle, color, thickness);
+        }
+
+        public static void DrawLine(this SpriteBatch spriteBatch, Vector2 point, float length, float angle, Color color, float thickness = 1f)
+        {
+            var origin = new Vector2(0f, 0.5f);
+            var scale = new Vector2(length, thickness);
+            spriteBatch.Draw(_pixel, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
+        }
+
+        public static void DrawCircle(this SpriteBatch spriteBatch, Vector2 position, int radius, Color borderColor)
+        {
+            var circle = CreateCircle(radius, borderColor);
+            var circlePosition = new Vector2(position.X - radius, position.Y - radius);
+            spriteBatch.Draw(circle, circlePosition, null, borderColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
+        }
+
+        public static void DrawRectangle(this SpriteBatch spriteBatch, Vector2 position, Vector2 size, float heading, Color borderColor)
+        {
+            var rectangle = CreateRectangle((int)Math.Ceiling(size.X), (int)Math.Ceiling(size.Y), Color.Transparent, borderColor);
+            spriteBatch.Draw(rectangle, position, null, borderColor, heading, size / 2f, 1f, SpriteEffects.None, 0);
         }
     }
 }

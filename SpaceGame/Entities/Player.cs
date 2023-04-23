@@ -8,9 +8,13 @@ namespace SpaceGame.Entities
 {
     public class Player : IEntity, IFocusable
     {
+        public Vector2 Position => Ship?.Position ?? Vector2.Zero;
+        public Vector2 TileCoordinates { get; set; }
         public bool IsExpired { get; set; }
-        public ShipBase Ship { get; set; }
+
         public Vector2 WorldPosition => Ship == null ? Vector2.Zero : Ship.Position;
+
+        public ShipBase Ship { get; set; }
 
         public Player(ShipBase ship)
         {
@@ -29,7 +33,7 @@ namespace SpaceGame.Entities
                 MainGame.Instance.PlayerDebugEntries["Velocity"] = $"{Math.Round(Ship.Velocity.X)}, {Math.Round(Ship.Velocity.Y)}";
                 MainGame.Instance.PlayerDebugEntries["Heading"] = $"{Math.Round(Ship.Heading, 2)}";
                 MainGame.Instance.PlayerDebugEntries["Velocity Heading"] = $"{Math.Round(Ship.Velocity.ToAngle(), 2)}";
-                MainGame.Instance.PlayerDebugEntries["World Tile"] = $"{Math.Floor(Ship.Position.X / MainGame.WorldTileSize)}, {Math.Floor(Ship.Position.Y / MainGame.WorldTileSize)}";
+                MainGame.Instance.PlayerDebugEntries["World Tile"] = $"{TileCoordinates.X}, {TileCoordinates.Y}";
                 MainGame.Instance.PlayerDebugEntries["Current Turn Rate"] = $"{Math.Round(Ship.CurrentTurnRate, 2)}";
             }
         }
@@ -37,11 +41,6 @@ namespace SpaceGame.Entities
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
             Ship.Draw(spriteBatch, parentTransform);
-
-            if (MainGame.IsDebugging)
-            {
-
-            }
         }
 
         private void HandleInput(float deltaTime)

@@ -19,7 +19,7 @@ namespace SpaceGame
         public static Vector2 ScreenSize => new Vector2(Viewport.Width, Viewport.Height);
         public static Vector2 ScreenCenter => new Vector2(Viewport.Width / 2, Viewport.Height / 2);
 
-        public const int WorldTileSize = 4000;
+        public const int TileSize = 500;
 
         public Dictionary<string, string> PlayerDebugEntries { get; set; }
         public Dictionary<string, string> EnemyDebugEntries { get; set; }
@@ -33,10 +33,9 @@ namespace SpaceGame
             var graphics = new GraphicsDeviceManager(this)
             {
                 IsFullScreen = false,
-                PreferredBackBufferHeight = 900,
-                PreferredBackBufferWidth = 1440,
+                PreferredBackBufferHeight = 1080,
+                PreferredBackBufferWidth = 1920,
             };
-            Window.IsBorderless = true;
             graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
@@ -51,7 +50,7 @@ namespace SpaceGame
             PlayerDebugEntries = new Dictionary<string, string>();
             EnemyDebugEntries = new Dictionary<string, string>();
             SystemDebugEntries = new Dictionary<string, string>();
-            _debugTile = Art.CreateRectangle(WorldTileSize, WorldTileSize, Color.Transparent, Color.DimGray * 0.5f);
+            _debugTile = Art.CreateRectangle(TileSize, TileSize, Color.Transparent, Color.WhiteSmoke * 0.5f);
 
             base.Initialize();
 
@@ -102,12 +101,17 @@ namespace SpaceGame
 
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, Camera.Transform);
             DrawBackground(_spriteBatch);
+            if (IsDebugging)
+            {
+                DrawDebugTiles(_spriteBatch);
+            }
             EntityManager.Draw(_spriteBatch, Matrix.Identity);
             _spriteBatch.End();
 
             if (IsDebugging)
             {
                 _spriteBatch.Begin();
+
                 var xTextOffset = 5;
                 var yTextOffset = 5;
                 _spriteBatch.DrawString(Art.DebugFont, "Player", new Vector2(xTextOffset, yTextOffset), Color.White);
@@ -154,14 +158,16 @@ namespace SpaceGame
 
         private void DrawBackground(SpriteBatch spriteBatch)
         {
+            var backgroundImage = Art.Background;
+            var backgroundTileSize = 2 * (backgroundImage.Width > backgroundImage.Height ? backgroundImage.Width : backgroundImage.Height);
             Vector2 startLocation = Vector2.Zero;
-            int numberOfTilesX = (int)Math.Ceiling((double)Viewport.Bounds.Width / WorldTileSize / Camera.Scale);
-            int numberOfTilesY = (int)Math.Ceiling((double)Viewport.Bounds.Height / WorldTileSize / Camera.Scale);
+            int numberOfTilesX = (int)Math.Ceiling((double)Viewport.Bounds.Width / backgroundTileSize / Camera.Scale);
+            int numberOfTilesY = (int)Math.Ceiling((double)Viewport.Bounds.Height / backgroundTileSize / Camera.Scale);
             Vector2 tilePosition;
-            tilePosition.X = (int)Math.Floor(Camera.Position.X / WorldTileSize);
-            tilePosition.Y = (int)Math.Floor(Camera.Position.Y / WorldTileSize);
+            tilePosition.X = (int)Math.Floor(Camera.Position.X / backgroundTileSize);
+            tilePosition.Y = (int)Math.Floor(Camera.Position.Y / backgroundTileSize);
 
-            startLocation.X = startLocation.X - WorldTileSize;
+            startLocation.X = startLocation.X - backgroundTileSize;
 
             int minX = (int)Math.Floor(tilePosition.X - (double)numberOfTilesX / 2);
             int maxX = (int)Math.Ceiling(tilePosition.X + (double)numberOfTilesX / 2);
@@ -172,9 +178,32 @@ namespace SpaceGame
             {
                 for (int y = minY; y <= maxY; y++)
                 {
-                    Rectangle backgroundRectangle = new Rectangle(WorldTileSize * x, WorldTileSize * y, WorldTileSize, WorldTileSize);
+                    Rectangle backgroundRectangle = new Rectangle(backgroundTileSize * x, backgroundTileSize * y, backgroundTileSize, backgroundTileSize);
                     spriteBatch.Draw(Art.Background, backgroundRectangle, Color.White);
+                }
+            }
+        }
 
+        private void DrawDebugTiles(SpriteBatch spriteBatch)
+        {
+            Vector2 startLocation = Vector2.Zero;
+            int numberOfTilesX = (int)Math.Ceiling((double)Viewport.Bounds.Width / TileSize / Camera.Scale);
+            int numberOfTilesY = (int)Math.Ceiling((double)Viewport.Bounds.Height / TileSize / Camera.Scale);
+            Vector2 tilePosition;
+            tilePosition.X = (int)Math.Floor(Camera.Position.X / TileSize);
+            tilePosition.Y = (int)Math.Floor(Camera.Position.Y / TileSize);
+
+            startLocation.X = startLocation.X - TileSize;
+
+            int minX = (int)Math.Floor(tilePosition.X - (double)numberOfTilesX / 2);
+            int maxX = (int)Math.Ceiling(tilePosition.X + (double)numberOfTilesX / 2);
+            int minY = (int)Math.Floor(tilePosition.Y - (double)numberOfTilesY / 2);
+            int maxY = (int)Math.Ceiling(tilePosition.Y + (double)numberOfTilesY / 2);
+
+            for (int x = minX; x <= maxX; x++)
+            {
+                for (int y = minY; y <= maxY; y++)
+                {
                     Vector2 position = new Vector2(_debugTile.Bounds.Width * x, _debugTile.Bounds.Height * y);
                     if (IsDebugging && Camera.Scale >= 0.5)
                     {

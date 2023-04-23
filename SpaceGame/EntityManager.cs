@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,11 +9,12 @@ namespace SpaceGame
 {
     public static class EntityManager
     {
-        private static List<IEntity> _entities = new List<IEntity>();
+        public static List<IEntity> Entities = new List<IEntity>();
+
         private static List<IEntity> _addedEntities = new List<IEntity>();
         private static bool _isUpdating;
 
-        public static int Count => _entities.Count;
+        public static int Count => Entities.Count;
 
         public static void Add(IEntity entity)
         {
@@ -26,18 +28,14 @@ namespace SpaceGame
             }
         }
 
-        private static void AddEntity(IEntity entity)
-        {
-            _entities.Add(entity);
-        }
-
         public static void Update(GameTime gameTime, Matrix parentTransform)
         {
             _isUpdating = true;
 
-            foreach (IEntity entity in _entities)
+            foreach (IEntity entity in Entities)
             {
                 entity.Update(gameTime, parentTransform);
+                UpdateEntityTileCoordinates(entity);
             }
 
             _isUpdating = false;
@@ -50,15 +48,27 @@ namespace SpaceGame
             _addedEntities.Clear();
 
             // remove any expired entities.
-            _entities = _entities.Where(x => !x.IsExpired).ToList();
+            Entities = Entities.Where(x => !x.IsExpired).ToList();
         }
 
         public static void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            foreach (IEntity entity in _entities)
+            foreach (IEntity entity in Entities)
             {
                 entity.Draw(spriteBatch, parentTransform);
             }
+        }
+
+        private static void AddEntity(IEntity entity)
+        {
+            Entities.Add(entity);
+        }
+
+        private static void UpdateEntityTileCoordinates(IEntity entity)
+        {
+            entity.TileCoordinates = new Vector2(
+                (float)Math.Floor(entity.Position.X / MainGame.TileSize),
+                (float)Math.Floor(entity.Position.Y / MainGame.TileSize));
         }
     }
 }

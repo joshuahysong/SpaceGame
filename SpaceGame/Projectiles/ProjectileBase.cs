@@ -1,14 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpaceGame.Projectiles
 {
     public class ProjectileBase : IEntity
     {
+        public Vector2 Position { get; set; }
+        public Vector2 TileCoordinates { get; set; }
         public bool IsExpired { get; set; }
 
-        public Vector2 _position;
+        public Vector2 _previousPosition;
         public Vector2 _velocity;
         private float _heading;
         private Texture2D _image;
@@ -27,7 +31,7 @@ namespace SpaceGame.Projectiles
             float scale = 1f,
             Color? color = null)
         {
-            _position = position;
+            Position = position;
             _velocity = velocity;
             _heading = velocity.ToAngle();
             _image = image;
@@ -44,18 +48,48 @@ namespace SpaceGame.Projectiles
                 _heading = _velocity.ToAngle();
             }
 
-            _position += _velocity * deltaTime;
+            _previousPosition = Position;
+            Position += _velocity * deltaTime;
 
             _timeAlive += gameTime.ElapsedGameTime.TotalSeconds;
             if (_timeAlive > _timeToLiveInSeconds)
             {
                 IsExpired = true;
             }
+            CheckForCollision();
         }
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            spriteBatch.Draw(_image, _position, null, _color, _heading, _size / 2f, _scale, 0, 0);
+            spriteBatch.Draw(_image, Position, null, _color, _heading, _size / 2f, _scale, 0, 0);
+
+            if (MainGame.IsDebugging && _previousPosition != Vector2.Zero)
+            {
+                Art.DrawLine(spriteBatch, _previousPosition, Position, Color.Red);
+            }
+        }
+
+        private void CheckForCollision()
+        {
+            var coordinatesToCheck = new List<Vector2>
+            {
+                TileCoordinates,
+                new Vector2(TileCoordinates.X - 1, TileCoordinates.Y),
+                new Vector2(TileCoordinates.X - 1, TileCoordinates.Y - 1),
+                new Vector2(TileCoordinates.X - 1, TileCoordinates.Y + 1),
+                new Vector2(TileCoordinates.X - 1, TileCoordinates.Y),
+                new Vector2(TileCoordinates.X + 1, TileCoordinates.Y - 1),
+                new Vector2(TileCoordinates.X + 1, TileCoordinates.Y + 1),
+                new Vector2(TileCoordinates.X, TileCoordinates.Y - 1),
+                new Vector2(TileCoordinates.X, TileCoordinates.Y + 1)
+            };
+            var validEntities = EntityManager.Entities
+                .Where(x => x.TileCoordinates == TileCoordinates
+                    && x != this).ToList();
+            if (validEntities.Count > 0)
+            {
+
+            }
         }
     }
 }

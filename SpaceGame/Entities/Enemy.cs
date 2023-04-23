@@ -7,9 +7,12 @@ namespace SpaceGame.Entities
 {
     public class Enemy : IEntity
     {
+        public Vector2 Position => Ship?.Position ?? Vector2.Zero;
+        public Vector2 TileCoordinates { get; set; }
+        public bool IsExpired { get; set; }
+
         public ShipBase Ship { get; set; }
         public ShipBase Target { get; set; }
-        public bool IsExpired { get; set; }
 
         private readonly List<IEnumerator<int>> _behaviours = new();
 

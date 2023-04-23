@@ -9,10 +9,10 @@ namespace SpaceGame.Ships
             : base(spawnPosition,
                 spawnHeading,
                 image: Art.TestEnemyShip,
-                thrust: 300f,
+                thrust: 200f,
                 maxTurnRate: 1f,
                 maneuveringThrust: 0.05f,
-                maxVelocity: 1000f,
+                maxVelocity: 500f,
                 scale: 0.5f,
                 imageRotationOverride: MathHelper.ToRadians(90))
         {

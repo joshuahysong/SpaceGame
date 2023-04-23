@@ -92,8 +92,12 @@ namespace SpaceGame.Ships
 
             if (MainGame.IsDebugging)
             {
-                Art.DrawLine(spriteBatch, Position, Position + Velocity, Color.Red);
+                Art.DrawLine(spriteBatch, Position, Position + Velocity, Color.Blue);
                 Art.DrawLine(spriteBatch, Position, _maxVelocity, Heading, Color.Green);
+                var scaledSize = _size * _scale;
+                var radius = Math.Sqrt(Math.Pow(scaledSize.X, 2) + Math.Pow(scaledSize.Y, 2)) / 2;
+                Art.DrawCircle(spriteBatch, Position, (int)Math.Ceiling(radius), Color.Yellow * 0.75f);
+                Art.DrawRectangle(spriteBatch, Position, scaledSize, Heading + _imageRotationOverride, Color.Turquoise);
             }
         }
 
