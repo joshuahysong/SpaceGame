@@ -19,7 +19,7 @@ namespace SpaceGame
         public static Vector2 ScreenSize => new Vector2(Viewport.Width, Viewport.Height);
         public static Vector2 ScreenCenter => new Vector2(Viewport.Width / 2, Viewport.Height / 2);
 
-        public const int TileSize = 500;
+        public const int TileSize = 400;
 
         public Dictionary<string, string> PlayerDebugEntries { get; set; }
         public Dictionary<string, string> EnemyDebugEntries { get; set; }
@@ -60,7 +60,7 @@ namespace SpaceGame
 
             for (var i = 1; i <= 2; i++)
             {
-                var enemy = new Enemy(new TestEnemyShip(new Vector2(i * 100, (i % 2 == 0 ? 1 : -1) * 100), 0));
+                var enemy = new Enemy(new TestEnemyShip(new Vector2(i * 200, (i % 2 == 0 ? 1 : -1) * 200), 0));
                 EntityManager.Add(enemy);
             }
         }
@@ -91,6 +91,7 @@ namespace SpaceGame
                 SystemDebugEntries["Camera Zoom"] = $"{Math.Round(Camera.Scale, 2)}";
                 SystemDebugEntries["Mouse Screen Position"] = $"{Input.ScreenMousePosition.X}, {Input.ScreenMousePosition.Y}";
                 SystemDebugEntries["Mouse World Position"] = $"{Math.Round(Input.WorldMousePosition.X)}, {Math.Round(Input.WorldMousePosition.Y)}";
+                SystemDebugEntries["Mouse World Tile"] = $"{Math.Floor(Input.WorldMousePosition.X / TileSize)}, {Math.Floor(Input.WorldMousePosition.Y / TileSize)}";
                 SystemDebugEntries["Entities"] = $"{EntityManager.Count}";
             }
         }
@@ -207,8 +208,8 @@ namespace SpaceGame
                     Vector2 position = new Vector2(_debugTile.Bounds.Width * x, _debugTile.Bounds.Height * y);
                     if (IsDebugging && Camera.Scale >= 0.5)
                     {
-                        _spriteBatch.Draw(_debugTile, position, Color.White);
-                        _spriteBatch.DrawString(Art.DebugFont, $"{x},{y}", new Vector2(position.X + 5, position.Y + 5), Color.DimGray);
+                        _spriteBatch.Draw(_debugTile, position, Color.DimGray * 0.5f);
+                        _spriteBatch.DrawString(Art.DebugFont, $"{x},{y}", new Vector2(position.X + 5, position.Y + 5), Color.DimGray * 0.5f);
                     }
                 }
             }

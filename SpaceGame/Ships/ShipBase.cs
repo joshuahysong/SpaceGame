@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SpaceGame.Entities;
 using SpaceGame.Weapons;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpaceGame.Ships
 {
@@ -13,40 +15,46 @@ namespace SpaceGame.Ships
         public float Heading;
         public float CurrentTurnRate;
         public bool IsManeuvering;
+        public readonly Texture2D Texture;
+        public readonly Color[] TextureData;
 
-        protected Texture2D _image;
-        protected float _scale;
+        public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f))
+            * Matrix.CreateRotationZ(Heading)
+            * Matrix.CreateTranslation(new Vector3(Position, 0.0f));
+
+        public Rectangle BoundingRectangle => CalculateBoundingRectangle(_rectangle, Transform);
+
         protected float _thrust;
         protected float _maneuveringThrust;
         protected float _maxTurnRate;
         protected float _maxVelocity;
-        protected float _imageRotationOverride;
         protected List<WeaponBase> _weapons;
 
         private Vector2 _acceleration;
 
-        private Vector2 _size => _image == null ? Vector2.Zero : new Vector2(_image.Width, _image.Height);
+        private readonly Rectangle _rectangle;
+        private readonly Vector2 _origin;
 
         public ShipBase(
             Vector2 spawnPosition,
             float spawnHeading,
-            Texture2D image,
+            Texture2D texture,
             float thrust,
             float maneuveringThrust,
             float maxTurnRate,
-            float maxVelocity,
-            float scale = 1f,
-            float imageRotationOverride = 0f)
+            float maxVelocity)
         {
             Position = spawnPosition;
             Heading = spawnHeading;
-            _image = image;
+            Texture = texture;
             _thrust = thrust;
             _maneuveringThrust = maneuveringThrust;
             _maxTurnRate = maxTurnRate;
             _maxVelocity = maxVelocity;
-            _scale = scale;
-            _imageRotationOverride = imageRotationOverride;
+            _origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
+            _rectangle = new Rectangle(0, 0, Texture.Width, Texture.Height);
+            TextureData = new Color[Texture.Width * Texture.Height];
+            Texture.GetData(TextureData);
             _weapons = new List<WeaponBase>();
         }
 
@@ -88,16 +96,16 @@ namespace SpaceGame.Ships
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            spriteBatch.Draw(_image, Position, null, Color.White, Heading + _imageRotationOverride, _size / 2f, _scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, 1f, SpriteEffects.None, 0);
 
             if (MainGame.IsDebugging)
             {
                 Art.DrawLine(spriteBatch, Position, Position + Velocity, Color.Blue);
                 Art.DrawLine(spriteBatch, Position, _maxVelocity, Heading, Color.Green);
-                var scaledSize = _size * _scale;
-                var radius = Math.Sqrt(Math.Pow(scaledSize.X, 2) + Math.Pow(scaledSize.Y, 2)) / 2;
-                Art.DrawCircle(spriteBatch, Position, (int)Math.Ceiling(radius), Color.Yellow * 0.75f);
-                Art.DrawRectangle(spriteBatch, Position, scaledSize, Heading + _imageRotationOverride, Color.Turquoise);
+
+                var color = IsColliding() ? Color.Red : Color.White;
+                var boundingTexture = Art.CreateRectangle(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, color);
+                spriteBatch.Draw(boundingTexture, BoundingRectangle, Color.White);
             }
         }
 
@@ -215,6 +223,105 @@ namespace SpaceGame.Ships
         {
             double brakingRange = _maxVelocity / 100;
             return Velocity.X < brakingRange && Velocity.X > -brakingRange && Velocity.Y < brakingRange && Velocity.Y > -brakingRange;
+        }
+
+        private static Rectangle CalculateBoundingRectangle(Rectangle rectangle, Matrix transform)
+        {
+            // Get all four corners in local space
+            Vector2 leftTop = new Vector2(rectangle.Left, rectangle.Top);
+            Vector2 rightTop = new Vector2(rectangle.Right, rectangle.Top);
+            Vector2 leftBottom = new Vector2(rectangle.Left, rectangle.Bottom);
+            Vector2 rightBottom = new Vector2(rectangle.Right, rectangle.Bottom);
+
+            // Transform all four corners into work space
+            Vector2.Transform(ref leftTop, ref transform, out leftTop);
+            Vector2.Transform(ref rightTop, ref transform, out rightTop);
+            Vector2.Transform(ref leftBottom, ref transform, out leftBottom);
+            Vector2.Transform(ref rightBottom, ref transform, out rightBottom);
+
+            // Find the minimum and maximum extents of the rectangle in world space
+            Vector2 min = Vector2.Min(Vector2.Min(leftTop, rightTop),
+                                      Vector2.Min(leftBottom, rightBottom));
+            Vector2 max = Vector2.Max(Vector2.Max(leftTop, rightTop),
+                                      Vector2.Max(leftBottom, rightBottom));
+
+            // Return that as a rectangle
+            return new Rectangle((int)min.X, (int)min.Y,
+                                 (int)(max.X - min.X), (int)(max.Y - min.Y));
+        }
+
+        private bool IsColliding()
+        {
+            bool retval = false;
+
+            // TODO REMOVE THIS TERRIBAD O(n2) IMPLEMENTATION
+            foreach (var entity in EntityManager.Entities.Where(x => x is Enemy && ((Enemy)x).Ship != this))
+            {
+                var ship = ((Enemy)entity).Ship;
+                if (BoundingRectangle.Intersects(ship.BoundingRectangle))
+                {
+                    if (HasIntersectingPixels(this, ship))
+                    {
+                        retval = true;
+                    }
+                    return retval;
+                }
+            }
+
+            return retval;
+        }
+
+        public static bool HasIntersectingPixels(ShipBase shipA, ShipBase shipB)
+        {
+            var transformA = shipA.Transform;
+            var widthA = shipA.Texture.Width;
+            var heightA = shipA.Texture.Height;
+            var dataA = shipA.TextureData;
+
+            var transformB = shipB.Transform;
+            var widthB = shipB.Texture.Width;
+            var heightB = shipB.Texture.Height;
+            var dataB = shipB.TextureData;
+
+            // Calculate a matrix which transforms from A's local space into
+            // world space and then into B's local space
+            Matrix transformAToB = transformA * Matrix.Invert(transformB);
+
+            // When a point moves in A's local space, it moves in B's local space with a
+            // fixed direction and distance proportional to the movement in A.
+            // This algorithm steps through A one pixel at a time along A's X and Y axes
+            // Calculate the analogous steps in B:
+            Vector2 stepX = Vector2.TransformNormal(Vector2.UnitX, transformAToB);
+            Vector2 stepY = Vector2.TransformNormal(Vector2.UnitY, transformAToB);
+
+            // Calculate the top left corner of A in B's local space
+            // This variable will be reused to keep track of the start of each row
+            Vector2 yPosInB = Vector2.Transform(Vector2.Zero, transformAToB);
+            for (int yA = 0; yA < heightA; yA++)
+            {
+                Vector2 posInB = yPosInB;
+                for (int xA = 0; xA < widthA; xA++)
+                {
+                    int xB = (int)Math.Round(posInB.X);
+                    int yB = (int)Math.Round(posInB.Y);
+
+                    // If the pixel lies within the bounds of B
+                    if (0 <= xB && xB < widthB &&
+                        0 <= yB && yB < heightB)
+                    {
+                        Color colorA = dataA[xA + yA * widthA];
+                        Color colorB = dataB[xB + yB * widthB];
+
+                        if (colorA.A != 0 && colorB.A != 0)
+                        {
+                            return true;
+                        }
+                    }
+                    posInB += stepX;
+                }
+                yPosInB += stepY;
+            }
+            return false;
         }
     }
 }

@@ -41,7 +41,7 @@ namespace SpaceGame
 
         public static Texture2D CreateRectangle(int width, int height, Color fillColor, Color borderColor)
         {
-            Texture2D tile = new Texture2D(MainGame.Instance.GraphicsDevice, width, height);
+            Texture2D texture = new Texture2D(MainGame.Instance.GraphicsDevice, width, height);
             Color[] data = new Color[width * height];
             for (int i = 0; i < data.Length; ++i)
             {
@@ -54,8 +54,8 @@ namespace SpaceGame
                     data[i] = fillColor;
                 }
             }
-            tile.SetData(data);
-            return tile;
+            texture.SetData(data);
+            return texture;
         }
 
         public static Texture2D CreateCircle(int radius, Color borderColor)

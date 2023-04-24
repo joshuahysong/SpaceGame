@@ -8,15 +8,13 @@ namespace SpaceGame.Ships
         public TestPlayerShip(Vector2 spawnPosition, float spawnHeading)
             : base(spawnPosition,
                 spawnHeading,
-                image: Art.TestPlayerShip,
+                texture: Art.TestPlayerShip,
                 thrust: 300f,
-                maxTurnRate: 1f,
+                maxTurnRate: 2f,
                 maneuveringThrust: 0.05f,
-                maxVelocity: 1000f,
-                scale: 0.5f,
-                imageRotationOverride: MathHelper.ToRadians(90))
+                maxVelocity: 1000f)
         {
-            _weapons.Add(new TestWeapon(Vector2.Zero + new Vector2(_image.Width / 2, 0) * _scale));
+            _weapons.Add(new TestWeapon(new Vector2(Texture.Width / 2, 0)));
         }
     }
 }

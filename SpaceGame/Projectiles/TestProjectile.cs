@@ -7,7 +7,7 @@ namespace SpaceGame.Projectiles
         public TestProjectile(Vector2 position, Vector2 velocity)
             : base(position, 
                   velocity,
-                  image: Art.Bullet,
+                  texture: Art.Bullet,
                   timeToLiveInSeconds: 5)
         {
         }

@@ -12,32 +12,26 @@ namespace SpaceGame.Projectiles
         public Vector2 TileCoordinates { get; set; }
         public bool IsExpired { get; set; }
 
+        private readonly Vector2 _origin;
         public Vector2 _previousPosition;
         public Vector2 _velocity;
         private float _heading;
-        private Texture2D _image;
+        private Texture2D _texture;
         private long _timeToLiveInSeconds;
         private double _timeAlive;
-        private float _scale;
-        private Color _color;
-
-        private Vector2 _size => _image == null ? Vector2.Zero : new Vector2(_image.Width, _image.Height);
 
         public ProjectileBase(
             Vector2 position,
             Vector2 velocity,
-            Texture2D image,
-            long timeToLiveInSeconds,
-            float scale = 1f,
-            Color? color = null)
+            Texture2D texture,
+            long timeToLiveInSeconds)
         {
             Position = position;
             _velocity = velocity;
-            _heading = velocity.ToAngle();
-            _image = image;
+            _texture = texture;
             _timeToLiveInSeconds = timeToLiveInSeconds;
-            _scale = scale;
-            _color = color ?? Color.White;
+            _heading = velocity.ToAngle();
+            _origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)
@@ -61,7 +55,7 @@ namespace SpaceGame.Projectiles
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            spriteBatch.Draw(_image, Position, null, _color, _heading, _size / 2f, _scale, 0, 0);
+            spriteBatch.Draw(_texture, Position, null, Color.White, _heading, _origin, 1f, 0, 0);
 
             if (MainGame.IsDebugging && _previousPosition != Vector2.Zero)
             {
