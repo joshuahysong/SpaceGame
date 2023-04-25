@@ -1,22 +1,31 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SpaceGame.Entities;
+using SpaceGame.Managers;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SpaceGame.Projectiles
 {
-    public class ProjectileBase : IEntity
+    public class ProjectileBase : IEntity, ICollidable
     {
         public Vector2 Position { get; set; }
         public Vector2 TileCoordinates { get; set; }
         public bool IsExpired { get; set; }
 
+        public Texture2D Texture { get; set; }
+        public Color[] TextureData { get; set; }
+
+        public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f))
+            * Matrix.CreateRotationZ(_heading)
+            * Matrix.CreateTranslation(new Vector3(Position, 0.0f));
+
+        public Rectangle BoundingRectangle => CollisionManager.CalculateBoundingRectangle(_rectangle, Transform);
+
+        private readonly Rectangle _rectangle;
         private readonly Vector2 _origin;
         public Vector2 _previousPosition;
         public Vector2 _velocity;
         private float _heading;
-        private Texture2D _texture;
         private long _timeToLiveInSeconds;
         private double _timeAlive;
 
@@ -27,11 +36,15 @@ namespace SpaceGame.Projectiles
             long timeToLiveInSeconds)
         {
             Position = position;
+            Texture = texture;
             _velocity = velocity;
-            _texture = texture;
             _timeToLiveInSeconds = timeToLiveInSeconds;
             _heading = velocity.ToAngle();
-            _origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
+            _origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
+            _rectangle = new Rectangle(0, 0, Texture.Width, Texture.Height);
+            TextureData = new Color[Texture.Width * Texture.Height];
+            Texture.GetData(TextureData);
+            CollisionManager.Add(this);
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)
@@ -55,7 +68,7 @@ namespace SpaceGame.Projectiles
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            spriteBatch.Draw(_texture, Position, null, Color.White, _heading, _origin, 1f, 0, 0);
+            spriteBatch.Draw(Texture, Position, null, Color.White, _heading, _origin, 1f, 0, 0);
 
             if (MainGame.IsDebugging && _previousPosition != Vector2.Zero)
             {

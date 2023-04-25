@@ -1,11 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SpaceGame.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SpaceGame
+namespace SpaceGame.Managers
 {
     public static class EntityManager
     {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SpaceGame.Managers;
 using SpaceGame.Ships;
 using System.Collections.Generic;
 

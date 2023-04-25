@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace SpaceGame.Entities
+namespace SpaceGame.Managers
 {
     public interface IEntity
     {

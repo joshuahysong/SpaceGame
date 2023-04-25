@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceGame.Entities;
+using SpaceGame.Managers;
 using SpaceGame.Ships;
 using System;
 using System.Collections.Generic;
