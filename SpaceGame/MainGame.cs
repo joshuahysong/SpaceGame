@@ -27,6 +27,9 @@ namespace SpaceGame
         public Dictionary<string, string> SystemDebugEntries { get; set; }
 
         private Texture2D _debugTile;
+        private Texture2D _starTile1;
+        private Texture2D _starTile2;
+        private Texture2D _starTile3;
         private SpriteBatch _spriteBatch;
 
         public MainGame()
@@ -59,7 +62,7 @@ namespace SpaceGame
             Camera.Focus = Player;
             EntityManager.Add(Player);
 
-            for (var i = 1; i <= 100; i++)
+            for (var i = 1; i <= 0; i++)
             {
                 var enemy = new Enemy(new TestEnemyShip(new Vector2(i * 200, (i % 2 == 0 ? 1 : -1) * 200), 0));
                 EntityManager.Add(enemy);
@@ -70,6 +73,9 @@ namespace SpaceGame
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             Art.Load(Content);
+            _starTile1 = GetStarsTexture();
+            _starTile2 = GetStarsTexture();
+            _starTile3 = GetStarsTexture();
         }
 
         protected override void Update(GameTime gameTime)
@@ -100,10 +106,14 @@ namespace SpaceGame
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
+
+            _spriteBatch.Begin(SpriteSortMode.Deferred);
+            DrawBackground(_spriteBatch);
+            _spriteBatch.End();
 
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, Camera.Transform);
-            DrawBackground(_spriteBatch);
+            DrawStarTiles();
             if (IsDebugging)
             {
                 DrawDebugTiles();
@@ -111,7 +121,7 @@ namespace SpaceGame
             EntityManager.Draw(_spriteBatch, Matrix.Identity);
             _spriteBatch.End();
 
-            _spriteBatch.Begin();
+            _spriteBatch.Begin(SpriteSortMode.Deferred);
             var fpsText = $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}";
             var fpsX = (int)(Viewport.Width - 5 - Art.DebugFont.MeasureString(fpsText).X);
             _spriteBatch.DrawString(Art.DebugFont, fpsText, new Vector2(fpsX, 5), Color.White);
@@ -164,7 +174,7 @@ namespace SpaceGame
         private void DrawBackground(SpriteBatch spriteBatch)
         {
             var backgroundImage = Art.Background;
-            var backgroundTileSize = 2 * (backgroundImage.Width > backgroundImage.Height ? backgroundImage.Width : backgroundImage.Height);
+            var backgroundTileSize = (backgroundImage.Width > backgroundImage.Height ? backgroundImage.Width : backgroundImage.Height);
             Vector2 startLocation = Vector2.Zero;
             int numberOfTilesX = (int)Math.Ceiling((double)Viewport.Bounds.Width / backgroundTileSize / Camera.Scale);
             int numberOfTilesY = (int)Math.Ceiling((double)Viewport.Bounds.Height / backgroundTileSize / Camera.Scale);
@@ -210,11 +220,70 @@ namespace SpaceGame
                 for (int y = minY; y <= maxY; y++)
                 {
                     Vector2 position = new Vector2(_debugTile.Bounds.Width * x, _debugTile.Bounds.Height * y);
-                    if (IsDebugging && Camera.Scale >= 0.5)
+                    if (Camera.Scale >= 0.5)
                     {
                         _spriteBatch.Draw(_debugTile, position, Color.DimGray * 0.5f);
                         _spriteBatch.DrawString(Art.DebugFont, $"{x},{y}", new Vector2(position.X + 5, position.Y + 5), Color.DimGray * 0.5f);
                     }
+                }
+            }
+        }
+
+        private Texture2D GetStarsTexture()
+        {
+            Texture2D texture = new Texture2D(MainGame.Instance.GraphicsDevice, TileSize, TileSize);
+            Random Random = new Random();
+            Color[] data = new Color[TileSize * TileSize];
+            for (int i = 0; i < data.Length; ++i)
+            {
+                if (!(i < TileSize || i % TileSize == 0 || i > TileSize * TileSize - TileSize || (i + 1) % TileSize == 0))
+                {
+                    if (Random.Next(1, 50000) == 1)
+                    {
+                        data[i] = Color.White;
+                    }
+                }
+            }
+            texture.SetData(data);
+            return texture;
+        }
+
+        private void DrawStarTiles()
+        {
+            Vector2 startLocation = Vector2.Zero;
+            int numberOfTilesX = (int)Math.Ceiling((double)Viewport.Bounds.Width / TileSize / Camera.Scale);
+            int numberOfTilesY = (int)Math.Ceiling((double)Viewport.Bounds.Height / TileSize / Camera.Scale);
+            Vector2 tilePosition;
+            tilePosition.X = (int)Math.Floor(Camera.Position.X / TileSize);
+            tilePosition.Y = (int)Math.Floor(Camera.Position.Y / TileSize);
+
+            startLocation.X = startLocation.X - TileSize;
+
+            int minX = (int)Math.Floor(tilePosition.X - (double)numberOfTilesX / 2);
+            int maxX = (int)Math.Ceiling(tilePosition.X + (double)numberOfTilesX / 2);
+            int minY = (int)Math.Floor(tilePosition.Y - (double)numberOfTilesY / 2);
+            int maxY = (int)Math.Ceiling(tilePosition.Y + (double)numberOfTilesY / 2);
+
+            for (int x = minX; x <= maxX; x++)
+            {
+                for (int y = minY; y <= maxY; y++)
+                {
+                    Vector2 position = new Vector2(_debugTile.Bounds.Width * x, _debugTile.Bounds.Height * y);
+                    _spriteBatch.Draw(_starTile1, position, new Rectangle(
+                        (int)Math.Floor(Camera.Position.X * 0.5f),
+                        (int)Math.Floor(Camera.Position.Y * 0.5f),
+                        _starTile1.Width,
+                        _starTile1.Height), Color.Red);
+                    _spriteBatch.Draw(_starTile2, position, new Rectangle(
+                        (int)Math.Floor(Camera.Position.X * 0.25f),
+                        (int)Math.Floor(Camera.Position.Y * 0.25f),
+                        _starTile1.Width,
+                        _starTile1.Height), Color.Yellow);
+                    _spriteBatch.Draw(_starTile3, position, new Rectangle(
+                        (int)Math.Floor(Camera.Position.X * 0.1f),
+                        (int)Math.Floor(Camera.Position.Y * 0.1f),
+                        _starTile1.Width,
+                        _starTile1.Height), Color.Green);
                 }
             }
         }
