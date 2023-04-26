@@ -16,9 +16,11 @@ namespace SpaceGame.Ships
         public float CurrentTurnRate;
         public bool IsManeuvering;
 
+        public FactionType Faction { get; set; }
         public Texture2D Texture { get; set; }
         public Color[] TextureData { get; set; }
         public float Scale { get; set; }
+        public bool IsExpired { get; set; }
 
         public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f) * Scale)
             * Matrix.CreateRotationZ(Heading)
@@ -36,8 +38,10 @@ namespace SpaceGame.Ships
         private bool _hasCollision;
         private Rectangle _rectangle;
         private Vector2 _origin;
+        private Texture2D _boundingBoxTexture;
 
         public ShipBase(
+            FactionType faction,
             Vector2 spawnPosition,
             float spawnHeading,
             Texture2D texture,
@@ -45,8 +49,9 @@ namespace SpaceGame.Ships
             float maneuveringThrust,
             float maxTurnRate,
             float maxVelocity,
-            float scale = Constants.Scales.Full)
+            float scale = ScaleType.Full)
         {
+            Faction = faction;
             Position = spawnPosition;
             Heading = spawnHeading;
             Texture = texture;
@@ -58,6 +63,7 @@ namespace SpaceGame.Ships
             _origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             _rectangle = new Rectangle(0, 0, (int)Math.Floor(Texture.Width * Scale), (int)Math.Floor(Texture.Height * Scale));
             TextureData = Art.GetScaledTextureData(Texture, Scale);
+            _boundingBoxTexture = Art.CreateRectangle(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
             CollisionManager.Add(this);
             _weapons = new List<WeaponBase>();
         }
@@ -113,16 +119,13 @@ namespace SpaceGame.Ships
             {
                 Art.DrawLine(spriteBatch, Position, Position + Velocity, Color.Blue);
                 Art.DrawLine(spriteBatch, Position, _maxVelocity, Heading, Color.Green);
-
-                var color = _hasCollision ? Color.Red : Color.White;
-                var boundingTexture = Art.CreateRectangle(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, color);
-                spriteBatch.Draw(boundingTexture, BoundingRectangle, Color.White);
+                spriteBatch.Draw(_boundingBoxTexture, BoundingRectangle, _hasCollision ? Color.Red : Color.White);
             }
         }
 
         public void FireWeapons()
         {
-            _weapons.ForEach(weapon => weapon.Fire(Heading, Velocity, Position));
+            _weapons.ForEach(weapon => weapon.Fire(Faction, Heading, Velocity, Position));
         }
 
         public void ApplyForwardThrust()

@@ -28,9 +28,10 @@ namespace SpaceGame.Weapons
             _speed = speed;
             _accuracy = accuracy;
             _projectileType = projectileType;
+            _cooldownRemaining = 0;
         }
 
-        public void Fire(float heading, Vector2 relativeVelocity, Vector2 shipLocation)
+        public void Fire(FactionType faction, float heading, Vector2 relativeVelocity, Vector2 shipLocation)
         {
             if (_cooldownRemaining <= 0)
             {
@@ -42,7 +43,7 @@ namespace SpaceGame.Weapons
                 Vector2 vel = MathUtilities.FromPolar(heading + randomSpread, _speed);
 
                 Vector2 offset = Vector2.Transform(_relativePosition, aimQuat);
-                EntityManager.Add((ProjectileBase)Activator.CreateInstance(_projectileType, shipLocation + offset, vel + relativeVelocity));
+                EntityManager.Add((ProjectileBase)Activator.CreateInstance(_projectileType, faction, shipLocation + offset, vel + relativeVelocity));
             }
 
             if (_cooldownRemaining > 0)

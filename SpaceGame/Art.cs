@@ -119,11 +119,11 @@ namespace SpaceGame
             Color[] data = new Color[texture.Width * texture.Height];
             texture.GetData(data);
 
-            if (scale == Constants.Scales.Full)
+            if (scale == ScaleType.Full)
                 return data;
 
             // TODO Add support for other scales
-            if (scale != Constants.Scales.Half)
+            if (scale != ScaleType.Half)
                 throw new ArgumentException("Must be a valid scale", nameof(scale));
 
             float modulus = 2;
