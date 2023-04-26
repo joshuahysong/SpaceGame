@@ -62,13 +62,13 @@ namespace SpaceGame.Managers
         public static bool HasIntersectingPixels(ICollidable collidableEntityA, ICollidable collidableEntityB)
         {
             var transformA = collidableEntityA.Transform;
-            var widthA = collidableEntityA.Texture.Width;
-            var heightA = collidableEntityA.Texture.Height;
+            var widthA = (int)Math.Floor(collidableEntityA.Texture.Width * collidableEntityA.Scale);
+            var heightA = (int)Math.Floor(collidableEntityA.Texture.Height * collidableEntityA.Scale);
             var dataA = collidableEntityA.TextureData;
 
             var transformB = collidableEntityB.Transform;
-            var widthB = collidableEntityB.Texture.Width;
-            var heightB = collidableEntityB.Texture.Height;
+            var widthB = (int)Math.Floor(collidableEntityB.Texture.Width * collidableEntityB.Scale);
+            var heightB = (int)Math.Floor(collidableEntityB.Texture.Height * collidableEntityB.Scale);
             var dataB = collidableEntityB.TextureData;
 
             // Calculate a matrix which transforms from A's local space into

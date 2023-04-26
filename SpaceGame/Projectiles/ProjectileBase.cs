@@ -11,9 +11,9 @@ namespace SpaceGame.Projectiles
         public Vector2 Position { get; set; }
         public Vector2 TileCoordinates { get; set; }
         public bool IsExpired { get; set; }
-
         public Texture2D Texture { get; set; }
         public Color[] TextureData { get; set; }
+        public float Scale { get; set; }
 
         public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f))
             * Matrix.CreateRotationZ(_heading)
@@ -23,8 +23,8 @@ namespace SpaceGame.Projectiles
 
         private readonly Rectangle _rectangle;
         private readonly Vector2 _origin;
-        public Vector2 _previousPosition;
-        public Vector2 _velocity;
+        private Vector2 _previousPosition;
+        private Vector2 _velocity;
         private float _heading;
         private long _timeToLiveInSeconds;
         private double _timeAlive;
@@ -33,10 +33,12 @@ namespace SpaceGame.Projectiles
             Vector2 position,
             Vector2 velocity,
             Texture2D texture,
-            long timeToLiveInSeconds)
+            long timeToLiveInSeconds,
+            float scale = 1f)
         {
             Position = position;
             Texture = texture;
+            Scale = scale;
             _velocity = velocity;
             _timeToLiveInSeconds = timeToLiveInSeconds;
             _heading = velocity.ToAngle();

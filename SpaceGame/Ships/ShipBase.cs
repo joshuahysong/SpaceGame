@@ -18,8 +18,9 @@ namespace SpaceGame.Ships
 
         public Texture2D Texture { get; set; }
         public Color[] TextureData { get; set; }
+        public float Scale { get; set; }
 
-        public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f))
+        public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f) * Scale)
             * Matrix.CreateRotationZ(Heading)
             * Matrix.CreateTranslation(new Vector3(Position, 0.0f));
 
@@ -33,9 +34,8 @@ namespace SpaceGame.Ships
 
         private Vector2 _acceleration;
         private bool _hasCollision;
-
-        private readonly Rectangle _rectangle;
-        private readonly Vector2 _origin;
+        private Rectangle _rectangle;
+        private Vector2 _origin;
 
         public ShipBase(
             Vector2 spawnPosition,
@@ -44,48 +44,22 @@ namespace SpaceGame.Ships
             float thrust,
             float maneuveringThrust,
             float maxTurnRate,
-            float maxVelocity)
+            float maxVelocity,
+            float scale = Constants.Scales.Full)
         {
             Position = spawnPosition;
             Heading = spawnHeading;
             Texture = texture;
+            Scale = scale;
             _thrust = thrust;
             _maneuveringThrust = maneuveringThrust;
             _maxTurnRate = maxTurnRate;
             _maxVelocity = maxVelocity;
             _origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
-            _rectangle = new Rectangle(0, 0, Texture.Width, Texture.Height);
-            TextureData = new Color[Texture.Width * Texture.Height];
-            Texture.GetData(TextureData);
-            TextureData = TestColorScale(Texture);
+            _rectangle = new Rectangle(0, 0, (int)Math.Floor(Texture.Width * Scale), (int)Math.Floor(Texture.Height * Scale));
+            TextureData = Art.GetScaledTextureData(Texture, Scale);
             CollisionManager.Add(this);
             _weapons = new List<WeaponBase>();
-        }
-
-        private Color[] TestColorScale(Texture2D texture)
-        {
-            Color[] data = new Color[Texture.Width * Texture.Height];
-            texture.GetData(data);
-
-            var columnsToKeep = Enumerable.Range(0, texture.Width - 1).Where((x, i) => i % 2 == 0);
-            var rowsToKeep= Enumerable.Range(0, texture.Height - 1).Where((x, i) => i % 2 == 0);
-            var numberOfRows = texture.Height;
-            var bothRemoved = new List<Color>();
-            var keptRows = new List<Color[]>();
-            rowsToKeep.ToList().ForEach(x =>
-            {
-                keptRows.Add(data.Where((z, i) => i >= x * texture.Width && i < (x + 1) * texture.Width).ToArray());
-            });
-
-            keptRows.ForEach(x =>
-            {
-                bothRemoved.AddRange(x.Where((y, i) => !columnsToKeep.Contains(i)));
-            });
-
-            //data = data
-            //    .Where((x, i) => i % 2 == 0)
-            //    .ToArray();
-            return bothRemoved.ToArray();
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)
@@ -133,7 +107,7 @@ namespace SpaceGame.Ships
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            //spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, 1f, SpriteEffects.None, 0);
+            spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
 
             if (MainGame.IsDebugging)
             {
@@ -143,10 +117,6 @@ namespace SpaceGame.Ships
                 var color = _hasCollision ? Color.Red : Color.White;
                 var boundingTexture = Art.CreateRectangle(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, color);
                 spriteBatch.Draw(boundingTexture, BoundingRectangle, Color.White);
-                
-                var testTexture = new Texture2D(MainGame.Instance.GraphicsDevice, Texture.Width / 2, Texture.Height / 2);
-                testTexture.SetData(TextureData);
-                spriteBatch.Draw(testTexture, Position, null, Color.White, Heading, _origin, 1f, SpriteEffects.None, 0);
             }
         }
 

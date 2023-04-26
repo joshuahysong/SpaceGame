@@ -12,7 +12,8 @@ namespace SpaceGame.Ships
                 thrust: 300f,
                 maxTurnRate: 2f,
                 maneuveringThrust: 0.05f,
-                maxVelocity: 1000f)
+                maxVelocity: 1000f,
+                scale: Constants.Scales.Half)
         {
             _weapons.Add(new TestWeapon(new Vector2(Texture.Width / 2, 0)));
         }
