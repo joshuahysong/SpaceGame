@@ -57,8 +57,35 @@ namespace SpaceGame.Ships
             _rectangle = new Rectangle(0, 0, Texture.Width, Texture.Height);
             TextureData = new Color[Texture.Width * Texture.Height];
             Texture.GetData(TextureData);
+            TextureData = TestColorScale(Texture);
             CollisionManager.Add(this);
             _weapons = new List<WeaponBase>();
+        }
+
+        private Color[] TestColorScale(Texture2D texture)
+        {
+            Color[] data = new Color[Texture.Width * Texture.Height];
+            texture.GetData(data);
+
+            var columnsToKeep = Enumerable.Range(0, texture.Width - 1).Where((x, i) => i % 2 == 0);
+            var rowsToKeep= Enumerable.Range(0, texture.Height - 1).Where((x, i) => i % 2 == 0);
+            var numberOfRows = texture.Height;
+            var bothRemoved = new List<Color>();
+            var keptRows = new List<Color[]>();
+            rowsToKeep.ToList().ForEach(x =>
+            {
+                keptRows.Add(data.Where((z, i) => i >= x * texture.Width && i < (x + 1) * texture.Width).ToArray());
+            });
+
+            keptRows.ForEach(x =>
+            {
+                bothRemoved.AddRange(x.Where((y, i) => !columnsToKeep.Contains(i)));
+            });
+
+            //data = data
+            //    .Where((x, i) => i % 2 == 0)
+            //    .ToArray();
+            return bothRemoved.ToArray();
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)
@@ -106,7 +133,7 @@ namespace SpaceGame.Ships
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, 1f, SpriteEffects.None, 0);
+            //spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, 1f, SpriteEffects.None, 0);
 
             if (MainGame.IsDebugging)
             {
@@ -116,6 +143,10 @@ namespace SpaceGame.Ships
                 var color = _hasCollision ? Color.Red : Color.White;
                 var boundingTexture = Art.CreateRectangle(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, color);
                 spriteBatch.Draw(boundingTexture, BoundingRectangle, Color.White);
+                
+                var testTexture = new Texture2D(MainGame.Instance.GraphicsDevice, Texture.Width / 2, Texture.Height / 2);
+                testTexture.SetData(TextureData);
+                spriteBatch.Draw(testTexture, Position, null, Color.White, Heading, _origin, 1f, SpriteEffects.None, 0);
             }
         }
 

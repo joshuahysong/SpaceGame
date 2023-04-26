@@ -61,8 +61,8 @@ namespace SpaceGame
 
             for (var i = 1; i <= 2; i++)
             {
-                var enemy = new Enemy(new TestEnemyShip(new Vector2(i * 200, (i % 2 == 0 ? 1 : -1) * 200), 0));
-                EntityManager.Add(enemy);
+                //var enemy = new Enemy(new TestEnemyShip(new Vector2(i * 200, (i % 2 == 0 ? 1 : -1) * 200), 0));
+                //EntityManager.Add(enemy);
             }
         }
 
