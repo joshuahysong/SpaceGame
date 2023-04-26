@@ -9,5 +9,6 @@ namespace SpaceGame.Managers
         public Color[] TextureData { get; }
         public Matrix Transform { get; }
         public Rectangle BoundingRectangle { get; }
+        public float Scale { get; }
     }
 }

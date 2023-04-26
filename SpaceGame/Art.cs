@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpaceGame
 {
@@ -110,6 +112,37 @@ namespace SpaceGame
         {
             var rectangle = CreateRectangle((int)Math.Ceiling(size.X), (int)Math.Ceiling(size.Y), Color.Transparent, borderColor);
             spriteBatch.Draw(rectangle, position, null, borderColor, heading, size / 2f, 1f, SpriteEffects.None, 0);
+        }
+
+        public static Color[] GetScaledTextureData(Texture2D texture, float scale)
+        {
+            Color[] data = new Color[texture.Width * texture.Height];
+            texture.GetData(data);
+
+            if (scale == Constants.Scales.Full)
+                return data;
+
+            // TODO Add support for other scales
+            if (scale != Constants.Scales.Half)
+                throw new ArgumentException("Must be a valid scale", nameof(scale));
+
+            float modulus = 2;
+            var columnsToKeep = Enumerable.Range(0, texture.Width - 1).Where((x, i) => i % modulus == 0).ToList();
+            var rowsToKeep = Enumerable.Range(0, texture.Height - 1).Where((x, i) => i % modulus == 0).ToList();
+            var numberOfRows = texture.Height;
+            var bothRemoved = new List<Color>();
+            var keptRows = new List<Color[]>();
+            rowsToKeep.ToList().ForEach(x =>
+            {
+                keptRows.Add(data.Where((z, i) => i >= x * texture.Width && i < (x + 1) * texture.Width).ToArray());
+            });
+
+            keptRows.ForEach(x =>
+            {
+                bothRemoved.AddRange(x.Where((y, i) => columnsToKeep.Contains(i)));
+            });
+
+            return bothRemoved.ToArray();
         }
     }
 }
