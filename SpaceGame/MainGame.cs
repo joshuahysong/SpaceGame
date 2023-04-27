@@ -6,6 +6,7 @@ using SpaceGame.Managers;
 using SpaceGame.Ships;
 using System;
 using System.Collections.Generic;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace SpaceGame
 {
@@ -62,7 +63,7 @@ namespace SpaceGame
             Camera.Focus = Player;
             EntityManager.Add(Player);
 
-            for (var i = 1; i <= 0; i++)
+            for (var i = 1; i <= 2; i++)
             {
                 var enemy = new Enemy(new TestEnemyShip(new Vector2(i * 200, (i % 2 == 0 ? 1 : -1) * 200), 0));
                 EntityManager.Add(enemy);
@@ -73,9 +74,9 @@ namespace SpaceGame
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             Art.Load(Content);
-            _starTile1 = GetStarsTexture();
-            _starTile2 = GetStarsTexture();
-            _starTile3 = GetStarsTexture();
+            _starTile1 = GetStarsTexture(400);
+            _starTile2 = GetStarsTexture(400);
+            _starTile3 = GetStarsTexture(400);
         }
 
         protected override void Update(GameTime gameTime)
@@ -108,12 +109,32 @@ namespace SpaceGame
         {
             GraphicsDevice.Clear(Color.Black);
 
-            _spriteBatch.Begin(SpriteSortMode.Deferred);
-            DrawBackground(_spriteBatch);
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
+            _spriteBatch.Draw(Art.Background, Vector2.Zero, new Rectangle(0, 0, Viewport.Width, Viewport.Height), Color.White);
             _spriteBatch.End();
 
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, Camera.Transform);
-            DrawStarTiles();
+            //_spriteBatch.Draw(_starTile1,
+            //    Vector2.Zero,
+            //    Color.White);
+
+            _spriteBatch.Draw(_starTile1,
+                //Vector2.Zero,
+                Player.Position * 0.5f,
+                new Rectangle(0, 0, Viewport.Width, Viewport.Height),
+                //new Rectangle((int)Math.Ceiling(Camera.Position.X), (int)Math.Ceiling(Camera.Position.Y), Viewport.Width, Viewport.Height),
+                Color.Red, 0f,
+                //Vector2.Zero,
+                new Vector2(Viewport.Width / 2, Viewport.Height / 2),
+                1f, SpriteEffects.None, 0f);
+            _spriteBatch.End();
+
+            //_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, Camera.GetMatrix(new Vector2(0.5f)));
+            //DrawStarTiles(_starTile1, Color.Red);
+            //_spriteBatch.End();
+
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, Camera.Transform);
+            DrawStarTiles(_starTile2, Color.Yellow);
             if (IsDebugging)
             {
                 DrawDebugTiles();
@@ -171,34 +192,6 @@ namespace SpaceGame
             }
         }
 
-        private void DrawBackground(SpriteBatch spriteBatch)
-        {
-            var backgroundImage = Art.Background;
-            var backgroundTileSize = (backgroundImage.Width > backgroundImage.Height ? backgroundImage.Width : backgroundImage.Height);
-            Vector2 startLocation = Vector2.Zero;
-            int numberOfTilesX = (int)Math.Ceiling((double)Viewport.Bounds.Width / backgroundTileSize / Camera.Scale);
-            int numberOfTilesY = (int)Math.Ceiling((double)Viewport.Bounds.Height / backgroundTileSize / Camera.Scale);
-            Vector2 tilePosition;
-            tilePosition.X = (int)Math.Floor(Camera.Position.X / backgroundTileSize);
-            tilePosition.Y = (int)Math.Floor(Camera.Position.Y / backgroundTileSize);
-
-            startLocation.X = startLocation.X - backgroundTileSize;
-
-            int minX = (int)Math.Floor(tilePosition.X - (double)numberOfTilesX / 2);
-            int maxX = (int)Math.Ceiling(tilePosition.X + (double)numberOfTilesX / 2);
-            int minY = (int)Math.Floor(tilePosition.Y - (double)numberOfTilesY / 2);
-            int maxY = (int)Math.Ceiling(tilePosition.Y + (double)numberOfTilesY / 2);
-
-            for (int x = minX; x <= maxX; x++)
-            {
-                for (int y = minY; y <= maxY; y++)
-                {
-                    Rectangle backgroundRectangle = new Rectangle(backgroundTileSize * x, backgroundTileSize * y, backgroundTileSize, backgroundTileSize);
-                    spriteBatch.Draw(Art.Background, backgroundRectangle, Color.White);
-                }
-            }
-        }
-
         private void DrawDebugTiles()
         {
             Vector2 startLocation = Vector2.Zero;
@@ -208,7 +201,7 @@ namespace SpaceGame
             tilePosition.X = (int)Math.Floor(Camera.Position.X / TileSize);
             tilePosition.Y = (int)Math.Floor(Camera.Position.Y / TileSize);
 
-            startLocation.X = startLocation.X - TileSize;
+            startLocation.X -= TileSize;
 
             int minX = (int)Math.Floor(tilePosition.X - (double)numberOfTilesX / 2);
             int maxX = (int)Math.Ceiling(tilePosition.X + (double)numberOfTilesX / 2);
@@ -229,35 +222,38 @@ namespace SpaceGame
             }
         }
 
-        private Texture2D GetStarsTexture()
+        private Texture2D GetStarsTexture(int size)
         {
-            Texture2D texture = new Texture2D(MainGame.Instance.GraphicsDevice, TileSize, TileSize);
-            Random Random = new Random();
-            Color[] data = new Color[TileSize * TileSize];
+            var texture = new Texture2D(GraphicsDevice, size, size);
+            var Random = new Random();
+            var data = new Color[size * size];
             for (int i = 0; i < data.Length; ++i)
             {
-                if (!(i < TileSize || i % TileSize == 0 || i > TileSize * TileSize - TileSize || (i + 1) % TileSize == 0))
+                if ((i < size || i % size == 0 || i > size * size - size || (i + 1) % size == 0))
                 {
-                    if (Random.Next(1, 50000) == 1)
-                    {
-                        data[i] = Color.White;
-                    }
+                    data[i] = Color.White;
+                }
+                if (Random.Next(1, size * 10) == 1)
+                {
+                    data[i] = Color.White;
                 }
             }
             texture.SetData(data);
             return texture;
         }
 
-        private void DrawStarTiles()
+        private void DrawStarTiles(Texture2D texture, Color color)
         {
+            var size = texture.Width > texture.Height ? texture.Width : texture.Height;
+            float scale = (float)TileSize / size;
             Vector2 startLocation = Vector2.Zero;
-            int numberOfTilesX = (int)Math.Ceiling((double)Viewport.Bounds.Width / TileSize / Camera.Scale);
-            int numberOfTilesY = (int)Math.Ceiling((double)Viewport.Bounds.Height / TileSize / Camera.Scale);
+            int numberOfTilesX = (int)Math.Ceiling((double)Viewport.Bounds.Width / size / Camera.Scale);
+            int numberOfTilesY = (int)Math.Ceiling((double)Viewport.Bounds.Height / size / Camera.Scale);
             Vector2 tilePosition;
-            tilePosition.X = (int)Math.Floor(Camera.Position.X / TileSize);
-            tilePosition.Y = (int)Math.Floor(Camera.Position.Y / TileSize);
+            tilePosition.X = (int)Math.Floor(Camera.Position.X / size);
+            tilePosition.Y = (int)Math.Floor(Camera.Position.Y / size);
 
-            startLocation.X = startLocation.X - TileSize;
+            startLocation.X = startLocation.X - size;
 
             int minX = (int)Math.Floor(tilePosition.X - (double)numberOfTilesX / 2);
             int maxX = (int)Math.Ceiling(tilePosition.X + (double)numberOfTilesX / 2);
@@ -268,22 +264,23 @@ namespace SpaceGame
             {
                 for (int y = minY; y <= maxY; y++)
                 {
-                    Vector2 position = new Vector2(_debugTile.Bounds.Width * x, _debugTile.Bounds.Height * y);
-                    _spriteBatch.Draw(_starTile1, position, new Rectangle(
-                        (int)Math.Floor(Camera.Position.X * 0.5f),
-                        (int)Math.Floor(Camera.Position.Y * 0.5f),
-                        _starTile1.Width,
-                        _starTile1.Height), Color.Red);
-                    _spriteBatch.Draw(_starTile2, position, new Rectangle(
-                        (int)Math.Floor(Camera.Position.X * 0.25f),
-                        (int)Math.Floor(Camera.Position.Y * 0.25f),
-                        _starTile1.Width,
-                        _starTile1.Height), Color.Yellow);
-                    _spriteBatch.Draw(_starTile3, position, new Rectangle(
-                        (int)Math.Floor(Camera.Position.X * 0.1f),
-                        (int)Math.Floor(Camera.Position.Y * 0.1f),
-                        _starTile1.Width,
-                        _starTile1.Height), Color.Green);
+                    Vector2 position = new Vector2(_starTile1.Bounds.Width * x, _starTile1.Bounds.Height * y);
+                    _spriteBatch.Draw(_starTile1, position, null, color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
+
+                    //    _spriteBatch.Draw(_starTile1, position,
+                    //new Rectangle(0, 0, _starTile1.Width, _starTile1.Height), Color.White,
+                    //0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+
+                    //_spriteBatch.Draw(_starTile2, position, new Rectangle(
+                    //    (int)Math.Floor(Camera.Position.X * 0.25f),
+                    //    (int)Math.Floor(Camera.Position.Y * 0.25f),
+                    //    _starTile1.Width,
+                    //    _starTile1.Height), Color.Yellow);
+                    //_spriteBatch.Draw(_starTile3, position, new Rectangle(
+                    //    (int)Math.Floor(Camera.Position.X * 0.1f),
+                    //    (int)Math.Floor(Camera.Position.Y * 0.1f),
+                    //    _starTile1.Width,
+                    //    _starTile1.Height), Color.Green);
                 }
             }
         }

@@ -55,5 +55,14 @@ namespace SpaceGame
             }
             _previousScrollValue = Input.MouseScrollWheelValue;
         }
+
+        public Matrix GetMatrix(Vector2 parallax)
+        {
+            return Matrix.CreateTranslation(new Vector3(-Position * parallax, 0.0f)) *
+                Matrix.CreateRotationZ(Rotation) *
+                Matrix.CreateScale(Scale, Scale, 1) *
+                Matrix.CreateTranslation(new Vector3(MainGame.ScreenCenter.X, MainGame.ScreenCenter.Y, 0));
+            //Matrix.CreateTranslation(new Vector3(Origin, 0.0f));
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace SpaceGame.Entities
         {
             Ship = ship;
             Target = MainGame.Player.Ship;
-            AddBehavior(HuntPlayer());
+            //AddBehavior(HuntPlayer());
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)
