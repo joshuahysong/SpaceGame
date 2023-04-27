@@ -6,14 +6,15 @@ namespace SpaceGame.Ships
     public class TestPlayerShip : ShipBase
     {
         public TestPlayerShip(Vector2 spawnPosition, float spawnHeading)
-            : base(spawnPosition,
+            : base(FactionType.Player,
+                spawnPosition,
                 spawnHeading,
                 texture: Art.TestPlayerShip,
                 thrust: 300f,
                 maxTurnRate: 2f,
                 maneuveringThrust: 0.05f,
                 maxVelocity: 1000f,
-                scale: Constants.Scales.Half)
+                scale: ScaleType.Half)
         {
             _weapons.Add(new TestWeapon(new Vector2(Texture.Width / 2, 0)));
         }

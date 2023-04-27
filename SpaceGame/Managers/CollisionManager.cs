@@ -16,6 +16,12 @@ namespace SpaceGame.Managers
             Entities.Add(entity);
         }
 
+        public static void Update()
+        {
+            // remove any expired entities.
+            Entities = Entities.Where(x => !x.IsExpired).ToList();
+        }
+
         public static Rectangle CalculateBoundingRectangle(Rectangle rectangle, Matrix transform)
         {
             // Get all four corners in local space
@@ -45,14 +51,15 @@ namespace SpaceGame.Managers
         {
             var collisions = new List<ICollidable>();
             // TODO REMOVE THIS TERRIBAD O(n2) IMPLEMENTATION
-            foreach (var entity in Entities.Where(x => x != collidableEntity))
+            foreach (var entity in Entities.Where(x => x != collidableEntity && collidableEntity.Faction != x.Faction))
             {
                 if (collidableEntity.BoundingRectangle.Intersects(entity.BoundingRectangle))
                 {
-                    if (HasIntersectingPixels(collidableEntity, entity))
-                    {
-                        collisions.Add(entity);
-                    }
+                    //if (HasIntersectingPixels(collidableEntity, entity))
+                    //{
+                    //    collisions.Add(entity);
+                    //}
+                    collisions.Add(entity);
                 }
             }
 
