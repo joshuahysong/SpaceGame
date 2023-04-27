@@ -55,11 +55,10 @@ namespace SpaceGame.Managers
             {
                 if (collidableEntity.BoundingRectangle.Intersects(entity.BoundingRectangle))
                 {
-                    //if (HasIntersectingPixels(collidableEntity, entity))
-                    //{
-                    //    collisions.Add(entity);
-                    //}
-                    collisions.Add(entity);
+                    if (HasIntersectingPixels(collidableEntity, entity))
+                    {
+                        collisions.Add(entity);
+                    }
                 }
             }
 

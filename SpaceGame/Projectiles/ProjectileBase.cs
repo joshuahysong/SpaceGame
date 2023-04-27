@@ -4,7 +4,7 @@ using SpaceGame.Managers;
 
 namespace SpaceGame.Projectiles
 {
-    public class ProjectileBase : IEntity, ICollidable
+    public abstract class ProjectileBase : IEntity, ICollidable
     {
         public FactionType Faction { get; set; }
         public Vector2 Position { get; set; }
@@ -77,5 +77,7 @@ namespace SpaceGame.Projectiles
                 Art.DrawLine(spriteBatch, _previousPosition, Position, Color.Red);
             }
         }
+
+        public abstract int PerformHitEffect();
     }
 }

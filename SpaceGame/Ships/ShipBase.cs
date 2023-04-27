@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.Managers;
+using SpaceGame.Projectiles;
 using SpaceGame.Weapons;
 using System;
 using System.Collections.Generic;
@@ -32,13 +33,14 @@ namespace SpaceGame.Ships
         protected float _maneuveringThrust;
         protected float _maxTurnRate;
         protected float _maxVelocity;
+        protected Vector2 _acceleration;
+        protected bool _hasCollision;
+        protected Rectangle _rectangle;
+        protected Vector2 _origin;
+        protected Texture2D _boundingBoxTexture;
         protected List<WeaponBase> _weapons;
-
-        private Vector2 _acceleration;
-        private bool _hasCollision;
-        private Rectangle _rectangle;
-        private Vector2 _origin;
-        private Texture2D _boundingBoxTexture;
+        protected int _maxHealth;
+        protected int _currentHealth;
 
         public ShipBase(
             FactionType faction,
@@ -49,6 +51,7 @@ namespace SpaceGame.Ships
             float maneuveringThrust,
             float maxTurnRate,
             float maxVelocity,
+            int maxHealth,
             float scale = ScaleType.Full)
         {
             Faction = faction;
@@ -60,6 +63,8 @@ namespace SpaceGame.Ships
             _maneuveringThrust = maneuveringThrust;
             _maxTurnRate = maxTurnRate;
             _maxVelocity = maxVelocity;
+            _maxHealth = maxHealth;
+            _currentHealth = maxHealth;
             _origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             _rectangle = new Rectangle(0, 0, (int)Math.Floor(Texture.Width * Scale), (int)Math.Floor(Texture.Height * Scale));
             TextureData = Art.GetScaledTextureData(Texture, Scale);
@@ -108,6 +113,17 @@ namespace SpaceGame.Ships
             if (collisions.Any())
             {
                 _hasCollision = true;
+                foreach (var collision in collisions.Where(x => x is ProjectileBase))
+                {
+                    var projectile = (ProjectileBase)collision;
+                    _currentHealth -= projectile.PerformHitEffect();
+                    projectile.IsExpired = true;
+                }
+            }
+
+            if (_currentHealth <= 0)
+            {
+                IsExpired = true;
             }
         }
 

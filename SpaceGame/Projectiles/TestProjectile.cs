@@ -12,5 +12,10 @@ namespace SpaceGame.Projectiles
                   timeToLiveInSeconds: 5)
         {
         }
+
+        public override int PerformHitEffect()
+        {
+            return 50;
+        }
     }
 }
