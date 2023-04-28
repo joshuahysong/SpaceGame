@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using SpaceGame.Managers;
+using SpaceGame.ParticleEffects;
 
 namespace SpaceGame.Projectiles
 {
@@ -15,6 +17,7 @@ namespace SpaceGame.Projectiles
 
         public override int PerformHitEffect()
         {
+            ParticleEffectsManager.Add(new TestParticleEffect(Position, _velocity));
             return 50;
         }
     }

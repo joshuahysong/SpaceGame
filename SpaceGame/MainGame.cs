@@ -88,6 +88,8 @@ namespace SpaceGame
             Camera.Update(Camera.Focus);
             EntityManager.Update(gameTime, Matrix.Identity);
             CollisionManager.Update();
+            ParticleEffectsManager.Update(gameTime);
+
             base.Update(gameTime);
 
             if (IsDebugging)
@@ -99,6 +101,7 @@ namespace SpaceGame
                 SystemDebugEntries["Mouse World Tile"] = $"{Math.Floor(Input.WorldMousePosition.X / TileSize)}, {Math.Floor(Input.WorldMousePosition.Y / TileSize)}";
                 SystemDebugEntries["Entities"] = $"{EntityManager.Count}";
                 SystemDebugEntries["Collidables"] = $"{CollisionManager.Count}";
+                SystemDebugEntries["Effects"] = $"{ParticleEffectsManager.Count}";
             }
         }
 
@@ -118,12 +121,21 @@ namespace SpaceGame
                 DrawDebugTiles();
             }
             EntityManager.Draw(_spriteBatch, Matrix.Identity);
+            ParticleEffectsManager.Draw(_spriteBatch);
             _spriteBatch.End();
 
             _spriteBatch.Begin(SpriteSortMode.Deferred);
             var fpsText = $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}";
             var fpsX = (int)(Viewport.Width - 5 - Art.DebugFont.MeasureString(fpsText).X);
             _spriteBatch.DrawString(Art.DebugFont, fpsText, new Vector2(fpsX, 5), Color.White);
+            DrawDebug();
+            _spriteBatch.End();
+
+            base.Draw(gameTime);
+        }
+
+        private void DrawDebug()
+        {
             if (IsDebugging)
             {
                 var xTextOffset = 5;
@@ -153,9 +165,6 @@ namespace SpaceGame
                     yTextOffset += 15;
                 }
             }
-            _spriteBatch.End();
-
-            base.Draw(gameTime);
         }
 
         private void HandleInput()

@@ -7,19 +7,19 @@ namespace SpaceGame.Managers
 {
     public static class CollisionManager
     {
-        public static List<ICollidable> Entities = new List<ICollidable>();
+        public static int Count => _entities.Count;
 
-        public static int Count => Entities.Count;
+        private static List<ICollidable> _entities = new();
 
         public static void Add(ICollidable entity)
         {
-            Entities.Add(entity);
+            _entities.Add(entity);
         }
 
         public static void Update()
         {
             // remove any expired entities.
-            Entities = Entities.Where(x => !x.IsExpired).ToList();
+            _entities = _entities.Where(x => !x.IsExpired).ToList();
         }
 
         public static Rectangle CalculateBoundingRectangle(Rectangle rectangle, Matrix transform)
@@ -51,7 +51,7 @@ namespace SpaceGame.Managers
         {
             var collisions = new List<ICollidable>();
             // TODO REMOVE THIS TERRIBAD O(n2) IMPLEMENTATION
-            foreach (var entity in Entities.Where(x => x != collidableEntity && collidableEntity.Faction != x.Faction))
+            foreach (var entity in _entities.Where(x => x != collidableEntity && collidableEntity.Faction != x.Faction))
             {
                 if (collidableEntity.BoundingRectangle.Intersects(entity.BoundingRectangle))
                 {
