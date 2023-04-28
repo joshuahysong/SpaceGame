@@ -20,10 +20,11 @@ namespace SpaceGame.Projectiles
 
         public Rectangle BoundingRectangle => CollisionManager.CalculateBoundingRectangle(_rectangle, Transform);
 
+        protected Vector2 _velocity;
+
         private readonly Rectangle _rectangle;
         private readonly Vector2 _origin;
         private Vector2 _previousPosition;
-        private Vector2 _velocity;
         private float _heading;
         private long _timeToLiveInSeconds;
         private double _timeAlive;

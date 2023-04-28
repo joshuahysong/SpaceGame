@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SpaceGame.ParticleEffects;
 using SpaceGame.Weapons;
 
 namespace SpaceGame.Ships
@@ -14,10 +15,14 @@ namespace SpaceGame.Ships
                 maxTurnRate: 2f,
                 maneuveringThrust: 0.05f,
                 maxVelocity: 500f,
-                maxHealth: 100,
+                maxHealth: 10000,
                 scale: ScaleType.Half)
         {
             _weapons.Add(new TestWeapon(Vector2.Zero + new Vector2(Texture.Width / 2, 0)));
+            _thrustEffects.Add(new TestThrustParticleEffect(new Vector2(-37, -20)));
+            _thrustEffects.Add(new TestThrustParticleEffect(new Vector2(-37, 20)));
+            _thrustEffects.Add(new TestThrustParticleEffect(new Vector2(-45, -8)));
+            _thrustEffects.Add(new TestThrustParticleEffect(new Vector2(-45, 8)));
         }
     }
 }

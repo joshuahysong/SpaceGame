@@ -27,7 +27,7 @@ namespace SpaceGame
         public static SpriteFont UIFont { get; private set; }
         #endregion
 
-        private static Texture2D _pixel { get; set; }
+        public static Texture2D Pixel { get; set; }
 
         public static void Load(ContentManager content)
         {
@@ -37,8 +37,8 @@ namespace SpaceGame
             Background = content.Load<Texture2D>("starfield2");
             Bullet = CreateRectangle(5, 5, Color.White, Color.White);
 
-            _pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            _pixel.SetData(new[] { Color.White });
+            Pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            Pixel.SetData(new[] { Color.White });
         }
 
         public static Texture2D CreateRectangle(int width, int height, Color fillColor, Color borderColor)
@@ -98,7 +98,7 @@ namespace SpaceGame
         {
             var origin = new Vector2(0f, 0.5f);
             var scale = new Vector2(length, thickness);
-            spriteBatch.Draw(_pixel, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(Pixel, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
         }
 
         public static void DrawCircle(this SpriteBatch spriteBatch, Vector2 position, int radius, Color borderColor)

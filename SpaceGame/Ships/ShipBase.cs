@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.Timers;
 using SpaceGame.Managers;
+using SpaceGame.ParticleEffects;
 using SpaceGame.Projectiles;
 using SpaceGame.Weapons;
 using System;
@@ -27,6 +29,12 @@ namespace SpaceGame.Ships
             * Matrix.CreateRotationZ(Heading)
             * Matrix.CreateTranslation(new Vector3(Position, 0.0f));
 
+        public Matrix LocalTransform =>
+            Matrix.CreateTranslation(0, 0, 0f) *
+            Matrix.CreateScale(1f, 1f, 1f) *
+            Matrix.CreateRotationZ(Heading) *
+            Matrix.CreateTranslation(Position.X, Position.Y, 0f);
+
         public Rectangle BoundingRectangle => CollisionManager.CalculateBoundingRectangle(_rectangle, Transform);
 
         protected float _thrust;
@@ -38,9 +46,13 @@ namespace SpaceGame.Ships
         protected Rectangle _rectangle;
         protected Vector2 _origin;
         protected Texture2D _boundingBoxTexture;
-        protected List<WeaponBase> _weapons;
         protected int _maxHealth;
         protected int _currentHealth;
+
+        protected List<WeaponBase> _weapons = new();
+        protected List<IParticleEffect> _thrustEffects = new();
+
+        private bool _isThrusting;
 
         public ShipBase(
             FactionType faction,
@@ -70,12 +82,12 @@ namespace SpaceGame.Ships
             TextureData = Art.GetScaledTextureData(Texture, Scale);
             _boundingBoxTexture = Art.CreateRectangle(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
             CollisionManager.Add(this);
-            _weapons = new List<WeaponBase>();
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Matrix globalTransform = LocalTransform * parentTransform;
 
             // Continue rotation until turn rate reaches zero to simulate slowing
             if (CurrentTurnRate > 0)
@@ -121,15 +133,35 @@ namespace SpaceGame.Ships
                 }
             }
 
+            if (_thrustEffects.Any())
+            {
+                foreach (var thrustEffect in _thrustEffects)
+                {
+                    thrustEffect.ParticleEffect.Emitters.First().AutoTrigger = _isThrusting;
+                    thrustEffect.Update(gameTime, globalTransform);
+                }
+            }
+
             if (_currentHealth <= 0)
             {
                 IsExpired = true;
             }
+            _isThrusting = false;
         }
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
+            Matrix globalTransform = LocalTransform * parentTransform;
+
             spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
+
+            if (_thrustEffects.Any())
+            {
+                foreach (var thrustEffect in _thrustEffects)
+                {
+                    thrustEffect.Draw(spriteBatch, globalTransform);
+                }
+            }
 
             if (MainGame.IsDebugging)
             {
@@ -146,6 +178,7 @@ namespace SpaceGame.Ships
 
         public void ApplyForwardThrust()
         {
+            _isThrusting = true;
             _acceleration.X += _thrust * (float)Math.Cos(Heading);
             _acceleration.Y += _thrust * (float)Math.Sin(Heading);
         }
@@ -213,6 +246,7 @@ namespace SpaceGame.Ships
                 }
                 else if (Heading == retroHeading)
                 {
+                    _isThrusting = true;
                     _acceleration.X += _thrust * (float)Math.Cos(Heading);
                     _acceleration.Y += _thrust * (float)Math.Sin(Heading);
                 }
