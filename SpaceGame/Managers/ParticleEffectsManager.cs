@@ -26,13 +26,13 @@ namespace SpaceGame.Managers
             }
         }
 
-        public static void Update(GameTime gameTime)
+        public static void Update(GameTime gameTime, Matrix parentTransform)
         {
             _isUpdating = true;
 
             foreach (IParticleEffect effect in _effects)
             {
-                effect.Update(gameTime);
+                effect.Update(gameTime, parentTransform);
             }
 
             _isUpdating = false;
@@ -48,11 +48,11 @@ namespace SpaceGame.Managers
             _effects = _effects.Where(x => !x.IsExpired).ToList();
         }
 
-        public static void Draw(SpriteBatch spriteBatch)
+        public static void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
             foreach (IParticleEffect effect in _effects)
             {
-                effect.Draw(spriteBatch);
+                effect.Draw(spriteBatch, parentTransform);
             }
         }
 

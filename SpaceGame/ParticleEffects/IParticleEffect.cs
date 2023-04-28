@@ -8,12 +8,11 @@ namespace SpaceGame.ParticleEffects
     {
         public ParticleEffect ParticleEffect { get; }
         public Vector2 Position { get; set; }
-        public Vector2 PositionOffset { get; set; }
         public Vector2 Rotation { get; set; }
         public bool IsExpired { get; set; }
 
-        public void Update(GameTime gameTime);
+        public void Update(GameTime gameTime, Matrix parentTransform);
 
-        public void Draw(SpriteBatch spriteBatch);
+        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform);
     }
 }

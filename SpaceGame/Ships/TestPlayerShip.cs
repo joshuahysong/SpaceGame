@@ -19,8 +19,8 @@ namespace SpaceGame.Ships
                 scale: ScaleType.Half)
         {
             _weapons.Add(new TestWeapon(new Vector2(Texture.Width / 2, 0)));
-            _thrustEffects.Add(new TestThrustParticleEffect(Position, new Vector2(-25, -14), Velocity));
-            _thrustEffects.Add(new TestThrustParticleEffect(Position, new Vector2(-25, 14), Velocity));
+            _thrustEffects.Add(new TestThrustParticleEffect(new Vector2(-25, -14)));
+            _thrustEffects.Add(new TestThrustParticleEffect(new Vector2(-25, 14)));
         }
     }
 }

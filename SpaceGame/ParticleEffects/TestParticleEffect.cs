@@ -16,30 +16,26 @@ namespace SpaceGame.ParticleEffects
     {
         public ParticleEffect ParticleEffect { get; private set; }
         public Vector2 Position { get; set; }
-        public Vector2 PositionOffset { get; set; }
         public Vector2 Rotation { get; set; }
         public bool IsExpired { get; set; }
 
         private float _particleAliveTime = 0;
 
-        public TestParticleEffect(
-            Vector2 position,
-            Vector2 positionOffset)
+        public TestParticleEffect(Vector2 position)
         {
             Position = position;
-            PositionOffset = positionOffset;
             _particleAliveTime = 1f;
 
             var textureRegion = new TextureRegion2D(Art.Pixel);
             ParticleEffect = new ParticleEffect(autoTrigger: false)
             {
-                Position = position + positionOffset,
+                Position = position,
                 Emitters = new List<ParticleEmitter>
                 {
                     new ParticleEmitter(textureRegion, 500, TimeSpan.FromSeconds(2),
                         Profile.Circle(10f, Profile.CircleRadiation.Out))
                     {
-                        AutoTrigger = false,
+                        AutoTrigger = true,
                         Parameters = new ParticleReleaseParameters
                         {
                             Speed = new Range<float>(0f, 50f),
@@ -69,9 +65,9 @@ namespace SpaceGame.ParticleEffects
 
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, Matrix parentTransform)
         {
-            ParticleEffect.Position = Position + PositionOffset;
+            ParticleEffect.Position = Position;
             ParticleEffect.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             if (_particleAliveTime > 0)
             {
@@ -88,7 +84,7 @@ namespace SpaceGame.ParticleEffects
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
             spriteBatch.Draw(ParticleEffect);
         }

@@ -17,7 +17,7 @@ namespace SpaceGame.Projectiles
 
         public override int PerformHitEffect()
         {
-            ParticleEffectsManager.Add(new TestParticleEffect(Position, _velocity));
+            ParticleEffectsManager.Add(new TestParticleEffect(Position));
             return 50;
         }
     }

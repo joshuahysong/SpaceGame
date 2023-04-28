@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SpaceGame.ParticleEffects;
 using SpaceGame.Weapons;
 
 namespace SpaceGame.Ships
@@ -18,6 +19,10 @@ namespace SpaceGame.Ships
                 scale: ScaleType.Half)
         {
             _weapons.Add(new TestWeapon(Vector2.Zero + new Vector2(Texture.Width / 2, 0)));
+            _thrustEffects.Add(new TestThrustParticleEffect(new Vector2(-37, -20)));
+            _thrustEffects.Add(new TestThrustParticleEffect(new Vector2(-37, 20)));
+            _thrustEffects.Add(new TestThrustParticleEffect(new Vector2(-45, -8)));
+            _thrustEffects.Add(new TestThrustParticleEffect(new Vector2(-45, 8)));
         }
     }
 }

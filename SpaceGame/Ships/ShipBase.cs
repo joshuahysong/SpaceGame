@@ -29,6 +29,12 @@ namespace SpaceGame.Ships
             * Matrix.CreateRotationZ(Heading)
             * Matrix.CreateTranslation(new Vector3(Position, 0.0f));
 
+        public Matrix LocalTransform =>
+            Matrix.CreateTranslation(0, 0, 0f) *
+            Matrix.CreateScale(1f, 1f, 1f) *
+            Matrix.CreateRotationZ(Heading) *
+            Matrix.CreateTranslation(Position.X, Position.Y, 0f);
+
         public Rectangle BoundingRectangle => CollisionManager.CalculateBoundingRectangle(_rectangle, Transform);
 
         protected float _thrust;
@@ -81,6 +87,7 @@ namespace SpaceGame.Ships
         public void Update(GameTime gameTime, Matrix parentTransform)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Matrix globalTransform = LocalTransform * parentTransform;
 
             // Continue rotation until turn rate reaches zero to simulate slowing
             if (CurrentTurnRate > 0)
@@ -131,9 +138,7 @@ namespace SpaceGame.Ships
                 foreach (var thrustEffect in _thrustEffects)
                 {
                     thrustEffect.ParticleEffect.Emitters.First().AutoTrigger = _isThrusting;
-                    thrustEffect.Rotation = Velocity;
-                    thrustEffect.Position = Position;
-                    thrustEffect.Update(gameTime);
+                    thrustEffect.Update(gameTime, globalTransform);
                 }
             }
 
@@ -146,13 +151,15 @@ namespace SpaceGame.Ships
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
+            Matrix globalTransform = LocalTransform * parentTransform;
+
             spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
 
             if (_thrustEffects.Any())
             {
                 foreach (var thrustEffect in _thrustEffects)
                 {
-                    thrustEffect.Draw(spriteBatch);
+                    thrustEffect.Draw(spriteBatch, globalTransform);
                 }
             }
 
@@ -239,6 +246,7 @@ namespace SpaceGame.Ships
                 }
                 else if (Heading == retroHeading)
                 {
+                    _isThrusting = true;
                     _acceleration.X += _thrust * (float)Math.Cos(Heading);
                     _acceleration.Y += _thrust * (float)Math.Sin(Heading);
                 }

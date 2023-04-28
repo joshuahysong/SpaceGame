@@ -16,35 +16,35 @@ namespace SpaceGame.ParticleEffects
     {
         public ParticleEffect ParticleEffect { get; private set; }
         public Vector2 Position { get; set; }
-        public Vector2 PositionOffset { get; set; }
         public Vector2 Rotation { get; set; }
         public bool IsExpired { get; set; }
 
-        public TestThrustParticleEffect(
-            Vector2 position,
-            Vector2 positionOffset,
-            Vector2 rotation)
+        private Matrix _localTransform =>
+            Matrix.CreateTranslation(0, 0, 0f) *
+            Matrix.CreateScale(1f, 1f, 1f) *
+            Matrix.CreateRotationZ(Rotation.ToAngle()) *
+            Matrix.CreateTranslation(Position.X, Position.Y, 0f);
+
+        public TestThrustParticleEffect(Vector2 position)
         {
             Position = position;
-            PositionOffset = positionOffset;
-            Rotation = rotation;
 
             var textureRegion = new TextureRegion2D(Art.Pixel);
             ParticleEffect = new ParticleEffect(autoTrigger: false)
             {
-                Position = position + positionOffset,
+                Position = position,
                 Emitters = new List<ParticleEmitter>
                 {
-                    new ParticleEmitter(textureRegion, 500, TimeSpan.FromSeconds(0.1),
-                        Profile.Spray(-rotation, 0.5f))
+                    new ParticleEmitter(textureRegion, 500, TimeSpan.FromSeconds(0.05),
+                        Profile.Line(new Vector2(0,0), 10))
                     {
                         AutoTrigger = false,
                         Parameters = new ParticleReleaseParameters
                         {
-                            Speed = new Range<float>(0f, 100f),
+                            Speed = new Range<float>(-100f, 100f),
                             Quantity = 10,
                             Rotation = new Range<float>(-10f, 10f),
-                            Scale = new Range<float>(1.5f, 1.5f)
+                            Scale = new Range<float>(1f, 1.5f)
                         },
                         Modifiers =
                         {
@@ -68,15 +68,22 @@ namespace SpaceGame.ParticleEffects
 
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, Matrix parentTransform)
         {
-            ParticleEffect.Position = Position + PositionOffset;
-            ParticleEffect.Emitters.First().Profile = Profile.Spray(Rotation, 0.5f);
+            Matrix globalTransform = _localTransform * parentTransform;
+            MathUtilities.DecomposeMatrix(ref globalTransform, out Vector2 position, out float rotation, out Vector2 scale);
+
+            ParticleEffect.Position = position;
+            ParticleEffect.Emitters.First().Profile = Profile.Line(Rotation, 10);
             ParticleEffect.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
+            Matrix globalTransform = _localTransform * parentTransform;
+            MathUtilities.DecomposeMatrix(ref globalTransform, out Vector2 position, out float rotation, out Vector2 scale);
+
+            ParticleEffect.Position = position;
             spriteBatch.Draw(ParticleEffect);
         }
     }

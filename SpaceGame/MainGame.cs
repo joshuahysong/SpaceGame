@@ -88,7 +88,7 @@ namespace SpaceGame
             Camera.Update(Camera.Focus);
             EntityManager.Update(gameTime, Matrix.Identity);
             CollisionManager.Update();
-            ParticleEffectsManager.Update(gameTime);
+            ParticleEffectsManager.Update(gameTime, Matrix.Identity);
 
             base.Update(gameTime);
 
@@ -121,7 +121,7 @@ namespace SpaceGame
                 DrawDebugTiles();
             }
             EntityManager.Draw(_spriteBatch, Matrix.Identity);
-            ParticleEffectsManager.Draw(_spriteBatch);
+            ParticleEffectsManager.Draw(_spriteBatch, Matrix.Identity);
             _spriteBatch.End();
 
             _spriteBatch.Begin(SpriteSortMode.Deferred);
