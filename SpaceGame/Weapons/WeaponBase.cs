@@ -40,10 +40,10 @@ namespace SpaceGame.Weapons
 
                 float jitter = 1 - _accuracy / 100;
                 float randomSpread = _random.NextFloat(-jitter, jitter) + _random.NextFloat(-jitter, jitter);
-                Vector2 vel = MathUtilities.FromPolar(heading + randomSpread, _speed);
+                Vector2 velocity = MathUtilities.FromPolar(heading + randomSpread, _speed);
 
                 Vector2 offset = Vector2.Transform(_relativePosition, aimQuat);
-                EntityManager.Add((ProjectileBase)Activator.CreateInstance(_projectileType, faction, shipLocation + offset, vel + relativeVelocity));
+                EntityManager.Add((ProjectileBase)Activator.CreateInstance(_projectileType, faction, shipLocation + offset, velocity + relativeVelocity, heading));
             }
 
             if (_cooldownRemaining > 0)

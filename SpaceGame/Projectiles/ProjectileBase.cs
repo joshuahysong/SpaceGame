@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.Managers;
+using System;
 
 namespace SpaceGame.Projectiles
 {
@@ -13,8 +14,8 @@ namespace SpaceGame.Projectiles
         public Texture2D Texture { get; set; }
         public Color[] TextureData { get; set; }
         public float Scale { get; set; }
-
-        public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f))
+        
+        public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f) * Scale)
             * Matrix.CreateRotationZ(_heading)
             * Matrix.CreateTranslation(new Vector3(Position, 0.0f));
 
@@ -24,6 +25,7 @@ namespace SpaceGame.Projectiles
 
         private readonly Rectangle _rectangle;
         private readonly Vector2 _origin;
+        private Texture2D _boundingBoxTexture;
         private Vector2 _previousPosition;
         private float _heading;
         private long _timeToLiveInSeconds;
@@ -33,6 +35,7 @@ namespace SpaceGame.Projectiles
             FactionType faction,
             Vector2 position,
             Vector2 velocity,
+            float heading,
             Texture2D texture,
             long timeToLiveInSeconds,
             float scale = 1f)
@@ -41,23 +44,19 @@ namespace SpaceGame.Projectiles
             Position = position;
             Texture = texture;
             Scale = scale;
+            TextureData = Art.GetScaledTextureData(Texture, Scale);
             _velocity = velocity;
             _timeToLiveInSeconds = timeToLiveInSeconds;
-            _heading = velocity.ToAngle();
+            _heading = heading;
             _origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
-            _rectangle = new Rectangle(0, 0, Texture.Width, Texture.Height);
-            TextureData = new Color[Texture.Width * Texture.Height];
-            Texture.GetData(TextureData);
+            _rectangle = new Rectangle(0, 0, (int)Math.Floor(Texture.Width * Scale), (int)Math.Floor(Texture.Height * Scale));
+            _boundingBoxTexture = Art.CreateRectangle(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
             CollisionManager.Add(this);
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (_velocity.LengthSquared() > 0)
-            {
-                _heading = _velocity.ToAngle();
-            }
 
             _previousPosition = Position;
             Position += _velocity * deltaTime;
@@ -71,11 +70,12 @@ namespace SpaceGame.Projectiles
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            spriteBatch.Draw(Texture, Position, null, Color.White, _heading, _origin, 1f, 0, 0);
+            spriteBatch.Draw(Texture, Position, null, Color.White, _heading, _origin, 0.5f, 0, 0);
 
             if (MainGame.IsDebugging && _previousPosition != Vector2.Zero)
             {
                 Art.DrawLine(spriteBatch, _previousPosition, Position, Color.Red);
+                spriteBatch.Draw(_boundingBoxTexture, BoundingRectangle, Color.White);
             }
         }
 

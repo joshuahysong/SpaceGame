@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Timers;
 using SpaceGame.Managers;
 using SpaceGame.ParticleEffects;
 using SpaceGame.Projectiles;
@@ -153,8 +152,6 @@ namespace SpaceGame.Ships
         {
             Matrix globalTransform = LocalTransform * parentTransform;
 
-            spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
-
             if (_thrustEffects.Any())
             {
                 foreach (var thrustEffect in _thrustEffects)
@@ -162,6 +159,8 @@ namespace SpaceGame.Ships
                     thrustEffect.Draw(spriteBatch, globalTransform);
                 }
             }
+
+            spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
 
             if (MainGame.IsDebugging)
             {

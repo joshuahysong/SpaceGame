@@ -57,15 +57,18 @@ namespace SpaceGame
 
             base.Initialize();
 
-            Player = new Player(new TestPlayerShip(Vector2.Zero, 0));
+            Player = new Player(new TestShip1(FactionType.Player, Vector2.Zero, 0));
             Camera.Focus = Player;
             EntityManager.Add(Player);
 
-            for (var i = 1; i <= 2; i++)
-            {
-                var enemy = new Enemy(new TestEnemyShip(new Vector2(i * 200, (i % 2 == 0 ? 1 : -1) * 200), 0));
-                EntityManager.Add(enemy);
-            }
+            //for (var i = 1; i <= 2; i++)
+            //{
+            //    var enemy = new Enemy(new TestShip2(FactionType.Enemy, new Vector2(i * 200, (i % 2 == 0 ? 1 : -1) * 200), 0));
+            //    EntityManager.Add(enemy);
+            //}
+
+            var dummy = new Dummy(new TestShip2(FactionType.Enemy, new Vector2(200, 0), (float)(Math.PI / 2f)));
+            EntityManager.Add(dummy);
         }
 
         protected override void LoadContent()

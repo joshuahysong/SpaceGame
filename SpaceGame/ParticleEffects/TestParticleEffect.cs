@@ -24,7 +24,9 @@ namespace SpaceGame.ParticleEffects
         public TestParticleEffect(Vector2 position)
         {
             Position = position;
-            _particleAliveTime = 1f;
+            _particleAliveTime = 0.2f;
+            var random = new Random();
+            var time = random.Next(300, 600);
 
             var textureRegion = new TextureRegion2D(Art.Pixel);
             ParticleEffect = new ParticleEffect(autoTrigger: false)
@@ -32,16 +34,16 @@ namespace SpaceGame.ParticleEffects
                 Position = position,
                 Emitters = new List<ParticleEmitter>
                 {
-                    new ParticleEmitter(textureRegion, 500, TimeSpan.FromSeconds(2),
-                        Profile.Circle(10f, Profile.CircleRadiation.Out))
+                    new ParticleEmitter(textureRegion, 500, TimeSpan.FromMilliseconds(time),
+                        Profile.Point())
                     {
                         AutoTrigger = true,
                         Parameters = new ParticleReleaseParameters
                         {
-                            Speed = new Range<float>(0f, 50f),
-                            Quantity = 3,
-                            Rotation = new Range<float>(-10f, 10f),
-                            Scale = new Range<float>(1.0f, 1.0f)
+                            Speed = new Range<float>(50f, 150f),
+                            Quantity = 20,
+                            Rotation = new Range<float>(-1f, 1f),
+                            Scale = new Range<float>(0.5f, 2f)
                         },
                         Modifiers =
                         {
@@ -51,13 +53,13 @@ namespace SpaceGame.ParticleEffects
                                 {
                                     new ColorInterpolator
                                     {
-                                        StartValue = Color.Cyan.ToHsl(),
-                                        EndValue = Color.Cyan.ToHsl()
+                                        StartValue = Color.Orange.ToHsl(),
+                                        EndValue = Color.Orange.ToHsl()
                                     }
                                 }
                             },
                             new OpacityFastFadeModifier(),
-                            new RotationModifier {RotationRate = -2.1f}
+                            new RotationModifier {RotationRate = 5f}
                         }
                     }
                 }

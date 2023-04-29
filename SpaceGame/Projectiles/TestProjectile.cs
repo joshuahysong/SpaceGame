@@ -6,12 +6,14 @@ namespace SpaceGame.Projectiles
 {
     public class TestProjectile : ProjectileBase
     {
-        public TestProjectile(FactionType faction, Vector2 position, Vector2 velocity)
+        public TestProjectile(FactionType faction, Vector2 position, Vector2 velocity, float heading)
             : base(faction,
                   position,
                   velocity,
-                  texture: Art.Bullet,
-                  timeToLiveInSeconds: 5)
+                  heading,
+                  texture: Art.OrangeLaser,
+                  timeToLiveInSeconds: 5,
+                  scale: 0.5f)
         {
         }
 
