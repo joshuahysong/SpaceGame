@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using SpaceGame.ParticleEffects;
+using SpaceGame.Ships.Parts;
 using SpaceGame.Weapons;
 
 namespace SpaceGame.Ships
@@ -18,9 +18,9 @@ namespace SpaceGame.Ships
                 maxHealth: 10000,
                 scale: ScaleType.Half)
         {
-            _weapons.Add(new TestWeapon(new Vector2(Texture.Width / 2, 0)));
-            //_thrustEffects.Add(new TestThrustParticleEffect(new Vector2(-25, -14)));
-            //_thrustEffects.Add(new TestThrustParticleEffect(new Vector2(-25, 14)));
+            _weapons.Add(new TestWeapon(new Vector2(Texture.Width / 2 * ScaleType.Half, 0)));
+            _thrusters.Add(new Thruster1(Art.Thruster1, new Vector2(-29.5f, -13), Vector2.Zero, ScaleType.Half));
+            _thrusters.Add(new Thruster1(Art.Thruster1, new Vector2(-29.5f, 13.5f), Vector2.Zero, ScaleType.Half));
         }
     }
 }

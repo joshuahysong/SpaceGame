@@ -24,6 +24,10 @@ namespace SpaceGame
         public static Texture2D OrangeLaser { get; set; }
         #endregion
 
+        #region Effects
+        public static Texture2D Thruster1 { get; set; }
+        #endregion
+
         #region Fonts
         public static SpriteFont DebugFont { get; private set; }
         public static SpriteFont UIFont { get; private set; }
@@ -33,13 +37,18 @@ namespace SpaceGame
 
         public static void Load(ContentManager content)
         {
+            Background = content.Load<Texture2D>("starfield2");
+
             TestShip1 = content.Load<Texture2D>("Ships/TestShip1");
             TestShip2 = content.Load<Texture2D>("Ships/TestShip2");
-            DebugFont = content.Load<SpriteFont>("Fonts/Debug");
-            Background = content.Load<Texture2D>("starfield2");
+
             Bullet = CreateRectangle(5, 5, Color.White, Color.White);
             GreenBullet = content.Load<Texture2D>("Projectiles/green_bullet");
             OrangeLaser = content.Load<Texture2D>("Projectiles/orange_laser");
+
+            Thruster1 = content.Load<Texture2D>("Effects/thruster-1");
+
+            DebugFont = content.Load<SpriteFont>("Fonts/Debug");
 
             Pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             Pixel.SetData(new[] { Color.White });

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.Managers;
-using SpaceGame.ParticleEffects;
 using SpaceGame.Projectiles;
+using SpaceGame.Ships.Parts;
 using SpaceGame.Weapons;
 using System;
 using System.Collections.Generic;
@@ -49,7 +49,7 @@ namespace SpaceGame.Ships
         protected int _currentHealth;
 
         protected List<WeaponBase> _weapons = new();
-        protected List<IParticleEffect> _thrustEffects = new();
+        protected List<Thruster1> _thrusters = new();
 
         private bool _isThrusting;
 
@@ -132,32 +132,23 @@ namespace SpaceGame.Ships
                 }
             }
 
-            if (_thrustEffects.Any())
-            {
-                foreach (var thrustEffect in _thrustEffects)
-                {
-                    thrustEffect.ParticleEffect.Emitters.First().AutoTrigger = _isThrusting;
-                    thrustEffect.Update(gameTime, globalTransform);
-                }
-            }
-
             if (_currentHealth <= 0)
             {
                 IsExpired = true;
             }
-            _isThrusting = false;
         }
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
             Matrix globalTransform = LocalTransform * parentTransform;
 
-            if (_thrustEffects.Any())
+            if (_thrusters.Any() && _isThrusting)
             {
-                foreach (var thrustEffect in _thrustEffects)
+                foreach (var thrustEffect in _thrusters)
                 {
                     thrustEffect.Draw(spriteBatch, globalTransform);
                 }
+                _isThrusting = false;
             }
 
             spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
@@ -177,9 +168,9 @@ namespace SpaceGame.Ships
 
         public void ApplyForwardThrust()
         {
-            _isThrusting = true;
             _acceleration.X += _thrust * (float)Math.Cos(Heading);
             _acceleration.Y += _thrust * (float)Math.Sin(Heading);
+            _isThrusting = true;
         }
 
         public void ApplyPortManeuveringThrusters()

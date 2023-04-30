@@ -53,7 +53,7 @@ namespace SpaceGame
             PlayerDebugEntries = new Dictionary<string, string>();
             EnemyDebugEntries = new Dictionary<string, string>();
             SystemDebugEntries = new Dictionary<string, string>();
-            _debugTile = Art.CreateRectangle(TileSize, TileSize, Color.Transparent, Color.WhiteSmoke * 0.5f);
+            _debugTile = Art.CreateRectangle(TileSize, TileSize, Color.Transparent, Color.WhiteSmoke * ScaleType.Half);
 
             base.Initialize();
 
@@ -117,7 +117,7 @@ namespace SpaceGame
             _spriteBatch.End();
 
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, Camera.Transform);
-            DrawStarTiles(_starTile1, Color.White, 0.5f);
+            DrawStarTiles(_starTile1, Color.White, ScaleType.Half);
             DrawStarTiles(_starTile2, Color.White);
             if (IsDebugging)
             {

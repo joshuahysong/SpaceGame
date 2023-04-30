@@ -13,7 +13,7 @@ namespace SpaceGame.Projectiles
                   heading,
                   texture: Art.OrangeLaser,
                   timeToLiveInSeconds: 5,
-                  scale: 0.5f)
+                  scale: ScaleType.Half)
         {
         }
 

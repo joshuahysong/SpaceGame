@@ -70,7 +70,7 @@ namespace SpaceGame.Projectiles
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            spriteBatch.Draw(Texture, Position, null, Color.White, _heading, _origin, 0.5f, 0, 0);
+            spriteBatch.Draw(Texture, Position, null, Color.White, _heading, _origin, Scale, 0, 0);
 
             if (MainGame.IsDebugging && _previousPosition != Vector2.Zero)
             {
