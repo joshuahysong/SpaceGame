@@ -55,6 +55,7 @@ namespace SpaceGame.Ships
         private float _maxShield;
         private float _currentShield;
         private float _shieldRegen;
+        private bool _showHealthBars;
 
         public ShipBase(
             FactionType faction,
@@ -68,7 +69,8 @@ namespace SpaceGame.Ships
             float maxHealth,
             float maxShield,
             float shieldRegen,
-            float scale = ScaleType.Full)
+            float scale = ScaleType.Full,
+            bool showHealthBars = true)
         {
             Faction = faction;
             Position = spawnPosition;
@@ -89,6 +91,7 @@ namespace SpaceGame.Ships
             TextureData = Art.GetScaledTextureData(Texture, Scale);
             _boundingBoxTexture = Art.CreateRectangle(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
             _healthBarOffset = (Texture.Width > Texture.Height ? Texture.Width : Texture.Height) / 2 * Scale + 10;
+            _showHealthBars = showHealthBars;
 
             CollisionManager.Add(this);
         }
@@ -182,7 +185,7 @@ namespace SpaceGame.Ships
 
             spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
 
-            if (_currentHealth < _maxHealth || _currentShield < _maxShield)
+            if (_showHealthBars && _currentHealth < _maxHealth || _currentShield < _maxShield)
             {
                 var healthBarLength = 60f * _currentHealth / _maxHealth;
                 Art.DrawLine(spriteBatch, Position + new Vector2(-30, _healthBarOffset), Position + new Vector2(-30 + healthBarLength, _healthBarOffset), Color.Red, 2);

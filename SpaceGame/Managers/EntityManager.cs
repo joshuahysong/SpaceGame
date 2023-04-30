@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SpaceGame.Scenes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,8 +67,8 @@ namespace SpaceGame.Managers
         private static void UpdateEntityTileCoordinates(IEntity entity)
         {
             entity.TileCoordinates = new Vector2(
-                (float)Math.Floor(entity.Position.X / MainGame.TileSize),
-                (float)Math.Floor(entity.Position.Y / MainGame.TileSize));
+                (float)Math.Floor(entity.Position.X / SpaceScene.TileSize),
+                (float)Math.Floor(entity.Position.Y / SpaceScene.TileSize));
         }
     }
 }

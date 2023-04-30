@@ -27,16 +27,6 @@ namespace SpaceGame.Entities
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             HandleInput(deltaTime);
             Ship.Update(gameTime, parentTransform);
-
-            if (MainGame.IsDebugging)
-            {
-                MainGame.Instance.PlayerDebugEntries["Position"] = $"{Math.Round(Ship.Position.X)}, {Math.Round(Ship.Position.Y)}";
-                MainGame.Instance.PlayerDebugEntries["Velocity"] = $"{Math.Round(Ship.Velocity.X)}, {Math.Round(Ship.Velocity.Y)}";
-                MainGame.Instance.PlayerDebugEntries["Heading"] = $"{Math.Round(Ship.Heading, 2)}";
-                MainGame.Instance.PlayerDebugEntries["Velocity Heading"] = $"{Math.Round(Ship.Velocity.ToAngle(), 2)}";
-                MainGame.Instance.PlayerDebugEntries["World Tile"] = $"{TileCoordinates.X}, {TileCoordinates.Y}";
-                MainGame.Instance.PlayerDebugEntries["Current Turn Rate"] = $"{Math.Round(Ship.CurrentTurnRate, 2)}";
-            }
         }
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)

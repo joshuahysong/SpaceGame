@@ -17,10 +17,10 @@ namespace SpaceGame.Entities
 
         private readonly List<IEnumerator<int>> _behaviours = new();
 
-        public Enemy(ShipBase ship)
+        public Enemy(ShipBase ship, ShipBase target)
         {
             Ship = ship;
-            Target = MainGame.Player.Ship;
+            Target = target;
             AddBehavior(HuntPlayer());
         }
 

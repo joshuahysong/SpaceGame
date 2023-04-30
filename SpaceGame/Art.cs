@@ -13,6 +13,10 @@ namespace SpaceGame
         public static Texture2D Background { get; set; }
         #endregion
 
+        #region Planets
+        public static Texture2D RedPlanet { get; set; }
+        #endregion
+
         #region Ships
         public static Texture2D TestShip1 { get; set; }
         public static Texture2D TestShip2 { get; set; }
@@ -38,6 +42,8 @@ namespace SpaceGame
         public static void Load(ContentManager content)
         {
             Background = content.Load<Texture2D>("starfield2");
+
+            RedPlanet = content.Load<Texture2D>("Planets/red-planet");
 
             TestShip1 = content.Load<Texture2D>("Ships/TestShip1");
             TestShip2 = content.Load<Texture2D>("Ships/TestShip2");
