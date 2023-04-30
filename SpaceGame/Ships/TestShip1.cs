@@ -15,10 +15,10 @@ namespace SpaceGame.Ships
                 maxTurnRate: 2f,
                 maneuveringThrust: 0.05f,
                 maxVelocity: 300f,
-                maxHealth: 10000,
+                maxHealth: 10000f,
                 scale: ScaleType.Half)
         {
-            _weapons.Add(new TestWeapon(new Vector2(Texture.Width / 2 * ScaleType.Half, 0)));
+            _weapons.Add(new TestWeapon(new Vector2(Texture.Width / 2 * Scale, 0)));
             _thrusters.Add(new Thruster1(Art.Thruster1, new Vector2(-29.5f, -13), Vector2.Zero, ScaleType.Half));
             _thrusters.Add(new Thruster1(Art.Thruster1, new Vector2(-29.5f, 13.5f), Vector2.Zero, ScaleType.Half));
         }

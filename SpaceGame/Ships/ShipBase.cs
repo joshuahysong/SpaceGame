@@ -36,21 +36,21 @@ namespace SpaceGame.Ships
 
         public Rectangle BoundingRectangle => CollisionManager.CalculateBoundingRectangle(_rectangle, Transform);
 
-        protected float _thrust;
-        protected float _maneuveringThrust;
-        protected float _maxTurnRate;
-        protected float _maxVelocity;
-        protected Vector2 _acceleration;
-        protected bool _hasCollision;
-        protected Rectangle _rectangle;
-        protected Vector2 _origin;
-        protected Texture2D _boundingBoxTexture;
-        protected int _maxHealth;
-        protected int _currentHealth;
-
         protected List<WeaponBase> _weapons = new();
         protected List<Thruster1> _thrusters = new();
 
+        private float _thrust;
+        private float _maneuveringThrust;
+        private float _maxTurnRate;
+        private float _maxVelocity;
+        private Vector2 _acceleration;
+        private bool _hasCollision;
+        private Rectangle _rectangle;
+        private Vector2 _origin;
+        private Texture2D _boundingBoxTexture;
+        private float _maxHealth;
+        private float _currentHealth;
+        private float _healthBarOffset;
         private bool _isThrusting;
 
         public ShipBase(
@@ -62,7 +62,7 @@ namespace SpaceGame.Ships
             float maneuveringThrust,
             float maxTurnRate,
             float maxVelocity,
-            int maxHealth,
+            float maxHealth,
             float scale = ScaleType.Full)
         {
             Faction = faction;
@@ -80,6 +80,8 @@ namespace SpaceGame.Ships
             _rectangle = new Rectangle(0, 0, (int)Math.Floor(Texture.Width * Scale), (int)Math.Floor(Texture.Height * Scale));
             TextureData = Art.GetScaledTextureData(Texture, Scale);
             _boundingBoxTexture = Art.CreateRectangle(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
+            _healthBarOffset = (Texture.Width > Texture.Height ? Texture.Width : Texture.Height) / 2 * Scale + 10;
+
             CollisionManager.Add(this);
         }
 
@@ -152,6 +154,13 @@ namespace SpaceGame.Ships
             }
 
             spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
+
+            if (_currentHealth < _maxHealth)
+            {
+                var healthPercentage = _currentHealth / _maxHealth;
+                var barLength = 60f * healthPercentage;
+                Art.DrawLine(spriteBatch, Position + new Vector2(-30, _healthBarOffset), Position + new Vector2(-30 + barLength, _healthBarOffset), Color.Red, 3);
+            }
 
             if (MainGame.IsDebugging)
             {
