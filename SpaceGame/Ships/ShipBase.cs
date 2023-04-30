@@ -188,7 +188,7 @@ namespace SpaceGame.Ships
                 Art.DrawLine(spriteBatch, Position + new Vector2(-30, _healthBarOffset), Position + new Vector2(-30 + healthBarLength, _healthBarOffset), Color.Red, 2);
 
                 var shieldBarLength = 60f * _currentShield / _maxShield;
-                Art.DrawLine(spriteBatch, Position + new Vector2(-30, _healthBarOffset + 5), Position + new Vector2(-30 + shieldBarLength, _healthBarOffset + 5), Color.Blue, 2);
+                Art.DrawLine(spriteBatch, Position + new Vector2(-30, _healthBarOffset + 5), Position + new Vector2(-30 + shieldBarLength, _healthBarOffset + 5), Color.Turquoise, 2);
             }
 
             if (MainGame.IsDebugging)
