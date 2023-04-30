@@ -15,7 +15,9 @@ namespace SpaceGame.Ships
                 maxTurnRate: 2f,
                 maneuveringThrust: 0.05f,
                 maxVelocity: 300f,
-                maxHealth: 10000f,
+                maxHealth: 1000f,
+                maxShield: 1000f,
+                shieldRegen: 10f,
                 scale: ScaleType.Half)
         {
             _weapons.Add(new TestWeapon(new Vector2(Texture.Width / 2 * Scale, 0)));

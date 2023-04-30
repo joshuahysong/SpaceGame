@@ -79,6 +79,6 @@ namespace SpaceGame.Projectiles
             }
         }
 
-        public abstract int PerformHitEffect();
+        public abstract float PerformHitEffect();
     }
 }

@@ -17,10 +17,10 @@ namespace SpaceGame.Projectiles
         {
         }
 
-        public override int PerformHitEffect()
+        public override float PerformHitEffect()
         {
             ParticleEffectsManager.Add(new TestParticleEffect(Position));
-            return 50;
+            return 50f;
         }
     }
 }

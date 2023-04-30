@@ -48,10 +48,13 @@ namespace SpaceGame.Ships
         private Rectangle _rectangle;
         private Vector2 _origin;
         private Texture2D _boundingBoxTexture;
+        private bool _isThrusting;
         private float _maxHealth;
         private float _currentHealth;
         private float _healthBarOffset;
-        private bool _isThrusting;
+        private float _maxShield;
+        private float _currentShield;
+        private float _shieldRegen;
 
         public ShipBase(
             FactionType faction,
@@ -63,6 +66,8 @@ namespace SpaceGame.Ships
             float maxTurnRate,
             float maxVelocity,
             float maxHealth,
+            float maxShield,
+            float shieldRegen,
             float scale = ScaleType.Full)
         {
             Faction = faction;
@@ -76,6 +81,9 @@ namespace SpaceGame.Ships
             _maxVelocity = maxVelocity;
             _maxHealth = maxHealth;
             _currentHealth = maxHealth;
+            _maxShield = maxShield;
+            _currentShield = maxShield;
+            _shieldRegen = shieldRegen;
             _origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             _rectangle = new Rectangle(0, 0, (int)Math.Floor(Texture.Width * Scale), (int)Math.Floor(Texture.Height * Scale));
             TextureData = Art.GetScaledTextureData(Texture, Scale);
@@ -129,9 +137,28 @@ namespace SpaceGame.Ships
                 foreach (var collision in collisions.Where(x => x is ProjectileBase))
                 {
                     var projectile = (ProjectileBase)collision;
-                    _currentHealth -= projectile.PerformHitEffect();
+                    var damage = projectile.PerformHitEffect();
+                    if (_currentShield > 0)
+                    {
+                        if (_currentShield < damage)
+                        {
+                            damage -= _currentShield;
+                            _currentShield = 0;
+                        }
+                        _currentShield -= damage;
+                    }
+                    else
+                    {
+                        _currentHealth -= damage;
+                    }
                     projectile.IsExpired = true;
                 }
+            }
+
+            if (_currentShield < _maxShield)
+            {
+                _currentShield += _shieldRegen * deltaTime;
+                _currentShield = _currentShield > _maxShield ? _maxShield : _currentShield;
             }
 
             if (_currentHealth <= 0)
@@ -155,11 +182,13 @@ namespace SpaceGame.Ships
 
             spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
 
-            if (_currentHealth < _maxHealth)
+            if (_currentHealth < _maxHealth || _currentShield < _maxShield)
             {
-                var healthPercentage = _currentHealth / _maxHealth;
-                var barLength = 60f * healthPercentage;
-                Art.DrawLine(spriteBatch, Position + new Vector2(-30, _healthBarOffset), Position + new Vector2(-30 + barLength, _healthBarOffset), Color.Red, 3);
+                var healthBarLength = 60f * _currentHealth / _maxHealth;
+                Art.DrawLine(spriteBatch, Position + new Vector2(-30, _healthBarOffset), Position + new Vector2(-30 + healthBarLength, _healthBarOffset), Color.Red, 2);
+
+                var shieldBarLength = 60f * _currentShield / _maxShield;
+                Art.DrawLine(spriteBatch, Position + new Vector2(-30, _healthBarOffset + 5), Position + new Vector2(-30 + shieldBarLength, _healthBarOffset + 5), Color.Blue, 2);
             }
 
             if (MainGame.IsDebugging)
