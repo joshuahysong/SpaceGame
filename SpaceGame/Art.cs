@@ -34,6 +34,7 @@ namespace SpaceGame
 
         #region Fonts
         public static SpriteFont DebugFont { get; private set; }
+        public static SpriteFont HeaderFont { get; private set; }
         public static SpriteFont UIFont { get; private set; }
         #endregion
 
@@ -55,6 +56,7 @@ namespace SpaceGame
             Thruster1 = content.Load<Texture2D>("Effects/thruster-1");
 
             DebugFont = content.Load<SpriteFont>("Fonts/Debug");
+            HeaderFont = content.Load<SpriteFont>("Fonts/Header");
             UIFont = content.Load<SpriteFont>("Fonts/UI");
 
             Pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);

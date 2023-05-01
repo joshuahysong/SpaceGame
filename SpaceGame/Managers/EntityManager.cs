@@ -40,7 +40,6 @@ namespace SpaceGame.Managers
             foreach (IEntity entity in _entities)
             {
                 entity.Update(gameTime, parentTransform);
-                UpdateEntityTileCoordinates(entity);
             }
 
             _isUpdating = false;
@@ -67,13 +66,6 @@ namespace SpaceGame.Managers
         private static void AddEntity(IEntity entity)
         {
             _entities.Add(entity);
-        }
-
-        private static void UpdateEntityTileCoordinates(IEntity entity)
-        {
-            entity.TileCoordinates = new Vector2(
-                (float)Math.Floor(entity.Position.X / SpaceScene.TileSize),
-                (float)Math.Floor(entity.Position.Y / SpaceScene.TileSize));
         }
     }
 }

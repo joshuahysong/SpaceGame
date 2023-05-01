@@ -153,9 +153,13 @@ namespace SpaceGame.Ships
                             damage -= _currentShield;
                             _currentShield = 0;
                         }
-                        _currentShield -= damage;
+                        else
+                        {
+                            _currentShield -= damage;
+                        }
                     }
-                    else
+
+                    if (damage > 0)
                     {
                         _currentHealth -= damage;
                     }
@@ -163,15 +167,15 @@ namespace SpaceGame.Ships
                 }
             }
 
+            if (_currentHealth <= 0)
+            {
+                IsExpired = true;
+            }
+
             if (_currentShield < _maxShield)
             {
                 _currentShield += _shieldRegen * deltaTime;
                 _currentShield = _currentShield > _maxShield ? _maxShield : _currentShield;
-            }
-
-            if (_currentHealth <= 0)
-            {
-                IsExpired = true;
             }
         }
 

@@ -7,7 +7,6 @@ namespace SpaceGame.Managers
     {
         public Vector2 Position { get; }
         public bool IsExpired { get; }
-        public Vector2 TileCoordinates { get; set; }
 
         public abstract void Update(GameTime gameTime, Matrix parentTransform);
 

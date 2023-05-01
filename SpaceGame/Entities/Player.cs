@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceGame.Managers;
+using SpaceGame.Scenes;
 using SpaceGame.Ships;
 
 namespace SpaceGame.Entities
@@ -9,7 +10,6 @@ namespace SpaceGame.Entities
     public class Player : IEntity, IFocusable
     {
         public Vector2 Position => Ship?.Position ?? Vector2.Zero;
-        public Vector2 TileCoordinates { get; set; }
         public bool IsExpired => Ship?.IsExpired ?? false;
 
         public Vector2 WorldPosition => Ship == null ? Vector2.Zero : Ship.Position;
@@ -26,6 +26,17 @@ namespace SpaceGame.Entities
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             HandleInput(deltaTime);
             Ship.Update(gameTime, parentTransform);
+
+            if (Ship.IsExpired)
+            {
+                EntityManager.Initialize();
+                CollisionManager.Initialize();
+                ParticleEffectsManager.Initialize();
+
+                var scene = new GameOverScene();
+                scene.Setup();
+                MainGame.SetScene(scene);
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)

@@ -9,7 +9,6 @@ namespace SpaceGame.Projectiles
     {
         public FactionType Faction { get; set; }
         public Vector2 Position { get; set; }
-        public Vector2 TileCoordinates { get; set; }
         public bool IsExpired { get; set; }
         public Texture2D Texture { get; set; }
         public Color[] TextureData { get; set; }

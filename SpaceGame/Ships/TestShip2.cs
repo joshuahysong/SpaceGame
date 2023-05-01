@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using SpaceGame.ParticleEffects;
 using SpaceGame.Ships.Parts;
 using SpaceGame.Weapons;
 
@@ -16,8 +15,8 @@ namespace SpaceGame.Ships
                 maxTurnRate: 2f,
                 maneuveringThrust: 0.05f,
                 maxVelocity: 100f,
-                maxHealth: 1000f,
-                maxShield: 1000f,
+                maxHealth: 1500f,
+                maxShield: 100f,
                 shieldRegen: 10f,
                 scale: ScaleType.Half)
         {

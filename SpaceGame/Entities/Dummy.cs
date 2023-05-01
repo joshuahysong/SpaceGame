@@ -8,7 +8,6 @@ namespace SpaceGame.Entities
     public class Dummy : IEntity
     {
         public Vector2 Position => Ship?.Position ?? Vector2.Zero;
-        public Vector2 TileCoordinates { get; set; }
         public bool IsExpired => Ship?.IsExpired ?? false;
 
         public ShipBase Ship { get; set; }
