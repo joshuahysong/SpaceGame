@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using SpaceGame.Entities;
 using SpaceGame.Managers;
 using SpaceGame.Ships;
@@ -11,7 +12,7 @@ namespace SpaceGame.Scenes
 {
     public class SpaceScene : IScene
     {
-        public static Player Player { get; set; }
+        public Player Player { get; private set; }
 
         public const int TileSize = 400;
         public Dictionary<string, string> PlayerDebugEntries = new();
@@ -20,9 +21,14 @@ namespace SpaceGame.Scenes
         private Texture2D _debugTile;
         private Texture2D _starTile1;
         private Texture2D _starTile2;
+        private bool _isPaused;
 
         public void Setup()
         {
+            EntityManager.Initialize();
+            CollisionManager.Initialize();
+            ParticleEffectsManager.Initialize();
+
             Player = new Player(new TestShip1(FactionType.Player, Vector2.Zero, 0));
             MainGame.Camera.Focus = Player;
             EntityManager.Add(Player);
@@ -45,6 +51,14 @@ namespace SpaceGame.Scenes
 
         public void Update(GameTime gameTime)
         {
+            if (MainGame.Instance.IsActive)
+            {
+                HandleInput();
+            }
+
+            if (_isPaused)
+                return;
+
             EntityManager.Update(gameTime, Matrix.Identity);
             CollisionManager.Update();
             ParticleEffectsManager.Update(gameTime, Matrix.Identity);
@@ -196,6 +210,20 @@ namespace SpaceGame.Scenes
                     }
                     spriteBatch.Draw(texture, position, null, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
                 }
+            }
+        }
+
+        private void HandleInput()
+        {
+            if (Input.WasButtonPressed(Buttons.Back) || Input.WasKeyPressed(Keys.Escape))
+            {
+                var scene = new PauseMenuScene();
+                scene.Setup();
+                MainGame.SetScene(scene);
+            }
+            if (Input.WasKeyPressed(Keys.Pause))
+            {
+                _isPaused = !_isPaused;
             }
         }
     }

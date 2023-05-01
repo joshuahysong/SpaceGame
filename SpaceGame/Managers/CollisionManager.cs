@@ -11,6 +11,11 @@ namespace SpaceGame.Managers
 
         private static List<ICollidable> _entities = new();
 
+        public static void Initialize()
+        {
+            _entities = new List<ICollidable>();
+        }
+
         public static void Add(ICollidable entity)
         {
             _entities.Add(entity);

@@ -12,17 +12,18 @@ namespace SpaceGame
     public class MainGame : Game
     {
         public static MainGame Instance { get; private set; }
-        public static IScene CurrentScene { get; private set; }
-        public static GameState GameState { get; set; }
-        public static Camera Camera { get; set; }
-        public static bool IsDebugging { get; set; }
+        public static Camera Camera { get; private set; }
+        public static bool IsDebugging { get; private set; }
 
         public static Viewport Viewport => Instance.GraphicsDevice.Viewport;
-        public static Vector2 ScreenCenter => new Vector2(Viewport.Width / 2, Viewport.Height / 2);
+        public static Vector2 ScreenCenter => new(Viewport.Width / 2, Viewport.Height / 2);
 
-        public Dictionary<string, string> SystemDebugEntries = new();
+        private Dictionary<string, string> _systemDebugEntries = new();
+
         private SpriteBatch _spriteBatch;
-        private bool _isPaused;
+        private static IScene _previousScene;
+        private static IScene _currentScene;
+        private static GameState _gameState;
 
         public MainGame()
         {
@@ -44,12 +45,11 @@ namespace SpaceGame
 
         protected override void Initialize()
         {
-            GameState = GameState.MainMenu;
+            SetGameState(GameState.MainMenu);
             Camera = new Camera();
-            SystemDebugEntries = new Dictionary<string, string>();
 
-            CurrentScene = new MainMenuScene();
-            CurrentScene.Setup();
+            _currentScene = new MainMenuScene();
+            _currentScene.Setup();
 
             base.Initialize();
         }
@@ -69,22 +69,19 @@ namespace SpaceGame
                 HandleInput();
             }
 
-            if (_isPaused)
-                return;
+            Camera.Update();
 
-            MainGame.Camera.Update();
-
-            if (CurrentScene != null)
-                CurrentScene.Update(gameTime);
+            if (_currentScene != null)
+                _currentScene.Update(gameTime);
 
             if (IsDebugging)
             {
-                SystemDebugEntries["Camera Focus"] = $"{Camera.Focus?.GetType().Name}";
-                SystemDebugEntries["Camera Zoom"] = $"{Math.Round(Camera.Scale, 2)}";
-                SystemDebugEntries["Entities"] = $"{EntityManager.Count}";
-                SystemDebugEntries["Collidables"] = $"{CollisionManager.Count}";
-                SystemDebugEntries["Effects"] = $"{ParticleEffectsManager.Count}";
-                SystemDebugEntries["Mouse Screen Position"] = $"{Input.ScreenMousePosition.X}, {Input.ScreenMousePosition.Y}";
+                _systemDebugEntries["Camera Focus"] = $"{Camera.Focus?.GetType().Name}";
+                _systemDebugEntries["Camera Zoom"] = $"{Math.Round(Camera.Scale, 2)}";
+                _systemDebugEntries["Entities"] = $"{EntityManager.Count}";
+                _systemDebugEntries["Collidables"] = $"{CollisionManager.Count}";
+                _systemDebugEntries["Effects"] = $"{ParticleEffectsManager.Count}";
+                _systemDebugEntries["Mouse Screen Position"] = $"{Input.ScreenMousePosition.X}, {Input.ScreenMousePosition.Y}";
             }
 
             base.Update(gameTime);
@@ -94,8 +91,8 @@ namespace SpaceGame
         {
             GraphicsDevice.Clear(Color.Black);
 
-            if (CurrentScene != null)
-                CurrentScene.Draw(gameTime, _spriteBatch);
+            if (_currentScene != null)
+                _currentScene.Draw(gameTime, _spriteBatch);
 
             DrawDebug(gameTime);
 
@@ -104,12 +101,21 @@ namespace SpaceGame
 
         public static void SetScene(IScene scene)
         {
-            CurrentScene = scene;
+            if (_currentScene != null)
+                _previousScene = _currentScene;
+
+            _currentScene = scene;
         }
 
         public static void SetGameState(GameState gameState)
         {
-            GameState = gameState;
+            _gameState = gameState;
+        }
+
+        public static void SwitchToPreviousScene()
+        {
+            _currentScene = _previousScene;
+            _previousScene = null;
         }
 
         private void DrawDebug(GameTime gameTime)
@@ -118,10 +124,10 @@ namespace SpaceGame
             var fpsText = $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}";
             var fpsX = (int)(Viewport.Width - 5 - Art.DebugFont.MeasureString(fpsText).X);
             _spriteBatch.DrawString(Art.DebugFont, fpsText, new Vector2(fpsX, 5), Color.White);
-            if (IsDebugging && SystemDebugEntries.Any())
+            if (IsDebugging && _systemDebugEntries.Any())
             {
                 var yTextOffset = 20;
-                foreach (KeyValuePair<string, string> debugEntry in SystemDebugEntries)
+                foreach (KeyValuePair<string, string> debugEntry in _systemDebugEntries)
                 {
                     var text = $"{debugEntry.Key}: {debugEntry.Value}";
                     var xTextOffset = (int)(Viewport.Width - 5 - Art.DebugFont.MeasureString(text).X);
@@ -134,17 +140,9 @@ namespace SpaceGame
 
         private void HandleInput()
         {
-            if (Input.WasButtonPressed(Buttons.Back) || Input.WasKeyPressed(Keys.Escape))
-            {
-                Exit();
-            }
             if (Input.WasKeyPressed(Keys.F4))
             {
                 IsDebugging = !IsDebugging;
-            }
-            if (Input.WasKeyPressed(Keys.Pause) && GameState == GameState.Space)
-            {
-                _isPaused = !_isPaused;
             }
         }
     }

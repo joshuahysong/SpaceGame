@@ -14,7 +14,7 @@ namespace SpaceGame.Weapons
 
         private Vector2 _relativePosition;
         private float _cooldownRemaining;
-        private static Random _random = new Random();
+        private Random _random = new Random();
 
         public WeaponBase(
             Vector2 relativePosition,

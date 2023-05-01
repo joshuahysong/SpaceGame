@@ -55,6 +55,7 @@ namespace SpaceGame
             Thruster1 = content.Load<Texture2D>("Effects/thruster-1");
 
             DebugFont = content.Load<SpriteFont>("Fonts/Debug");
+            UIFont = content.Load<SpriteFont>("Fonts/UI");
 
             Pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             Pixel.SetData(new[] { Color.White });
