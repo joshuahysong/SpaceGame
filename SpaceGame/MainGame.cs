@@ -23,15 +23,14 @@ namespace SpaceGame
         private SpriteBatch _spriteBatch;
         private static IScene _previousScene;
         private static IScene _currentScene;
-        private static GameState _gameState;
 
         public MainGame()
         {
             var graphics = new GraphicsDeviceManager(this)
             {
                 IsFullScreen = false,
-                PreferredBackBufferHeight = 1080,
-                PreferredBackBufferWidth = 1920,
+                PreferredBackBufferHeight = 900,
+                PreferredBackBufferWidth = 1440,
                 SynchronizeWithVerticalRetrace = false
             };
             graphics.ApplyChanges();
@@ -45,7 +44,6 @@ namespace SpaceGame
 
         protected override void Initialize()
         {
-            SetGameState(GameState.MainMenu);
             Camera = new Camera();
 
             _currentScene = new MainMenuScene();
@@ -105,11 +103,6 @@ namespace SpaceGame
                 _previousScene = _currentScene;
 
             _currentScene = scene;
-        }
-
-        public static void SetGameState(GameState gameState)
-        {
-            _gameState = gameState;
         }
 
         public static void SwitchToPreviousScene()

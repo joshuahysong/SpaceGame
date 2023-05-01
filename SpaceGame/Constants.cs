@@ -1,11 +1,5 @@
 ﻿namespace SpaceGame
 {
-    public enum GameState
-    {
-        MainMenu,
-        Space
-    }
-
     public static class ScaleType
     {
         public const float Half = 0.5f;

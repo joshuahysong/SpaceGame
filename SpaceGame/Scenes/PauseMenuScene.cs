@@ -34,7 +34,7 @@ namespace SpaceGame.Scenes
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
-            spriteBatch.Draw(Art.Background, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White);
+            spriteBatch.Draw(Art.BlueNebula1, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White);
             foreach (var button in _buttons)
             {
                 button.Draw(spriteBatch);
@@ -45,7 +45,6 @@ namespace SpaceGame.Scenes
         private void Resume()
         {
             MainGame.SwitchToPreviousScene();
-            MainGame.SetGameState(GameState.Space);
         }
 
         private void ReturnToMainMenu()
@@ -57,7 +56,6 @@ namespace SpaceGame.Scenes
             var scene = new MainMenuScene();
             scene.Setup();
             MainGame.SetScene(scene);
-            MainGame.SetGameState(GameState.MainMenu);
         }
 
         private void Quit()

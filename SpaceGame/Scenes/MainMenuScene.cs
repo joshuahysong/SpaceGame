@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.UI;
+using System;
 using System.Collections.Generic;
 
 namespace SpaceGame.Scenes
@@ -8,6 +9,7 @@ namespace SpaceGame.Scenes
     public class MainMenuScene : IScene
     {
         private List<Button> _buttons = new();
+        private Texture2D _background;
 
         public void Setup()
         {
@@ -29,8 +31,15 @@ namespace SpaceGame.Scenes
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            if (_background == null)
+            {
+                var random = new Random();
+                var index = random.Next(0, Art.Backgrounds.Count - 1);
+                _background = Art.Backgrounds.ToArray()[index];
+            }
+
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
-            spriteBatch.Draw(Art.Background, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White);
+            spriteBatch.Draw(_background, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White);
             foreach (var button in _buttons)
             {
                 button.Draw(spriteBatch);
@@ -43,7 +52,6 @@ namespace SpaceGame.Scenes
             var scene = new SpaceScene();
             scene.Setup();
             MainGame.SetScene(scene);
-            MainGame.SetGameState(GameState.Space);
         }
 
         private void Quit()

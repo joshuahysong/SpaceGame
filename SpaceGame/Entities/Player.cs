@@ -11,7 +11,6 @@ namespace SpaceGame.Entities
     {
         public Vector2 Position => Ship?.Position ?? Vector2.Zero;
         public bool IsExpired => Ship?.IsExpired ?? false;
-
         public Vector2 WorldPosition => Ship == null ? Vector2.Zero : Ship.Position;
 
         public ShipBase Ship { get; set; }

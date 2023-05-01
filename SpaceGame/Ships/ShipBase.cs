@@ -156,6 +156,7 @@ namespace SpaceGame.Ships
                         else
                         {
                             _currentShield -= damage;
+                            damage = 0;
                         }
                     }
 

@@ -73,13 +73,13 @@ namespace SpaceGame.Scenes
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
-            spriteBatch.Draw(Art.Background, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White);
+            spriteBatch.Draw(Art.BlueNebula1, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White);
             spriteBatch.End();
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, MainGame.Camera.Transform);
             DrawStarTiles(spriteBatch, _starTile1, Color.White, ScaleType.Half);
             DrawStarTiles(spriteBatch, _starTile2, Color.White);
-            spriteBatch.Draw(Art.RedPlanet, Vector2.Zero, Color.White);
+            spriteBatch.Draw(Art.Planet.RedPlanet, Vector2.Zero, Color.White);
             EntityManager.Draw(spriteBatch, Matrix.Identity);
             ParticleEffectsManager.Draw(spriteBatch, Matrix.Identity);
             spriteBatch.End();
