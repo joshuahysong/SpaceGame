@@ -50,7 +50,7 @@ namespace SpaceGame.Projectiles
             _heading = heading;
             _origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             _rectangle = new Rectangle(0, 0, (int)Math.Floor(Texture.Width * Scale), (int)Math.Floor(Texture.Height * Scale));
-            _boundingBoxTexture = Art.CreateRectangle(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
+            _boundingBoxTexture = Art.CreateRectangleTexture(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
             CollisionManager.Add(this);
         }
 

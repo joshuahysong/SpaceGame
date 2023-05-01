@@ -7,7 +7,7 @@ namespace SpaceGame.Weapons
     {
         public TestWeapon(Vector2 relativePosition)
             : base(relativePosition,
-                cooldown: 25f,
+                cooldown: 0.5f,
                 speed: 2000f,
                 accuracy: 99f,
                 projectileType: typeof(TestProjectile))

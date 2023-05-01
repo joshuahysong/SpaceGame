@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using SpaceGame.Entities;
 using SpaceGame.Managers;
 using SpaceGame.Scenes;
 using System;
@@ -13,18 +12,15 @@ namespace SpaceGame
     public class MainGame : Game
     {
         public static MainGame Instance { get; private set; }
+        public static IScene CurrentScene { get; private set; }
         public static GameState GameState { get; set; }
         public static Camera Camera { get; set; }
-        public static Player Player { get; set; }
         public static bool IsDebugging { get; set; }
 
         public static Viewport Viewport => Instance.GraphicsDevice.Viewport;
-        public static Vector2 ScreenSize => new Vector2(Viewport.Width, Viewport.Height);
         public static Vector2 ScreenCenter => new Vector2(Viewport.Width / 2, Viewport.Height / 2);
 
         public Dictionary<string, string> SystemDebugEntries = new();
-
-        private SpaceScene _spaceScene;
         private SpriteBatch _spriteBatch;
         private bool _isPaused;
 
@@ -35,6 +31,7 @@ namespace SpaceGame
                 IsFullScreen = false,
                 PreferredBackBufferHeight = 1080,
                 PreferredBackBufferWidth = 1920,
+                SynchronizeWithVerticalRetrace = false
             };
             graphics.ApplyChanges();
 
@@ -42,13 +39,17 @@ namespace SpaceGame
             Instance = this;
             IsDebugging = false;
             IsMouseVisible = true;
+            IsFixedTimeStep = false;
         }
 
         protected override void Initialize()
         {
-            GameState = GameState.Space;
+            GameState = GameState.MainMenu;
             Camera = new Camera();
             SystemDebugEntries = new Dictionary<string, string>();
+
+            CurrentScene = new MainMenuScene();
+            CurrentScene.Setup();
 
             base.Initialize();
         }
@@ -64,25 +65,17 @@ namespace SpaceGame
             if (IsActive)
             {
                 Input.Update(Camera);
+                Camera.HandleInput();
                 HandleInput();
             }
 
             if (_isPaused)
                 return;
 
-            if (GameState == GameState.MainMenu)
-            {
-            }
+            MainGame.Camera.Update();
 
-            if (GameState == GameState.Space)
-            {
-                if (_spaceScene == null)
-                {
-                    _spaceScene = new SpaceScene();
-                    _spaceScene.Initialize();
-                }
-                _spaceScene.Update(gameTime, IsActive);
-            }
+            if (CurrentScene != null)
+                CurrentScene.Update(gameTime);
 
             if (IsDebugging)
             {
@@ -101,26 +94,22 @@ namespace SpaceGame
         {
             GraphicsDevice.Clear(Color.Black);
 
-            if (GameState == GameState.MainMenu)
-            {
-                _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
-                _spriteBatch.Draw(Art.Background, Vector2.Zero, new Rectangle(0, 0, Viewport.Width, Viewport.Height), Color.White);
-                _spriteBatch.End();
-            }
-
-            if (GameState == GameState.Space)
-            {
-                if (_spaceScene == null)
-                {
-                    _spaceScene = new SpaceScene();
-                    _spaceScene.Initialize();
-                }
-                _spaceScene.Draw(gameTime, _spriteBatch);
-            }
+            if (CurrentScene != null)
+                CurrentScene.Draw(gameTime, _spriteBatch);
 
             DrawDebug(gameTime);
 
             base.Draw(gameTime);
+        }
+
+        public static void SetScene(IScene scene)
+        {
+            CurrentScene = scene;
+        }
+
+        public static void SetGameState(GameState gameState)
+        {
+            GameState = gameState;
         }
 
         private void DrawDebug(GameTime gameTime)
@@ -152,14 +141,6 @@ namespace SpaceGame
             if (Input.WasKeyPressed(Keys.F4))
             {
                 IsDebugging = !IsDebugging;
-            }
-            if (Input.WasKeyPressed(Keys.D1))
-            {
-                GameState = GameState.Space;
-            }
-            if (Input.WasKeyPressed(Keys.D2))
-            {
-                GameState = GameState.MainMenu;
             }
             if (Input.WasKeyPressed(Keys.Pause) && GameState == GameState.Space)
             {

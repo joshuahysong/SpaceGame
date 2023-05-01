@@ -19,16 +19,18 @@ namespace SpaceGame
             Scale = 1f;
         }
 
-        public void Update(IFocusable focus)
+        public void Update()
         {
-            Focus = focus;
-            Transform = Matrix.CreateTranslation(new Vector3(-focus.WorldPosition.X, -focus.WorldPosition.Y, 0)) *
-                Matrix.CreateRotationZ(Rotation) *
-                Matrix.CreateScale(new Vector3(Scale, Scale, 1)) *
-                Matrix.CreateTranslation(new Vector3(MainGame.ScreenCenter.X, MainGame.ScreenCenter.Y, 0));
+            if (Focus != null)
+            {
+                Transform = Matrix.CreateTranslation(new Vector3(-Focus.WorldPosition.X, -Focus.WorldPosition.Y, 0)) *
+                    Matrix.CreateRotationZ(Rotation) *
+                    Matrix.CreateScale(new Vector3(Scale, Scale, 1)) *
+                    Matrix.CreateTranslation(new Vector3(MainGame.ScreenCenter.X, MainGame.ScreenCenter.Y, 0));
 
-            Origin = MainGame.ScreenCenter / Scale;
-            Position = focus.WorldPosition;
+                Origin = MainGame.ScreenCenter / Scale;
+                Position = Focus.WorldPosition;
+            }
         }
 
         public void HandleInput()
