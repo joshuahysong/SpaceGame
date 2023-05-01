@@ -14,7 +14,7 @@ namespace SpaceGame.Weapons
 
         private Vector2 _relativePosition;
         private float _cooldownRemaining;
-        private static Random _random = new Random();
+        private Random _random = new Random();
 
         public WeaponBase(
             Vector2 relativePosition,
@@ -31,6 +31,15 @@ namespace SpaceGame.Weapons
             _cooldownRemaining = 0;
         }
 
+        public void Update(GameTime gameTime)
+        {
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (_cooldownRemaining > 0)
+            {
+                _cooldownRemaining -= deltaTime;
+            }
+        }
+
         public void Fire(FactionType faction, float heading, Vector2 relativeVelocity, Vector2 shipLocation)
         {
             if (_cooldownRemaining <= 0)
@@ -44,11 +53,6 @@ namespace SpaceGame.Weapons
 
                 Vector2 offset = Vector2.Transform(_relativePosition, aimQuat);
                 EntityManager.Add((ProjectileBase)Activator.CreateInstance(_projectileType, faction, shipLocation + offset, velocity + relativeVelocity, heading));
-            }
-
-            if (_cooldownRemaining > 0)
-            {
-                _cooldownRemaining--;
             }
         }
     }

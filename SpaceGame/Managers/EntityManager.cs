@@ -9,12 +9,17 @@ namespace SpaceGame.Managers
 {
     public static class EntityManager
     {
-        public static List<IEntity> Entities = new List<IEntity>();
+        public static int Count => _entities.Count;
 
-        private static List<IEntity> _addedEntities = new List<IEntity>();
+        private static List<IEntity> _entities;
+        private static List<IEntity> _addedEntities;
         private static bool _isUpdating;
 
-        public static int Count => Entities.Count;
+        public static void Initialize()
+        {
+            _entities = new List<IEntity>();
+            _addedEntities = new List<IEntity>();
+        }
 
         public static void Add(IEntity entity)
         {
@@ -32,7 +37,7 @@ namespace SpaceGame.Managers
         {
             _isUpdating = true;
 
-            foreach (IEntity entity in Entities)
+            foreach (IEntity entity in _entities)
             {
                 entity.Update(gameTime, parentTransform);
                 UpdateEntityTileCoordinates(entity);
@@ -48,12 +53,12 @@ namespace SpaceGame.Managers
             _addedEntities.Clear();
 
             // remove any expired entities.
-            Entities = Entities.Where(x => !x.IsExpired).ToList();
+            _entities = _entities.Where(x => !x.IsExpired).ToList();
         }
 
         public static void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
         {
-            foreach (IEntity entity in Entities)
+            foreach (IEntity entity in _entities)
             {
                 entity.Draw(spriteBatch, parentTransform);
             }
@@ -61,7 +66,7 @@ namespace SpaceGame.Managers
 
         private static void AddEntity(IEntity entity)
         {
-            Entities.Add(entity);
+            _entities.Add(entity);
         }
 
         private static void UpdateEntityTileCoordinates(IEntity entity)

@@ -48,19 +48,20 @@ namespace SpaceGame
             TestShip1 = content.Load<Texture2D>("Ships/TestShip1");
             TestShip2 = content.Load<Texture2D>("Ships/TestShip2");
 
-            Bullet = CreateRectangle(5, 5, Color.White, Color.White);
+            Bullet = CreateRectangleTexture(5, 5, Color.White, Color.White);
             GreenBullet = content.Load<Texture2D>("Projectiles/green_bullet");
             OrangeLaser = content.Load<Texture2D>("Projectiles/orange_laser");
 
             Thruster1 = content.Load<Texture2D>("Effects/thruster-1");
 
             DebugFont = content.Load<SpriteFont>("Fonts/Debug");
+            UIFont = content.Load<SpriteFont>("Fonts/UI");
 
             Pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             Pixel.SetData(new[] { Color.White });
         }
 
-        public static Texture2D CreateRectangle(int width, int height, Color fillColor, Color borderColor)
+        public static Texture2D CreateRectangleTexture(int width, int height, Color fillColor, Color borderColor)
         {
             Texture2D texture = new Texture2D(MainGame.Instance.GraphicsDevice, width, height);
             Color[] data = new Color[width * height];
@@ -79,7 +80,7 @@ namespace SpaceGame
             return texture;
         }
 
-        public static Texture2D CreateCircle(int radius, Color borderColor)
+        public static Texture2D CreateCircleTexture(int radius, Color borderColor)
         {
             int outerRadius = radius * 2 + 2; // So circle doesn't go out of bounds
             Texture2D texture = new Texture2D(MainGame.Instance.GraphicsDevice, outerRadius, outerRadius);
@@ -122,14 +123,14 @@ namespace SpaceGame
 
         public static void DrawCircle(this SpriteBatch spriteBatch, Vector2 position, int radius, Color borderColor)
         {
-            var circle = CreateCircle(radius, borderColor);
+            var circle = CreateCircleTexture(radius, borderColor);
             var circlePosition = new Vector2(position.X - radius, position.Y - radius);
             spriteBatch.Draw(circle, circlePosition, null, borderColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
         }
 
         public static void DrawRectangle(this SpriteBatch spriteBatch, Vector2 position, Vector2 size, float heading, Color borderColor)
         {
-            var rectangle = CreateRectangle((int)Math.Ceiling(size.X), (int)Math.Ceiling(size.Y), Color.Transparent, borderColor);
+            var rectangle = CreateRectangleTexture((int)Math.Ceiling(size.X), (int)Math.Ceiling(size.Y), Color.Transparent, borderColor);
             spriteBatch.Draw(rectangle, position, null, borderColor, heading, size / 2f, 1f, SpriteEffects.None, 0);
         }
 

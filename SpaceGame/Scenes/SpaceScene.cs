@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using SpaceGame.Entities;
 using SpaceGame.Managers;
 using SpaceGame.Ships;
@@ -9,10 +10,9 @@ using System.Linq;
 
 namespace SpaceGame.Scenes
 {
-    public class SpaceScene
+    public class SpaceScene : IScene
     {
-        public static Camera Camera { get; set; }
-        public static Player Player { get; set; }
+        public Player Player { get; private set; }
 
         public const int TileSize = 400;
         public Dictionary<string, string> PlayerDebugEntries = new();
@@ -21,17 +21,21 @@ namespace SpaceGame.Scenes
         private Texture2D _debugTile;
         private Texture2D _starTile1;
         private Texture2D _starTile2;
+        private bool _isPaused;
 
-        public void Initialize()
+        public void Setup()
         {
-            Camera = new Camera();
+            EntityManager.Initialize();
+            CollisionManager.Initialize();
+            ParticleEffectsManager.Initialize();
+
             Player = new Player(new TestShip1(FactionType.Player, Vector2.Zero, 0));
-            Camera.Focus = Player;
+            MainGame.Camera.Focus = Player;
             EntityManager.Add(Player);
 
             _starTile1 = GetStarsTexture(1000);
             _starTile2 = GetStarsTexture(1000);
-            _debugTile = Art.CreateRectangle(TileSize, TileSize, Color.Transparent, Color.WhiteSmoke * ScaleType.Half);
+            _debugTile = Art.CreateRectangleTexture(TileSize, TileSize, Color.Transparent, Color.WhiteSmoke * ScaleType.Half);
 
             for (var i = 1; i <= 1; i++)
             {
@@ -45,15 +49,16 @@ namespace SpaceGame.Scenes
             //EntityManager.Add(dummy);
         }
 
-        public void Update(GameTime gameTime, bool isActive)
+        public void Update(GameTime gameTime)
         {
-            if (isActive)
+            if (MainGame.Instance.IsActive)
             {
-                Input.Update(Camera);
-                Camera.HandleInput();
+                HandleInput();
             }
 
-            Camera.Update(Camera.Focus);
+            if (_isPaused)
+                return;
+
             EntityManager.Update(gameTime, Matrix.Identity);
             CollisionManager.Update();
             ParticleEffectsManager.Update(gameTime, Matrix.Identity);
@@ -77,7 +82,7 @@ namespace SpaceGame.Scenes
             spriteBatch.Draw(Art.Background, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White);
             spriteBatch.End();
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, Camera.Transform);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, MainGame.Camera.Transform);
             DrawStarTiles(spriteBatch, _starTile1, Color.White, ScaleType.Half);
             DrawStarTiles(spriteBatch, _starTile2, Color.White);
             if (MainGame.IsDebugging)
@@ -127,11 +132,11 @@ namespace SpaceGame.Scenes
 
         private void DrawDebugTiles(SpriteBatch spriteBatch)
         {
-            int numberOfTilesX = (int)Math.Ceiling((double)MainGame.Viewport.Bounds.Width / TileSize / Camera.Scale);
-            int numberOfTilesY = (int)Math.Ceiling((double)MainGame.Viewport.Bounds.Height / TileSize / Camera.Scale);
+            int numberOfTilesX = (int)Math.Ceiling((double)MainGame.Viewport.Bounds.Width / TileSize / MainGame.Camera.Scale);
+            int numberOfTilesY = (int)Math.Ceiling((double)MainGame.Viewport.Bounds.Height / TileSize / MainGame.Camera.Scale);
             Vector2 tilePosition;
-            tilePosition.X = (int)Math.Floor(Camera.Position.X / TileSize);
-            tilePosition.Y = (int)Math.Floor(Camera.Position.Y / TileSize);
+            tilePosition.X = (int)Math.Floor(MainGame.Camera.Position.X / TileSize);
+            tilePosition.Y = (int)Math.Floor(MainGame.Camera.Position.Y / TileSize);
 
             int minX = (int)Math.Floor(tilePosition.X - (double)numberOfTilesX / 2);
             int maxX = (int)Math.Ceiling(tilePosition.X + (double)numberOfTilesX / 2);
@@ -143,7 +148,7 @@ namespace SpaceGame.Scenes
                 for (int y = minY; y <= maxY; y++)
                 {
                     Vector2 position = new Vector2(_debugTile.Bounds.Width * x, _debugTile.Bounds.Height * y);
-                    if (Camera.Scale >= 0.5)
+                    if (MainGame.Camera.Scale >= 0.5)
                     {
                         spriteBatch.Draw(_debugTile, position, Color.DimGray * 0.5f);
                         spriteBatch.DrawString(Art.DebugFont, $"{x},{y}", new Vector2(position.X + 5, position.Y + 5), Color.DimGray * 0.5f);
@@ -183,11 +188,11 @@ namespace SpaceGame.Scenes
         private void DrawStarTiles(SpriteBatch spriteBatch, Texture2D texture, Color color, float parallaxScale = 1f)
         {
             var size = texture.Width > texture.Height ? texture.Width : texture.Height;
-            int numberOfTilesX = (int)Math.Ceiling((double)MainGame.Viewport.Bounds.Width / size / Camera.Scale);
-            int numberOfTilesY = (int)Math.Ceiling((double)MainGame.Viewport.Bounds.Height / size / Camera.Scale);
+            int numberOfTilesX = (int)Math.Ceiling((double)MainGame.Viewport.Bounds.Width / size / MainGame.Camera.Scale);
+            int numberOfTilesY = (int)Math.Ceiling((double)MainGame.Viewport.Bounds.Height / size / MainGame.Camera.Scale);
             Vector2 tilePosition;
-            tilePosition.X = (int)Math.Floor(Camera.Position.X * parallaxScale / size);
-            tilePosition.Y = (int)Math.Floor(Camera.Position.Y * parallaxScale / size);
+            tilePosition.X = (int)Math.Floor(MainGame.Camera.Position.X * parallaxScale / size);
+            tilePosition.Y = (int)Math.Floor(MainGame.Camera.Position.Y * parallaxScale / size);
 
             int minX = (int)Math.Floor(tilePosition.X - (double)numberOfTilesX / 2);
             int maxX = (int)Math.Ceiling(tilePosition.X + (double)numberOfTilesX / 2);
@@ -201,10 +206,24 @@ namespace SpaceGame.Scenes
                     var position = new Vector2(texture.Bounds.Width * x, texture.Bounds.Height * y);
                     if (parallaxScale != 1f)
                     {
-                        position += Camera.Position * parallaxScale;
+                        position += MainGame.Camera.Position * parallaxScale;
                     }
                     spriteBatch.Draw(texture, position, null, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
                 }
+            }
+        }
+
+        private void HandleInput()
+        {
+            if (Input.WasButtonPressed(Buttons.Back) || Input.WasKeyPressed(Keys.Escape))
+            {
+                var scene = new PauseMenuScene();
+                scene.Setup();
+                MainGame.SetScene(scene);
+            }
+            if (Input.WasKeyPressed(Keys.Pause))
+            {
+                _isPaused = !_isPaused;
             }
         }
     }

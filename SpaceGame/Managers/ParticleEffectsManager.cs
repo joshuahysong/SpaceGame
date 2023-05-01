@@ -14,6 +14,12 @@ namespace SpaceGame.Managers
         private static List<IParticleEffect> _addedEffects = new();
         private static bool _isUpdating;
 
+        public static void Initialize()
+        {
+            _effects = new List<IParticleEffect>();
+            _addedEffects = new List<IParticleEffect>();
+        }
+
         public static void Add(IParticleEffect effect)
         {
             if (!_isUpdating)

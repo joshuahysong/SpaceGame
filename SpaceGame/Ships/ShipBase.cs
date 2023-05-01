@@ -89,7 +89,7 @@ namespace SpaceGame.Ships
             _origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             _rectangle = new Rectangle(0, 0, (int)Math.Floor(Texture.Width * Scale), (int)Math.Floor(Texture.Height * Scale));
             TextureData = Art.GetScaledTextureData(Texture, Scale);
-            _boundingBoxTexture = Art.CreateRectangle(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
+            _boundingBoxTexture = Art.CreateRectangleTexture(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
             _healthBarOffset = (Texture.Width > Texture.Height ? Texture.Width : Texture.Height) / 2 * Scale + 10;
             _showHealthBars = showHealthBars;
 
@@ -131,6 +131,11 @@ namespace SpaceGame.Ships
                 }
             }
             IsManeuvering = false;
+
+            foreach (var weapon in _weapons)
+            {
+                weapon.Update(gameTime);
+            }
 
             _hasCollision = false;
             var collisions = CollisionManager.GetCollisions(this);
