@@ -29,8 +29,8 @@ namespace SpaceGame
             var graphics = new GraphicsDeviceManager(this)
             {
                 IsFullScreen = false,
-                PreferredBackBufferHeight = 900,
-                PreferredBackBufferWidth = 1440,
+                PreferredBackBufferHeight = 1080,
+                PreferredBackBufferWidth = 1920,
                 SynchronizeWithVerticalRetrace = false
             };
             graphics.ApplyChanges();

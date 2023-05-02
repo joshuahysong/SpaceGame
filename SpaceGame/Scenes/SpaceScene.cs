@@ -18,6 +18,7 @@ namespace SpaceGame.Scenes
         private Player _player;
         private Texture2D _starTile1;
         private Texture2D _starTile2;
+        private Texture2D _starTile3;
         private bool _isPaused;
 
         public void Setup()
@@ -32,6 +33,7 @@ namespace SpaceGame.Scenes
 
             _starTile1 = GetStarsTexture(1000);
             _starTile2 = GetStarsTexture(1000);
+            _starTile3 = GetStarsTexture(1000);
 
             for (var i = 1; i <= 1; i++)
             {
@@ -77,8 +79,9 @@ namespace SpaceGame.Scenes
             spriteBatch.End();
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, MainGame.Camera.Transform);
-            DrawStarTiles(spriteBatch, _starTile1, Color.White, ScaleType.Half);
-            DrawStarTiles(spriteBatch, _starTile2, Color.White);
+            DrawStarTiles(spriteBatch, _starTile1, Color.White, 0.8f);
+            DrawStarTiles(spriteBatch, _starTile2, Color.White, 0.5f);
+            DrawStarTiles(spriteBatch, _starTile3, Color.White, 0.1f);
             spriteBatch.Draw(Art.Planet.RedPlanet, Vector2.Zero, Color.White);
             EntityManager.Draw(spriteBatch, Matrix.Identity);
             ParticleEffectsManager.Draw(spriteBatch, Matrix.Identity);
@@ -155,8 +158,9 @@ namespace SpaceGame.Scenes
             int numberOfTilesX = (int)Math.Ceiling((double)MainGame.Viewport.Bounds.Width / size / MainGame.Camera.Scale);
             int numberOfTilesY = (int)Math.Ceiling((double)MainGame.Viewport.Bounds.Height / size / MainGame.Camera.Scale);
             Vector2 tilePosition;
-            tilePosition.X = (int)Math.Floor(MainGame.Camera.Position.X * parallaxScale / size);
-            tilePosition.Y = (int)Math.Floor(MainGame.Camera.Position.Y * parallaxScale / size);
+            var cameraOffset = parallaxScale == 1f ? parallaxScale : (1f - parallaxScale);
+            tilePosition.X = (int)Math.Floor(MainGame.Camera.Position.X * cameraOffset / size);
+            tilePosition.Y = (int)Math.Floor(MainGame.Camera.Position.Y * cameraOffset / size);
 
             int minX = (int)Math.Floor(tilePosition.X - (double)numberOfTilesX / 2);
             int maxX = (int)Math.Ceiling(tilePosition.X + (double)numberOfTilesX / 2);
