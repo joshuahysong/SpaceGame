@@ -10,7 +10,7 @@ namespace SpaceGame.Managers
     {
         public static Dictionary<ICollidable, List<ICollidable>> Collisions { get; private set; }
 
-        public static int Count => _entities.Count;
+        public static int Count => _entities?.Count ?? 0;
 
         private static List<ICollidable> _entities = new();
 

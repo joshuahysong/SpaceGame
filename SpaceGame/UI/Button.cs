@@ -13,11 +13,13 @@ namespace SpaceGame.UI
         public int Height { get; set; }
         public Action Callback { get; set; }
 
+        private TextSize _textSize;
         private Color _assignedColor;
         private Color _color;
 
         public Button(Texture2D texture,
             string label,
+            TextSize textSize,
             Vector2 position,
             int width,
             int height,
@@ -30,6 +32,7 @@ namespace SpaceGame.UI
             Width = width;
             Height = height;
             Callback = callback;
+            _textSize = textSize;
             _assignedColor = color;
             _color = _assignedColor * 0.75f;
         }
@@ -53,10 +56,11 @@ namespace SpaceGame.UI
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Texture, new Rectangle((int)Position.X, (int)Position.Y, Width, Height), _color);
-            var labelSize = Art.UIFont.MeasureString(Label);
+            var font = _textSize == TextSize.Small ? Art.UISmalFont : Art.UIMediumFont;
+            var labelSize = font.MeasureString(Label);
             var textX = (Width / 2) - (labelSize.X / 2);
             var textY = (Height / 2) - (labelSize.Y / 2);
-            spriteBatch.DrawString(Art.UIFont, Label, new Vector2(Position.X + textX, Position.Y + textY), _color);
+            spriteBatch.DrawString(font, Label, new Vector2(Position.X + textX, Position.Y + textY), _color);
         }
 
         public bool IsMouseInButton()

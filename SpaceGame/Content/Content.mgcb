@@ -243,12 +243,19 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Header.spritefont
 
-#begin Fonts/UI.spritefont
+#begin Fonts/UI_Medium.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:Fonts/UI.spritefont
+/build:Fonts/UI_Medium.spritefont
+
+#begin Fonts/UI_Small.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/UI_Small.spritefont
 
 #begin Planets/cloudy-4.png
 /importer:TextureImporter

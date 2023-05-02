@@ -5,6 +5,7 @@ using SpaceGame.Entities;
 using SpaceGame.Managers;
 using SpaceGame.Scenes.Models;
 using SpaceGame.Ships;
+using SpaceGame.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace SpaceGame.Scenes
         private Texture2D _starTile1;
         private Texture2D _starTile2;
         private bool _isPaused;
+        private Button _landingButton;
 
         public void Setup()
         {
@@ -45,6 +47,9 @@ namespace SpaceGame.Scenes
                 EntityManager.Add(enemy);
             }
 
+            var buttonTexture = Art.CreateRectangleTexture(250, 40, Color.Transparent, Color.White);
+            _landingButton = new Button(buttonTexture, "Land", TextSize.Small, Vector2.Zero + new Vector2(5,5), 100, 20, Color.White, LandOnPlanet);
+
             //var dummy = new Dummy(new TestShip2(FactionType.Enemy, new Vector2(200, 0), (float)(Math.PI / 2f)));
             //EntityManager.Add(dummy);
         }
@@ -63,6 +68,8 @@ namespace SpaceGame.Scenes
             CollisionManager.Update();
             ParticleEffectsManager.Update(gameTime, Matrix.Identity);
 
+            _landingButton.Update();
+
             if (MainGame.IsDebugging)
             {
                 _playerDebugEntries["Position"] = $"{Math.Round(_player.Ship.Position.X)}, {Math.Round(_player.Ship.Position.Y)}";
@@ -76,10 +83,12 @@ namespace SpaceGame.Scenes
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            // Locked to screen
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
-            spriteBatch.Draw(Art.Backgrounds.BlueNebula1, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White);
+            spriteBatch.Draw(Art.Backgrounds.BlueNebula1, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White * 0.75f);
             spriteBatch.End();
 
+            // Locked to world
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, MainGame.Camera.Transform);
             DrawStarTiles(spriteBatch, _starTile1, Color.White, 0.8f);
             DrawStarTiles(spriteBatch, _starTile2, Color.White, 0.5f);
@@ -92,11 +101,19 @@ namespace SpaceGame.Scenes
             ParticleEffectsManager.Draw(spriteBatch, Matrix.Identity);
             spriteBatch.End();
 
+            // Locked to screen
             spriteBatch.Begin(SpriteSortMode.Deferred);
+
+            if (_player.Ship.IsAbleToLand)
+            {
+                _landingButton.Draw(spriteBatch);
+            }
+
             var fpsText = $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}";
             var fpsX = (int)(MainGame.Viewport.Width - 5 - Art.DebugFont.MeasureString(fpsText).X);
             spriteBatch.DrawString(Art.DebugFont, fpsText, new Vector2(fpsX, 5), Color.White);
             DrawDebug(spriteBatch);
+
             spriteBatch.End();
         }
 
@@ -198,6 +215,17 @@ namespace SpaceGame.Scenes
             {
                 _isPaused = !_isPaused;
             }
+            if (Input.WasKeyPressed(Keys.L) && _player.Ship.IsAbleToLand)
+            {
+                LandOnPlanet();
+            }
+        }
+
+        private void LandOnPlanet()
+        {
+            var scene = new PauseMenuScene();
+            scene.Setup();
+            MainGame.SetScene(scene);
         }
     }
 }

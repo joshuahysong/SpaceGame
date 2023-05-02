@@ -8,7 +8,7 @@ namespace SpaceGame.Managers
 {
     public class ParticleEffectsManager
     {
-        public static int Count => _effects.Count;
+        public static int Count => _effects?.Count ?? 0;
 
         private static List<IParticleEffect> _effects = new();
         private static List<IParticleEffect> _addedEffects = new();

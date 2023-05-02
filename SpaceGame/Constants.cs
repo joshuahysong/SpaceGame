@@ -12,4 +12,15 @@
         Player = 1,
         Enemy = 2
     }
+
+    public enum TextSize
+    {
+        Small = 0,
+        Medium = 1
+    }
+
+    public class Constants
+    {
+        public const float LandingSpeed = 200f;
+    }
 }

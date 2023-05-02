@@ -9,7 +9,7 @@ namespace SpaceGame.Managers
 {
     public static class EntityManager
     {
-        public static int Count => _entities.Count;
+        public static int Count => _entities?.Count ?? 0;
 
         private static List<IEntity> _entities;
         private static List<IEntity> _addedEntities;

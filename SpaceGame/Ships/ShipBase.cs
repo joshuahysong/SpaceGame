@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.Managers;
 using SpaceGame.Projectiles;
+using SpaceGame.Scenes.Models;
 using SpaceGame.Ships.Parts;
 using SpaceGame.Weapons;
 using System;
@@ -35,6 +36,8 @@ namespace SpaceGame.Ships
             Matrix.CreateTranslation(Position.X, Position.Y, 0f);
 
         public Rectangle BoundingRectangle => CollisionManager.CalculateBoundingRectangle(_rectangle, Transform);
+
+        public bool IsAbleToLand { get; set; }
 
         protected List<WeaponBase> _weapons = new();
         protected List<Thruster1> _thrusters = new();
@@ -178,7 +181,8 @@ namespace SpaceGame.Ships
             {
                 Art.DrawLine(spriteBatch, Position, Position + Velocity, Color.Blue);
                 Art.DrawLine(spriteBatch, Position, _maxVelocity, Heading, Color.Green);
-                spriteBatch.Draw(_boundingBoxTexture, BoundingRectangle, _hasCollision ? Color.Red : Color.White);
+                var color = IsAbleToLand ? Color.Green : _hasCollision ? Color.Red : Color.White;
+                spriteBatch.Draw(_boundingBoxTexture, BoundingRectangle, color);
             }
         }
 
@@ -305,6 +309,7 @@ namespace SpaceGame.Ships
         private void HandleCollisions()
         {
             _hasCollision = false;
+            IsAbleToLand = false;
             if (CollisionManager.Collisions == null)
                 return;
 
@@ -335,6 +340,15 @@ namespace SpaceGame.Ships
                         _currentHealth -= damage;
                     }
                     projectile.IsExpired = true;
+                }
+
+                foreach (var collsion in collisions.Where(x => x is Planet))
+                {
+                    if (Velocity.LengthSquared() < Constants.LandingSpeed * Constants.LandingSpeed)
+                    {
+                        IsAbleToLand = true;
+                        return;
+                    }
                 }
             }
         }

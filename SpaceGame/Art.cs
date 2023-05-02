@@ -77,7 +77,8 @@ namespace SpaceGame
         #region Fonts
         public static SpriteFont DebugFont { get; private set; }
         public static SpriteFont HeaderFont { get; private set; }
-        public static SpriteFont UIFont { get; private set; }
+        public static SpriteFont UISmalFont { get; private set; }
+        public static SpriteFont UIMediumFont { get; private set; }
         #endregion
 
         public static Texture2D Pixel { get; set; }
@@ -116,7 +117,8 @@ namespace SpaceGame
 
             DebugFont = content.Load<SpriteFont>("Fonts/Debug");
             HeaderFont = content.Load<SpriteFont>("Fonts/Header");
-            UIFont = content.Load<SpriteFont>("Fonts/UI");
+            UISmalFont = content.Load<SpriteFont>("Fonts/UI_Small");
+            UIMediumFont = content.Load<SpriteFont>("Fonts/UI_Medium");
 
             Pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             Pixel.SetData(new[] { Color.White });
