@@ -34,8 +34,8 @@ namespace SpaceGame.Scenes
             if (_background == null)
             {
                 var random = new Random();
-                var index = random.Next(0, Art.Backgrounds.Count - 1);
-                _background = Art.Backgrounds.ToArray()[index];
+                var index = random.Next(0, Art.Backgrounds.All.Count - 1);
+                _background = Art.Backgrounds.All.ToArray()[index];
             }
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);

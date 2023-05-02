@@ -12,17 +12,17 @@ namespace SpaceGame.Ships
 {
     public class ShipBase : ICollidable
     {
-        public Vector2 Position;
-        public Vector2 Velocity;
-        public float Heading;
-        public float CurrentTurnRate;
-        public bool IsManeuvering;
-
+        public Vector2 Position { get; set; }
         public FactionType Faction { get; set; }
         public Texture2D Texture { get; set; }
         public Color[] TextureData { get; set; }
         public float Scale { get; set; }
         public bool IsExpired { get; set; }
+
+        public Vector2 Velocity;
+        public float Heading;
+        public float CurrentTurnRate;
+        public bool IsManeuvering;
 
         public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f) * Scale)
             * Matrix.CreateRotationZ(Heading)
@@ -99,7 +99,6 @@ namespace SpaceGame.Ships
         public void Update(GameTime gameTime, Matrix parentTransform)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Matrix globalTransform = LocalTransform * parentTransform;
 
             // Continue rotation until turn rate reaches zero to simulate slowing
             if (CurrentTurnRate > 0)
@@ -137,36 +136,7 @@ namespace SpaceGame.Ships
                 weapon.Update(gameTime);
             }
 
-            _hasCollision = false;
-            var collisions = CollisionManager.GetCollisions(this);
-            if (collisions.Any())
-            {
-                _hasCollision = true;
-                foreach (var collision in collisions.Where(x => x is ProjectileBase))
-                {
-                    var projectile = (ProjectileBase)collision;
-                    var damage = projectile.PerformHitEffect();
-                    if (_currentShield > 0)
-                    {
-                        if (_currentShield < damage)
-                        {
-                            damage -= _currentShield;
-                            _currentShield = 0;
-                        }
-                        else
-                        {
-                            _currentShield -= damage;
-                            damage = 0;
-                        }
-                    }
-
-                    if (damage > 0)
-                    {
-                        _currentHealth -= damage;
-                    }
-                    projectile.IsExpired = true;
-                }
-            }
+            HandleCollisions();
 
             if (_currentHealth <= 0)
             {
@@ -212,6 +182,7 @@ namespace SpaceGame.Ships
             }
         }
 
+        #region Movement
         public void FireWeapons()
         {
             _weapons.ForEach(weapon => weapon.Fire(Faction, Heading, Velocity, Position));
@@ -328,6 +299,44 @@ namespace SpaceGame.Ships
         {
             double brakingRange = _maxVelocity / 100;
             return Velocity.X < brakingRange && Velocity.X > -brakingRange && Velocity.Y < brakingRange && Velocity.Y > -brakingRange;
+        }
+        #endregion
+
+        private void HandleCollisions()
+        {
+            _hasCollision = false;
+            if (CollisionManager.Collisions == null)
+                return;
+
+            var collisions = CollisionManager.Collisions[this];
+            if (collisions.Any())
+            {
+                _hasCollision = true;
+                foreach (var collision in collisions.Where(x => x is ProjectileBase))
+                {
+                    var projectile = (ProjectileBase)collision;
+                    var damage = projectile.PerformHitEffect();
+                    if (_currentShield > 0)
+                    {
+                        if (_currentShield < damage)
+                        {
+                            damage -= _currentShield;
+                            _currentShield = 0;
+                        }
+                        else
+                        {
+                            _currentShield -= damage;
+                            damage = 0;
+                        }
+                    }
+
+                    if (damage > 0)
+                    {
+                        _currentHealth -= damage;
+                    }
+                    projectile.IsExpired = true;
+                }
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceGame.Entities;
 using SpaceGame.Managers;
+using SpaceGame.Scenes.Models;
 using SpaceGame.Ships;
 using System;
 using System.Collections.Generic;
@@ -14,11 +15,11 @@ namespace SpaceGame.Scenes
     {
         private Dictionary<string, string> _playerDebugEntries = new();
         private Dictionary<string, string> _systemDebugEntries = new();
+        private List<Planet> _planets = new();
 
         private Player _player;
         private Texture2D _starTile1;
         private Texture2D _starTile2;
-        private Texture2D _starTile3;
         private bool _isPaused;
 
         public void Setup()
@@ -27,13 +28,14 @@ namespace SpaceGame.Scenes
             CollisionManager.Initialize();
             ParticleEffectsManager.Initialize();
 
+            _planets.Add(new Planet(FactionType.None, Vector2.Zero, Art.Planets.RedPlanet));
+
             _player = new Player(new TestShip1(FactionType.Player, Vector2.Zero, 0));
             MainGame.Camera.Focus = _player;
             EntityManager.Add(_player);
 
             _starTile1 = GetStarsTexture(1000);
             _starTile2 = GetStarsTexture(1000);
-            _starTile3 = GetStarsTexture(1000);
 
             for (var i = 1; i <= 1; i++)
             {
@@ -75,14 +77,17 @@ namespace SpaceGame.Scenes
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
-            spriteBatch.Draw(Art.BlueNebula1, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White);
+            spriteBatch.Draw(Art.Backgrounds.BlueNebula1, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White);
             spriteBatch.End();
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, MainGame.Camera.Transform);
             DrawStarTiles(spriteBatch, _starTile1, Color.White, 0.8f);
             DrawStarTiles(spriteBatch, _starTile2, Color.White, 0.5f);
-            DrawStarTiles(spriteBatch, _starTile3, Color.White, 0.1f);
-            spriteBatch.Draw(Art.Planet.RedPlanet, Vector2.Zero, Color.White);
+            DrawStarTiles(spriteBatch, Art.Backgrounds.Starfield1, Color.White, 0.1f);
+            foreach (var planet in _planets)
+            {
+                planet.Draw(spriteBatch, Matrix.Identity);
+            }
             EntityManager.Draw(spriteBatch, Matrix.Identity);
             ParticleEffectsManager.Draw(spriteBatch, Matrix.Identity);
             spriteBatch.End();

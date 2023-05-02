@@ -10,45 +10,49 @@ namespace SpaceGame
     public static class Art
     {
         #region Backgrounds
-        public static Texture2D BlueNebula1 { get; set; }
-        public static Texture2D BlueNebula2 { get; set; }
-        public static Texture2D BlueNebula3 { get; set; }
-        public static Texture2D BlueNebula4 { get; set; }
-        public static Texture2D BlueNebula5 { get; set; }
-        public static Texture2D BlueNebula6 { get; set; }
-        public static Texture2D BlueNebula7 { get; set; }
-        public static Texture2D GreenNebula1 { get; set; }
-        public static Texture2D GreenNebula2 { get; set; }
-        public static Texture2D GreenNebula3 { get; set; }
-        public static Texture2D GreenNebula4 { get; set; }
-        public static Texture2D PurpleNebula1 { get; set; }
-        public static Texture2D PurpleNebula2 { get; set; }
-        public static Texture2D PurpleNebula3 { get; set; }
-        public static Texture2D PurpleNebula4 { get; set; }
-        public static Texture2D PurpleNebula5 { get; set; }
-        public static List<Texture2D> Backgrounds => new()
+        public static class Backgrounds
         {
-            BlueNebula1,
-            BlueNebula2,
-            BlueNebula3,
-            BlueNebula4,
-            BlueNebula5,
-            BlueNebula6,
-            BlueNebula7,
-            GreenNebula1,
-            GreenNebula2,
-            GreenNebula3,
-            GreenNebula4,
-            PurpleNebula1,
-            PurpleNebula2,
-            PurpleNebula3,
-            PurpleNebula4,
-            PurpleNebula5
-        };
+            public static Texture2D BlueNebula1 { get; set; }
+            public static Texture2D BlueNebula2 { get; set; }
+            public static Texture2D BlueNebula3 { get; set; }
+            public static Texture2D BlueNebula4 { get; set; }
+            public static Texture2D BlueNebula5 { get; set; }
+            public static Texture2D BlueNebula6 { get; set; }
+            public static Texture2D BlueNebula7 { get; set; }
+            public static Texture2D GreenNebula1 { get; set; }
+            public static Texture2D GreenNebula2 { get; set; }
+            public static Texture2D GreenNebula3 { get; set; }
+            public static Texture2D GreenNebula4 { get; set; }
+            public static Texture2D PurpleNebula1 { get; set; }
+            public static Texture2D PurpleNebula2 { get; set; }
+            public static Texture2D PurpleNebula3 { get; set; }
+            public static Texture2D PurpleNebula4 { get; set; }
+            public static Texture2D PurpleNebula5 { get; set; }
+            public static Texture2D Starfield1 { get; set; }
+            public static List<Texture2D> All => new()
+            {
+                BlueNebula1,
+                BlueNebula2,
+                BlueNebula3,
+                BlueNebula4,
+                BlueNebula5,
+                BlueNebula6,
+                BlueNebula7,
+                GreenNebula1,
+                GreenNebula2,
+                GreenNebula3,
+                GreenNebula4,
+                PurpleNebula1,
+                PurpleNebula2,
+                PurpleNebula3,
+                PurpleNebula4,
+                PurpleNebula5
+            };
+        }
         #endregion
 
         #region Planets
-        public static class Planet
+        public static class Planets
         {
             public static Texture2D Cloudy4 { get; set; }
             public static Texture2D RedPlanet { get; set; }
@@ -80,25 +84,26 @@ namespace SpaceGame
 
         public static void Load(ContentManager content)
         {
-            BlueNebula1 = content.Load<Texture2D>("Backgrounds/blue-nebula-1");
-            BlueNebula2 = content.Load<Texture2D>("Backgrounds/blue-nebula-2");
-            BlueNebula3 = content.Load<Texture2D>("Backgrounds/blue-nebula-3");
-            BlueNebula4 = content.Load<Texture2D>("Backgrounds/blue-nebula-4");
-            BlueNebula5 = content.Load<Texture2D>("Backgrounds/blue-nebula-5");
-            BlueNebula6 = content.Load<Texture2D>("Backgrounds/blue-nebula-6");
-            BlueNebula7 = content.Load<Texture2D>("Backgrounds/blue-nebula-7");
-            GreenNebula1 = content.Load<Texture2D>("Backgrounds/green-nebula-1");
-            GreenNebula2 = content.Load<Texture2D>("Backgrounds/green-nebula-2");
-            GreenNebula3 = content.Load<Texture2D>("Backgrounds/green-nebula-3");
-            GreenNebula4 = content.Load<Texture2D>("Backgrounds/green-nebula-4");
-            PurpleNebula1 = content.Load<Texture2D>("Backgrounds/purple-nebula-1");
-            PurpleNebula2 = content.Load<Texture2D>("Backgrounds/purple-nebula-2");
-            PurpleNebula3 = content.Load<Texture2D>("Backgrounds/purple-nebula-3");
-            PurpleNebula4 = content.Load<Texture2D>("Backgrounds/purple-nebula-4");
-            PurpleNebula5 = content.Load<Texture2D>("Backgrounds/purple-nebula-5");
+            Backgrounds.BlueNebula1 = content.Load<Texture2D>("Backgrounds/blue-nebula-1");
+            Backgrounds.BlueNebula2 = content.Load<Texture2D>("Backgrounds/blue-nebula-2");
+            Backgrounds.BlueNebula3 = content.Load<Texture2D>("Backgrounds/blue-nebula-3");
+            Backgrounds.BlueNebula4 = content.Load<Texture2D>("Backgrounds/blue-nebula-4");
+            Backgrounds.BlueNebula5 = content.Load<Texture2D>("Backgrounds/blue-nebula-5");
+            Backgrounds.BlueNebula6 = content.Load<Texture2D>("Backgrounds/blue-nebula-6");
+            Backgrounds.BlueNebula7 = content.Load<Texture2D>("Backgrounds/blue-nebula-7");
+            Backgrounds.GreenNebula1 = content.Load<Texture2D>("Backgrounds/green-nebula-1");
+            Backgrounds.GreenNebula2 = content.Load<Texture2D>("Backgrounds/green-nebula-2");
+            Backgrounds.GreenNebula3 = content.Load<Texture2D>("Backgrounds/green-nebula-3");
+            Backgrounds.GreenNebula4 = content.Load<Texture2D>("Backgrounds/green-nebula-4");
+            Backgrounds.PurpleNebula1 = content.Load<Texture2D>("Backgrounds/purple-nebula-1");
+            Backgrounds.PurpleNebula2 = content.Load<Texture2D>("Backgrounds/purple-nebula-2");
+            Backgrounds.PurpleNebula3 = content.Load<Texture2D>("Backgrounds/purple-nebula-3");
+            Backgrounds.PurpleNebula4 = content.Load<Texture2D>("Backgrounds/purple-nebula-4");
+            Backgrounds.PurpleNebula5 = content.Load<Texture2D>("Backgrounds/purple-nebula-5");
+            Backgrounds.Starfield1 = content.Load<Texture2D>("Backgrounds/starfield-1");
 
-            Planet.Cloudy4 = content.Load<Texture2D>("Planets/cloudy-4");
-            Planet.RedPlanet = content.Load<Texture2D>("Planets/red-planet");
+            Planets.Cloudy4 = content.Load<Texture2D>("Planets/cloudy-4");
+            Planets.RedPlanet = content.Load<Texture2D>("Planets/red-planet");
 
             TestShip1 = content.Load<Texture2D>("Ships/TestShip1");
             TestShip2 = content.Load<Texture2D>("Ships/TestShip2");
