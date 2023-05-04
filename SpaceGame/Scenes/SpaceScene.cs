@@ -50,7 +50,7 @@ namespace SpaceGame.Scenes
                 EntityManager.Add(enemy);
             }
 
-            var buttonTexture = Art.CreateRectangleTexture(250, 40, Color.Transparent, Color.White);
+            var buttonTexture = Art.CreateRectangleTexture(250, 40, Color.Black, Color.White);
             _landingButton = new Button(buttonTexture, "Land", TextSize.Small, Vector2.Zero + new Vector2(5, 5), 100, 20, Color.White, LandOnPlanet);
 
             //var dummy = new Dummy(new TestShip2(FactionType.Enemy, new Vector2(200, 0), (float)(Math.PI / 2f)));
@@ -67,6 +67,11 @@ namespace SpaceGame.Scenes
             if (_isPaused)
                 return;
 
+
+            if (_player.Ship.IsExpired)
+            {
+                MainGame.SetScene(new GameOverScene());
+            }
 
             if (_isLanded)
             {

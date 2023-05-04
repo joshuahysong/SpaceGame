@@ -13,7 +13,7 @@ namespace SpaceGame.Scenes
         public PauseMenuScene()
         {
             var buttonPosition = MainGame.ScreenCenter - new Vector2(125, 80);
-            var buttonTexture = Art.CreateRectangleTexture(250, 40, Color.Transparent, Color.White);
+            var buttonTexture = Art.CreateRectangleTexture(250, 40, Color.Black, Color.White);
             _buttons.Add(new Button(buttonTexture, "Resume", TextSize.Large, buttonPosition, 250, 40, Color.White, Resume));
 
             buttonPosition = MainGame.ScreenCenter - new Vector2(125, 20);

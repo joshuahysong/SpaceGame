@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SpaceGame.Managers;
 using SpaceGame.UI;
 using System.Collections.Generic;
 
@@ -10,10 +9,10 @@ namespace SpaceGame.Scenes
     {
         private List<Button> _buttons = new();
 
-        public void Setup()
+        public GameOverScene()
         {
             var buttonPosition = MainGame.ScreenCenter - new Vector2(125, 80);
-            var buttonTexture = Art.CreateRectangleTexture(250, 40, Color.Transparent, Color.White);
+            var buttonTexture = Art.CreateRectangleTexture(250, 40, Color.Black, Color.White);
             _buttons.Add(new Button(buttonTexture, "New Game", TextSize.Large, buttonPosition, 250, 40, Color.White, StartNewGame));
 
             buttonPosition = MainGame.ScreenCenter - new Vector2(125, 20);
