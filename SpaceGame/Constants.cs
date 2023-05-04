@@ -8,15 +8,16 @@
 
     public enum FactionType
     {
-        None = 0,
-        Player = 1,
-        Enemy = 2
+        None,
+        Player,
+        Enemy
     }
 
     public enum TextSize
     {
-        Small = 0,
-        Medium = 1
+        Small,
+        Medium,
+        Large
     }
 
     public class Constants

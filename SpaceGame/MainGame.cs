@@ -45,9 +45,6 @@ namespace SpaceGame
         protected override void Initialize()
         {
             Camera = new Camera();
-
-            _currentScene = new MainMenuScene();
-
             base.Initialize();
         }
 
@@ -55,6 +52,7 @@ namespace SpaceGame
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             Art.Load(Content);
+            _currentScene = new MainMenuScene();
         }
 
         protected override void Update(GameTime gameTime)

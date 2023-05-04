@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceGame.Entities;
 using SpaceGame.Managers;
+using SpaceGame.Scenes.Components;
 using SpaceGame.Scenes.Models;
 using SpaceGame.Ships;
 using SpaceGame.UI;
@@ -23,6 +24,8 @@ namespace SpaceGame.Scenes
         private Texture2D _starTile2;
         private bool _isPaused;
         private Button _landingButton;
+        private LandingScene _landingScene;
+        private bool _isLanded;
 
         public SpaceScene()
         {
@@ -64,11 +67,21 @@ namespace SpaceGame.Scenes
             if (_isPaused)
                 return;
 
+
+            if (_isLanded)
+            {
+                _landingScene.Update(gameTime);
+                if (_landingScene.IsExiting)
+                    _isLanded = false;
+                return;
+            }
+
             EntityManager.Update(gameTime, Matrix.Identity);
             CollisionManager.Update();
             ParticleEffectsManager.Update(gameTime, Matrix.Identity);
 
-            _landingButton.Update();
+            if (_player.Ship.IsAbleToLand)
+                _landingButton.Update();
 
             if (MainGame.IsDebugging)
             {
@@ -107,19 +120,18 @@ namespace SpaceGame.Scenes
             ParticleEffectsManager.Draw(spriteBatch, Matrix.Identity);
             spriteBatch.End();
 
+            if (_isLanded)
+                _landingScene.Draw(gameTime, spriteBatch);
+
             // Locked to screen
             spriteBatch.Begin(SpriteSortMode.Deferred);
-
             if (_player.Ship.IsAbleToLand)
-            {
                 _landingButton.Draw(spriteBatch);
-            }
 
             var fpsText = $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}";
             var fpsX = (int)(MainGame.Viewport.Width - 5 - Art.DebugFont.MeasureString(fpsText).X);
             spriteBatch.DrawString(Art.DebugFont, fpsText, new Vector2(fpsX, 5), Color.White);
             DrawDebug(spriteBatch);
-
             spriteBatch.End();
         }
 
@@ -227,7 +239,8 @@ namespace SpaceGame.Scenes
 
         private void LandOnPlanet()
         {
-            MainGame.SetScene(new PauseMenuScene());
+            _landingScene = new LandingScene();
+            _isLanded = true;
         }
     }
 }

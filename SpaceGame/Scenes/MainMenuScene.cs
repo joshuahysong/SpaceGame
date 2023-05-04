@@ -15,10 +15,10 @@ namespace SpaceGame.Scenes
         {
             var buttonPosition = MainGame.ScreenCenter - new Vector2(100, 50);
             var buttonTexture = Art.CreateRectangleTexture(200, 40, Color.Transparent, Color.White);
-            _buttons.Add(new Button(buttonTexture, "New Game", TextSize.Medium, buttonPosition, 200, 40, Color.White, StartNewGame));
+            _buttons.Add(new Button(buttonTexture, "New Game", TextSize.Large, buttonPosition, 200, 40, Color.White, StartNewGame));
 
             buttonPosition = MainGame.ScreenCenter - new Vector2(100, -30);
-            _buttons.Add(new Button(buttonTexture, "Quit", TextSize.Medium, buttonPosition, 200, 40, Color.White, Quit));
+            _buttons.Add(new Button(buttonTexture, "Quit", TextSize.Large, buttonPosition, 200, 40, Color.White, Quit));
         }
 
         public void Update(GameTime gameTime)
