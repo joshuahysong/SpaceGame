@@ -47,7 +47,6 @@ namespace SpaceGame
             Camera = new Camera();
 
             _currentScene = new MainMenuScene();
-            _currentScene.Setup();
 
             base.Initialize();
         }
@@ -74,11 +73,6 @@ namespace SpaceGame
 
             if (IsDebugging)
             {
-                _systemDebugEntries["Camera Focus"] = $"{Camera.Focus?.GetType().Name}";
-                _systemDebugEntries["Camera Zoom"] = $"{Math.Round(Camera.Scale, 2)}";
-                _systemDebugEntries["Entities"] = $"{EntityManager.Count}";
-                _systemDebugEntries["Collidables"] = $"{CollisionManager.Count}";
-                _systemDebugEntries["Effects"] = $"{ParticleEffectsManager.Count}";
                 _systemDebugEntries["Mouse Screen Position"] = $"{Input.ScreenMousePosition.X}, {Input.ScreenMousePosition.Y}";
             }
 

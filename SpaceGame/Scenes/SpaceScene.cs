@@ -24,7 +24,7 @@ namespace SpaceGame.Scenes
         private bool _isPaused;
         private Button _landingButton;
 
-        public void Setup()
+        public SpaceScene()
         {
             EntityManager.Initialize();
             CollisionManager.Initialize();
@@ -48,7 +48,7 @@ namespace SpaceGame.Scenes
             }
 
             var buttonTexture = Art.CreateRectangleTexture(250, 40, Color.Transparent, Color.White);
-            _landingButton = new Button(buttonTexture, "Land", TextSize.Small, Vector2.Zero + new Vector2(5,5), 100, 20, Color.White, LandOnPlanet);
+            _landingButton = new Button(buttonTexture, "Land", TextSize.Small, Vector2.Zero + new Vector2(5, 5), 100, 20, Color.White, LandOnPlanet);
 
             //var dummy = new Dummy(new TestShip2(FactionType.Enemy, new Vector2(200, 0), (float)(Math.PI / 2f)));
             //EntityManager.Add(dummy);
@@ -77,7 +77,13 @@ namespace SpaceGame.Scenes
                 _playerDebugEntries["Heading"] = $"{Math.Round(_player.Ship.Heading, 2)}";
                 _playerDebugEntries["Velocity Heading"] = $"{Math.Round(_player.Ship.Velocity.ToAngle(), 2)}";
                 _playerDebugEntries["Current Turn Rate"] = $"{Math.Round(_player.Ship.CurrentTurnRate, 2)}";
+
                 _systemDebugEntries["Mouse World Position"] = $"{Math.Round(Input.WorldMousePosition.X)}, {Math.Round(Input.WorldMousePosition.Y)}";
+                _systemDebugEntries["Camera Focus"] = $"{MainGame.Camera.Focus?.GetType().Name}";
+                _systemDebugEntries["Camera Zoom"] = $"{Math.Round(MainGame.Camera.Scale, 2)}";
+                _systemDebugEntries["Entities"] = $"{EntityManager.Count}";
+                _systemDebugEntries["Collidables"] = $"{CollisionManager.Count}";
+                _systemDebugEntries["Effects"] = $"{ParticleEffectsManager.Count}";
             }
         }
 
@@ -134,7 +140,7 @@ namespace SpaceGame.Scenes
 
                 if (_systemDebugEntries.Any())
                 {
-                    yTextOffset = 110;
+                    yTextOffset = 35;
                     foreach (KeyValuePair<string, string> debugEntry in _systemDebugEntries)
                     {
                         var text = $"{debugEntry.Key}: {debugEntry.Value}";
@@ -207,9 +213,7 @@ namespace SpaceGame.Scenes
         {
             if (Input.WasButtonPressed(Buttons.Back) || Input.WasKeyPressed(Keys.Escape))
             {
-                var scene = new PauseMenuScene();
-                scene.Setup();
-                MainGame.SetScene(scene);
+                MainGame.SetScene(new PauseMenuScene());
             }
             if (Input.WasKeyPressed(Keys.Pause))
             {
@@ -223,9 +227,7 @@ namespace SpaceGame.Scenes
 
         private void LandOnPlanet()
         {
-            var scene = new PauseMenuScene();
-            scene.Setup();
-            MainGame.SetScene(scene);
+            MainGame.SetScene(new PauseMenuScene());
         }
     }
 }

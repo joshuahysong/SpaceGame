@@ -50,20 +50,12 @@ namespace SpaceGame.Scenes
 
         private void StartNewGame()
         {
-            var scene = new SpaceScene();
-            scene.Setup();
-            MainGame.SetScene(scene);
+            MainGame.SetScene(new SpaceScene());
         }
 
         private void ReturnToMainMenu()
         {
-            EntityManager.Initialize();
-            CollisionManager.Initialize();
-            ParticleEffectsManager.Initialize();
-
-            var scene = new MainMenuScene();
-            scene.Setup();
-            MainGame.SetScene(scene);
+            MainGame.SetScene(new MainMenuScene());
         }
 
         private void Quit()

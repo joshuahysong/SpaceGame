@@ -11,7 +11,7 @@ namespace SpaceGame.Scenes
         private List<Button> _buttons = new();
         private Texture2D _background;
 
-        public void Setup()
+        public MainMenuScene()
         {
             var buttonPosition = MainGame.ScreenCenter - new Vector2(100, 50);
             var buttonTexture = Art.CreateRectangleTexture(200, 40, Color.Transparent, Color.White);
@@ -49,9 +49,7 @@ namespace SpaceGame.Scenes
 
         private void StartNewGame()
         {
-            var scene = new SpaceScene();
-            scene.Setup();
-            MainGame.SetScene(scene);
+            MainGame.SetScene(new SpaceScene());
         }
 
         private void Quit()
