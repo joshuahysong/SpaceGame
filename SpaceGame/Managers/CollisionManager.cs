@@ -8,7 +8,7 @@ namespace SpaceGame.Managers
 {
     public static class CollisionManager
     {
-        public static Dictionary<ICollidable, List<ICollidable>> Collisions { get; private set; }
+        public static Dictionary<Guid, List<ICollidable>> Collisions { get; private set; }
 
         public static int Count => _entities?.Count ?? 0;
 
@@ -57,7 +57,7 @@ namespace SpaceGame.Managers
 
         public static void GetCollisions()
         {
-            var collisions = new Dictionary<ICollidable, List<ICollidable>>();
+            var collisions = new Dictionary<Guid, List<ICollidable>>();
             var entitiesToCheck = _entities.Where(x => x is ShipBase).ToList();
             foreach (var entityToCheck in entitiesToCheck)
             {
@@ -72,7 +72,7 @@ namespace SpaceGame.Managers
                         }
                     }
                 }
-                collisions[entityToCheck] = entityCollisions;
+                collisions[entityToCheck.Id] = entityCollisions;
             }
 
             Collisions = collisions;

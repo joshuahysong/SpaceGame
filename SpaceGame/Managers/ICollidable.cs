@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace SpaceGame.Managers
 {
     public interface ICollidable
     {
+        public Guid Id { get; }
         public FactionType Faction { get; }
         public Texture2D Texture { get; }
         public Color[] TextureData { get; }

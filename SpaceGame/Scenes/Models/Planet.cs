@@ -7,6 +7,7 @@ namespace SpaceGame.Scenes.Models
 {
     public class Planet : ICollidable
     {
+        public Guid Id { get; set; }
         public FactionType Faction { get; set; }
         public Vector2 Position { get; set; }
         public bool IsExpired { get; set; }
@@ -30,6 +31,7 @@ namespace SpaceGame.Scenes.Models
             Texture2D texture,
             float scale = 1f)
         {
+            Id = Guid.NewGuid();
             Faction = faction;
             Position = position;
             Texture = texture;

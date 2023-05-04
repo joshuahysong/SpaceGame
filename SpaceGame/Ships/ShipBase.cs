@@ -13,6 +13,7 @@ namespace SpaceGame.Ships
 {
     public class ShipBase : ICollidable
     {
+        public Guid Id { get; set; }
         public Vector2 Position { get; set; }
         public FactionType Faction { get; set; }
         public Texture2D Texture { get; set; }
@@ -75,6 +76,7 @@ namespace SpaceGame.Ships
             float scale = ScaleType.Full,
             bool showHealthBars = true)
         {
+            Id = Guid.NewGuid();
             Faction = faction;
             Position = spawnPosition;
             Heading = spawnHeading;
@@ -313,8 +315,7 @@ namespace SpaceGame.Ships
             if (CollisionManager.Collisions == null)
                 return;
 
-            var collisions = CollisionManager.Collisions[this];
-            if (collisions.Any())
+            if (CollisionManager.Collisions.TryGetValue(Id, out var collisions) && collisions.Any())
             {
                 _hasCollision = true;
                 foreach (var collision in collisions.Where(x => x is ProjectileBase))

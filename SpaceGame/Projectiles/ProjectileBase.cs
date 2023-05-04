@@ -7,6 +7,7 @@ namespace SpaceGame.Projectiles
 {
     public abstract class ProjectileBase : IEntity, ICollidable
     {
+        public Guid Id { get; set; }
         public FactionType Faction { get; set; }
         public Vector2 Position { get; set; }
         public bool IsExpired { get; set; }
@@ -39,6 +40,7 @@ namespace SpaceGame.Projectiles
             long timeToLiveInSeconds,
             float scale = 1f)
         {
+            Id = Guid.NewGuid();
             Faction = faction;
             Position = position;
             Texture = texture;
