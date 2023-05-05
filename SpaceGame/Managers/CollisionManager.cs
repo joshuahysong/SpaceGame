@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SpaceGame.Common;
 using SpaceGame.Ships;
 using System;
 using System.Collections.Generic;
@@ -10,23 +11,23 @@ namespace SpaceGame.Managers
     {
         public static Dictionary<Guid, List<ICollidable>> Collisions { get; private set; }
 
-        public static int Count => _entities?.Count ?? 0;
+        public static int Count => _collidables?.Count ?? 0;
 
-        private static List<ICollidable> _entities = new();
+        private static List<ICollidable> _collidables = new();
 
         public static void Initialize()
         {
-            _entities = new List<ICollidable>();
+            _collidables = new List<ICollidable>();
         }
 
-        public static void Add(ICollidable entity)
+        public static void Add(ICollidable collidable)
         {
-            _entities.Add(entity);
+            _collidables.Add(collidable);
         }
 
         public static void Update()
         {
-            _entities = _entities.Where(x => !x.IsExpired).ToList();
+            _collidables = _collidables.Where(x => !x.IsExpired).ToList();
             GetCollisions();
         }
 
@@ -58,21 +59,21 @@ namespace SpaceGame.Managers
         public static void GetCollisions()
         {
             var collisions = new Dictionary<Guid, List<ICollidable>>();
-            var entitiesToCheck = _entities.Where(x => x is ShipBase).ToList();
-            foreach (var entityToCheck in entitiesToCheck)
+            var collidablesToCheck = _collidables.Where(x => x is ShipBase).ToList();
+            foreach (var collidableToCheck in collidablesToCheck)
             {
                 var entityCollisions = new List<ICollidable>();
-                foreach (var entity in _entities.Where(x => x != entityToCheck && entityToCheck.Faction != x.Faction))
+                foreach (var entity in _collidables.Where(x => x != collidableToCheck && collidableToCheck.Faction != x.Faction))
                 {
-                    if (entityToCheck.BoundingRectangle.Intersects(entity.BoundingRectangle))
+                    if (collidableToCheck.BoundingRectangle.Intersects(entity.BoundingRectangle))
                     {
-                        if (HasIntersectingPixels(entityToCheck, entity))
+                        if (HasIntersectingPixels(collidableToCheck, entity))
                         {
                             entityCollisions.Add(entity);
                         }
                     }
                 }
-                collisions[entityToCheck.Id] = entityCollisions;
+                collisions[collidableToCheck.Id] = entityCollisions;
             }
 
             Collisions = collisions;

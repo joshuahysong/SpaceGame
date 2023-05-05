@@ -5,7 +5,7 @@ using SpaceGame.Entities;
 using SpaceGame.Managers;
 using SpaceGame.Scenes.Components;
 using SpaceGame.Ships;
-using SpaceGame.SolarSystems.Models;
+using SpaceGame.SolarSystems;
 using SpaceGame.UI;
 using System;
 using System.Collections.Generic;
@@ -17,15 +17,15 @@ namespace SpaceGame.Scenes
     {
         private Dictionary<string, string> _playerDebugEntries = new();
         private Dictionary<string, string> _systemDebugEntries = new();
-        private List<Planet> _planets = new();
 
         private Player _player;
         private Texture2D _starTile1;
         private Texture2D _starTile2;
-        private bool _isPaused;
         private Button _landingButton;
+        private ISolarSystem _currentSolarSystem;
         private LandingScene _landingScene;
         private bool _isLanded;
+        private bool _isPaused;
 
         public SpaceScene()
         {
@@ -33,14 +33,14 @@ namespace SpaceGame.Scenes
             CollisionManager.Initialize();
             ParticleEffectsManager.Initialize();
 
-            _planets.Add(new Planet(FactionType.None, Vector2.Zero, Art.Planets.RedPlanet));
-
             _player = new Player(new TestShip1(FactionType.Player, Vector2.Zero, 0));
             MainGame.Camera.Focus = _player;
             EntityManager.Add(_player);
 
             _starTile1 = GetStarsTexture(1000);
             _starTile2 = GetStarsTexture(1000);
+
+            _currentSolarSystem = new TestSystem1();
 
             for (var i = 1; i <= 1; i++)
             {
@@ -52,9 +52,6 @@ namespace SpaceGame.Scenes
 
             var buttonTexture = Art.CreateRectangleTexture(250, 40, Color.Black, Color.White);
             _landingButton = new Button(buttonTexture, "Land", TextSize.Small, Vector2.Zero + new Vector2(5, 5), 100, 20, Color.White, LandOnPlanet);
-
-            //var dummy = new Dummy(new TestShip2(FactionType.Enemy, new Vector2(200, 0), (float)(Math.PI / 2f)));
-            //EntityManager.Add(dummy);
         }
 
         public void Update(GameTime gameTime)
@@ -85,7 +82,7 @@ namespace SpaceGame.Scenes
             CollisionManager.Update();
             ParticleEffectsManager.Update(gameTime, Matrix.Identity);
 
-            if (_player.Ship.IsAbleToLand)
+            if (_player.Ship.DockableLocation != null)
                 _landingButton.Update();
 
             if (MainGame.IsDebugging)
@@ -117,10 +114,7 @@ namespace SpaceGame.Scenes
             DrawStarTiles(spriteBatch, _starTile1, Color.White, 0.8f);
             DrawStarTiles(spriteBatch, _starTile2, Color.White, 0.5f);
             DrawStarTiles(spriteBatch, Art.Backgrounds.Starfield1, Color.White, 0.1f);
-            foreach (var planet in _planets)
-            {
-                planet.Draw(spriteBatch, Matrix.Identity);
-            }
+            _currentSolarSystem.Draw(gameTime, spriteBatch);
             EntityManager.Draw(spriteBatch, Matrix.Identity);
             ParticleEffectsManager.Draw(spriteBatch, Matrix.Identity);
             spriteBatch.End();
@@ -130,7 +124,7 @@ namespace SpaceGame.Scenes
 
             // Locked to screen
             spriteBatch.Begin(SpriteSortMode.Deferred);
-            if (_player.Ship.IsAbleToLand)
+            if (_player.Ship.DockableLocation != null)
                 _landingButton.Draw(spriteBatch);
 
             var fpsText = $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}";
@@ -236,7 +230,7 @@ namespace SpaceGame.Scenes
             {
                 _isPaused = !_isPaused;
             }
-            if (Input.WasKeyPressed(Keys.L) && _player.Ship.IsAbleToLand)
+            if (Input.WasKeyPressed(Keys.L) && _player.Ship.DockableLocation != null)
             {
                 LandOnPlanet();
             }
@@ -244,7 +238,8 @@ namespace SpaceGame.Scenes
 
         private void LandOnPlanet()
         {
-            _landingScene = new LandingScene();
+            var dockable = _player.Ship.DockableLocation;
+            _landingScene = new LandingScene(dockable.Description);
             _isLanded = true;
         }
     }

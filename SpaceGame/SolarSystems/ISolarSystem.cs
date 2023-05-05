@@ -7,9 +7,9 @@ namespace SpaceGame.SolarSystems
 {
     public interface ISolarSystem
     {
-        public string Name { get; set; }
-        public FactionType Faction { get; set; }
-        public List<Planet> Planets { get; set; }
+        public string Name { get; }
+        public FactionType Faction { get; }
+        public List<Planet> Planets { get; }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch);
     }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SpaceGame.Scenes;
-using System;
+using SpaceGame.Common;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,8 +10,8 @@ namespace SpaceGame.Managers
     {
         public static int Count => _entities?.Count ?? 0;
 
-        private static List<IEntity> _entities;
-        private static List<IEntity> _addedEntities;
+        private static List<IEntity> _entities = new();
+        private static List<IEntity> _addedEntities = new();
         private static bool _isUpdating;
 
         public static void Initialize()
