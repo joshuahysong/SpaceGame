@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.Managers;
 using System;
 
-namespace SpaceGame.Scenes.Models
+namespace SpaceGame.SolarSystems.Models
 {
     public class Planet : ICollidable
     {

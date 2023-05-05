@@ -2,8 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.Managers;
 using SpaceGame.Projectiles;
-using SpaceGame.Scenes.Models;
 using SpaceGame.Ships.Parts;
+using SpaceGame.SolarSystems.Models;
 using SpaceGame.Weapons;
 using System;
 using System.Collections.Generic;
