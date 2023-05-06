@@ -75,11 +75,18 @@ namespace SpaceGame
         #endregion
 
         #region Fonts
-        public static SpriteFont DebugFont { get; private set; }
-        public static SpriteFont HeaderFont { get; private set; }
-        public static SpriteFont UISmalFont { get; private set; }
-        public static SpriteFont UIMediumFont { get; private set; }
-        public static SpriteFont UILargeFont { get; private set; }
+        public static SpriteFont DebugFont { get; set; }
+        public static SpriteFont HeaderFont { get; set; }
+        public static SpriteFont UISmalFont { get; set; }
+        public static SpriteFont UIMediumFont { get; set; }
+        public static SpriteFont UILargeFont { get; set; }
+        #endregion
+
+        #region Map
+        public static class Map
+        {
+            public static Texture2D SolarSystem { get; set; }
+        }
         #endregion
 
         public static Texture2D Pixel { get; set; }
@@ -121,6 +128,8 @@ namespace SpaceGame
             UISmalFont = content.Load<SpriteFont>("Fonts/UI_Small");
             UIMediumFont = content.Load<SpriteFont>("Fonts/UI_Medium");
             UILargeFont = content.Load<SpriteFont>("Fonts/UI_Large");
+
+            Map.SolarSystem = content.Load<Texture2D>("Map/solar-system");
 
             Pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             Pixel.SetData(new[] { Color.White });

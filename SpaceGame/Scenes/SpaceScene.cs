@@ -234,6 +234,10 @@ namespace SpaceGame.Scenes
             {
                 LandOnPlanet();
             }
+            if (Input.WasKeyPressed(Keys.M))
+            {
+                MainGame.SetScene(new UniverseMapScene());
+            }
         }
 
         private void LandOnPlanet()

@@ -9,12 +9,16 @@ namespace SpaceGame.SolarSystems
     {
         public string Name { get; }
         public FactionType Faction { get; }
+        public Vector2 MapLocation { get; }
+        public List<string> NeighborsByName { get; }
         public List<Planet> Planets { get; }
 
         public TestSystem1()
         {
             Name = "Test System 1";
             Faction = FactionType.None;
+            MapLocation = new Vector2(50, 50);
+            NeighborsByName = new List<string> { "Test System 2" };
             Planets = new List<Planet> { CreatePlanet1() };
         }
 
