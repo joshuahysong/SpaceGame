@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using SpaceGame.Managers;
+using SpaceGame.Common;
 using SpaceGame.Ships;
 
 namespace SpaceGame.Entities
@@ -12,7 +12,7 @@ namespace SpaceGame.Entities
         public bool IsExpired => Ship?.IsExpired ?? false;
         public Vector2 WorldPosition => Ship == null ? Vector2.Zero : Ship.Position;
 
-        public ShipBase Ship { get; set; }
+        public ShipBase Ship { get; }
 
         public Player(ShipBase ship)
         {

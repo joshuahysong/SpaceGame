@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SpaceGame.Managers;
+using SpaceGame.Common;
 using SpaceGame.Ships;
 using System.Collections.Generic;
 
@@ -11,15 +11,16 @@ namespace SpaceGame.Entities
         public Vector2 Position => Ship?.Position ?? Vector2.Zero;
         public bool IsExpired => Ship?.IsExpired ?? false;
 
-        public ShipBase Ship { get; set; }
-        public ShipBase Target { get; set; }
+        public ShipBase Ship { get; }
 
-        private readonly List<IEnumerator<int>> _behaviours = new();
+        private List<IEnumerator<int>> _behaviours;
+        private ShipBase _target;
 
         public Enemy(ShipBase ship, ShipBase target)
         {
             Ship = ship;
-            Target = target;
+            _target = target;
+            _behaviours = new();
             AddBehavior(HuntPlayer());
         }
 
@@ -52,9 +53,9 @@ namespace SpaceGame.Entities
 
         private IEnumerable<int> HuntPlayer()
         {
-            while (true && Target != null)
+            while (true && _target != null)
             {
-                float distanceToTarget = (Ship.Position - Target.Position).Length();
+                float distanceToTarget = (Ship.Position - _target.Position).Length();
                 double degreesToTarget = GetDegreesToTarget();
                 if (distanceToTarget > 100)
                 {
@@ -82,7 +83,7 @@ namespace SpaceGame.Entities
 
         private double GetDegreesToTarget()
         {
-            float angleToTarget = (Ship.Position - Target.Position).ToAngle();
+            float angleToTarget = (Ship.Position - _target.Position).ToAngle();
             double degreesToTarget = angleToTarget.ToDegrees();
             double headingDegrees = Ship.Heading.ToDegrees();
             return headingDegrees < degreesToTarget ? headingDegrees + 360 - degreesToTarget : headingDegrees - degreesToTarget;

@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace SpaceGame.Managers
+namespace SpaceGame.Common
 {
     public interface ICollidable
     {

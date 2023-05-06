@@ -6,17 +6,16 @@ namespace SpaceGame.UI
 {
     public class Button
     {
-        public Texture2D Texture { get; set; }
-        public string Label { get; set; }
-        public Vector2 Position { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public Action Callback { get; set; }
-
+        private Texture2D _texture;
+        private string _label;
+        private Vector2 _position;
+        private int _width;
+        private int _height;
+        private Action _callback;
         private TextSize _textSize;
         private Color _assignedColor;
-        private Color _color;
         private SpriteFont _font;
+        private Color _color;
 
         public Button(Texture2D texture,
             string label,
@@ -27,12 +26,12 @@ namespace SpaceGame.UI
             Color color,
             Action callback)
         {
-            Texture = texture;
-            Label = label;
-            Position = position;
-            Width = width;
-            Height = height;
-            Callback = callback;
+            _texture = texture;
+            _label = label;
+            _position = position;
+            _width = width;
+            _height = height;
+            _callback = callback;
             _textSize = textSize;
             _assignedColor = color;
             _font = _textSize == TextSize.Small
@@ -50,7 +49,7 @@ namespace SpaceGame.UI
                 _color = _assignedColor;
                 if (Input.WasLeftMouseButtonClicked())
                 {
-                    Callback.Invoke();
+                    _callback.Invoke();
                 }
             }
             else
@@ -61,19 +60,19 @@ namespace SpaceGame.UI
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Texture, new Rectangle((int)Position.X, (int)Position.Y, Width, Height), _color);
-            var labelSize = _font.MeasureString(Label);
-            var textX = (Width / 2) - (labelSize.X / 2);
-            var textY = (Height / 2) - (labelSize.Y / 2);
-            spriteBatch.DrawString(_font, Label, new Vector2(Position.X + textX, Position.Y + textY), _color);
+            spriteBatch.Draw(_texture, new Rectangle((int)_position.X, (int)_position.Y, _width, _height), _color);
+            var labelSize = _font.MeasureString(_label);
+            var textX = (_width / 2) - (labelSize.X / 2);
+            var textY = (_height / 2) - (labelSize.Y / 2);
+            spriteBatch.DrawString(_font, _label, new Vector2(_position.X + textX, _position.Y + textY), _color);
         }
 
         public bool IsMouseInButton()
         {
-            return Input.ScreenMousePosition.X < Position.X + Width &&
-                Input.ScreenMousePosition.X > Position.X &&
-                Input.ScreenMousePosition.Y < Position.Y + Height &&
-                Input.ScreenMousePosition.Y > Position.Y;
+            return Input.ScreenMousePosition.X < _position.X + _width &&
+                Input.ScreenMousePosition.X > _position.X &&
+                Input.ScreenMousePosition.Y < _position.Y + _height &&
+                Input.ScreenMousePosition.Y > _position.Y;
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SpaceGame.Common;
 using SpaceGame.Managers;
 using SpaceGame.Projectiles;
-using SpaceGame.Scenes.Models;
 using SpaceGame.Ships.Parts;
+using SpaceGame.SolarSystems.Models;
 using SpaceGame.Weapons;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace SpaceGame.Ships
         public Color[] TextureData { get; set; }
         public float Scale { get; set; }
         public bool IsExpired { get; set; }
+        public IDockable DockableLocation { get; set; }
 
         public Vector2 Velocity;
         public float Heading;
@@ -37,8 +39,6 @@ namespace SpaceGame.Ships
             Matrix.CreateTranslation(Position.X, Position.Y, 0f);
 
         public Rectangle BoundingRectangle => CollisionManager.CalculateBoundingRectangle(_rectangle, Transform);
-
-        public bool IsAbleToLand { get; set; }
 
         protected List<WeaponBase> _weapons = new();
         protected List<Thruster1> _thrusters = new();
@@ -183,7 +183,7 @@ namespace SpaceGame.Ships
             {
                 Art.DrawLine(spriteBatch, Position, Position + Velocity, Color.Blue);
                 Art.DrawLine(spriteBatch, Position, _maxVelocity, Heading, Color.Green);
-                var color = IsAbleToLand ? Color.Green : _hasCollision ? Color.Red : Color.White;
+                var color = DockableLocation != null ? Color.Green : _hasCollision ? Color.Red : Color.White;
                 spriteBatch.Draw(_boundingBoxTexture, BoundingRectangle, color);
             }
         }
@@ -311,7 +311,7 @@ namespace SpaceGame.Ships
         private void HandleCollisions()
         {
             _hasCollision = false;
-            IsAbleToLand = false;
+            DockableLocation = null;
             if (CollisionManager.Collisions == null)
                 return;
 
@@ -343,11 +343,11 @@ namespace SpaceGame.Ships
                     projectile.IsExpired = true;
                 }
 
-                foreach (var collsion in collisions.Where(x => x is Planet))
+                foreach (var collsion in collisions.Where(x => x is IDockable))
                 {
                     if (Velocity.LengthSquared() < Constants.LandingSpeed * Constants.LandingSpeed)
                     {
-                        IsAbleToLand = true;
+                        DockableLocation = (IDockable)collsion;
                         return;
                     }
                 }
