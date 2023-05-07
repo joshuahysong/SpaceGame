@@ -32,7 +32,7 @@ namespace SpaceGame
 
             ScreenMousePosition = new Vector2(_mouseState.X, _mouseState.Y);
             WorldMousePosition = camera == null
-                ? Vector2.Zero : Vector2.Transform(_mouseState.Position.ToVector2(), Matrix.Invert(camera.Transform));
+                ? Vector2.Zero : Vector2.Transform(_mouseState.Position.ToVector2(), Matrix.Invert(camera.GetTransform(MainGame.ScreenCenter)));
             _previousMouseScrollWheelValue = _mouseScrollWheelValue;
             _mouseScrollWheelValue = _mouseState.ScrollWheelValue;
         }

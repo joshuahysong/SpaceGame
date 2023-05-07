@@ -120,7 +120,7 @@ namespace SpaceGame.Scenes
             spriteBatch.End();
 
             // Locked to world
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.Transform);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.GetTransform(MainGame.ScreenCenter));
             DrawStarTiles(spriteBatch, _starTile1, Color.White, 0.8f);
             DrawStarTiles(spriteBatch, _starTile2, Color.White, 0.5f);
             DrawStarTiles(spriteBatch, Art.Backgrounds.Starfield1, Color.White, 0.1f);
@@ -161,7 +161,8 @@ namespace SpaceGame.Scenes
             spriteBatch.Begin(SpriteSortMode.Deferred);
             spriteBatch.End();
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.TransformMini);
+            var renderCenter = new Vector2(MainGame.RenderTarget.Width / 2, MainGame.RenderTarget.Height / 2);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.GetTransform(renderCenter));
             spriteBatch.Draw(_viewPortBox, _player.WorldPosition, null, Color.White, 0f, screenOrigin, 1 / _camera.Scale, SpriteEffects.None, 1f);
             _currentSolarSystem.DrawMini(gameTime, spriteBatch);
             //EntityManager.Draw(spriteBatch, Matrix.Identity);
