@@ -18,7 +18,7 @@ namespace SpaceGame
         private static GamePadState _gamepadState;
         private static GamePadState _lastGamepadState;
 
-        public static void Update(Camera camera)
+        public static void Update(Camera camera = null)
         {
             ManagedKeys = new List<Keys>();
             _lastKeyboardState = _keyboardState;
@@ -30,7 +30,8 @@ namespace SpaceGame
             _gamepadState = GamePad.GetState(PlayerIndex.One);
 
             ScreenMousePosition = new Vector2(_mouseState.X, _mouseState.Y);
-            WorldMousePosition = Vector2.Transform(_mouseState.Position.ToVector2(), Matrix.Invert(camera.Transform));
+            WorldMousePosition = camera == null
+                ? Vector2.Zero : Vector2.Transform(_mouseState.Position.ToVector2(), Matrix.Invert(camera.Transform));
             MouseScrollWheelValue = _mouseState.ScrollWheelValue;
         }
 

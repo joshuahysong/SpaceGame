@@ -8,11 +8,14 @@ namespace SpaceGame.Scenes
 {
     public class MainMenuScene : IScene
     {
-        private List<Button> _buttons = new();
+        private Camera _camera;
         private Texture2D _background;
+        private List<Button> _buttons = new();
 
         public MainMenuScene()
         {
+            _camera = new Camera();
+
             var buttonPosition = MainGame.ScreenCenter - new Vector2(100, 50);
             var buttonTexture = Art.CreateRectangleTexture(200, 40, Color.Black, Color.White);
             _buttons.Add(new Button(buttonTexture, "New Game", TextSize.Large, buttonPosition, 200, 40, Color.White, StartNewGame));
@@ -23,6 +26,12 @@ namespace SpaceGame.Scenes
 
         public void Update(GameTime gameTime)
         {
+            if (MainGame.Instance.IsActive)
+            {
+                Input.Update();
+            }
+            _camera.Update();
+
             foreach (var button in _buttons)
             {
                 button.Update();

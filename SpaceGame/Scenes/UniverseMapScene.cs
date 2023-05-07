@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
 using SpaceGame.SolarSystems;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +8,7 @@ namespace SpaceGame.Scenes
 {
     public class UniverseMapScene : IScene
     {
+        private Camera _camera;
         private Texture2D _solarSystemTexture;
         private Vector2 _solarSystemOrigin;
         private List<ISolarSystem> _solarSystems;
@@ -18,6 +18,7 @@ namespace SpaceGame.Scenes
 
         public UniverseMapScene()
         {
+            _camera = new Camera();
             _solarSystemTexture = Art.CreateCircleTexture(10, Color.White);
             _solarSystemOrigin = new Vector2(_solarSystemTexture.Width / 2, _solarSystemTexture.Height / 2);
             _solarSystems = new List<ISolarSystem>
@@ -35,6 +36,15 @@ namespace SpaceGame.Scenes
             _solarSystemFont = Art.UIMediumFont;
         }
 
+        public void Update(GameTime gameTime)
+        {
+            if (MainGame.Instance.IsActive)
+            {
+                Input.Update();
+            }
+            _camera.Update();
+        }
+
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             // Locked to screen
@@ -43,7 +53,7 @@ namespace SpaceGame.Scenes
             spriteBatch.End();
 
             // Locked to world
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, MainGame.Camera.Transform);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.Transform);
             foreach (var lineToDraw in _linesToDraw)
             {
                 Art.DrawLine(spriteBatch, lineToDraw.Item1, lineToDraw.Item2, Color.Gray, 2);
@@ -56,10 +66,6 @@ namespace SpaceGame.Scenes
                 spriteBatch.DrawString(_solarSystemFont, solarSystem.Name, textLocation, Color.White);
             }
             spriteBatch.End();
-        }
-
-        public void Update(GameTime gameTime)
-        {
         }
     }
 }

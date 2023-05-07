@@ -12,9 +12,10 @@ namespace SpaceGame
     public class MainGame : Game
     {
         public static MainGame Instance { get; private set; }
-        public static Camera Camera { get; private set; }
         public static bool IsDebugging { get; private set; }
         public static RenderTarget2D RenderTarget { get; private set; }
+
+        public Camera Camera { get; private set; }
 
         public static Viewport Viewport => Instance.GraphicsDevice.Viewport;
         public static Vector2 ScreenCenter => new(Viewport.Width / 2, Viewport.Height / 2);
@@ -59,15 +60,6 @@ namespace SpaceGame
 
         protected override void Update(GameTime gameTime)
         {
-            if (IsActive)
-            {
-                Input.Update(Camera);
-                Camera.HandleInput();
-                HandleInput();
-            }
-
-            Camera.Update();
-
             if (_currentScene != null)
                 _currentScene.Update(gameTime);
 
