@@ -21,6 +21,8 @@ namespace SpaceGame.Scenes
         private Player _player;
         private Texture2D _starTile1;
         private Texture2D _starTile2;
+        private Texture2D _minimapContainer;
+        private Texture2D _viewPortBox;
         private Button _landingButton;
         private ISolarSystem _currentSolarSystem;
         private LandingScene _landingScene;
@@ -39,6 +41,8 @@ namespace SpaceGame.Scenes
 
             _starTile1 = GetStarsTexture(1000);
             _starTile2 = GetStarsTexture(1000);
+            _minimapContainer = Art.CreateRectangleTexture(200, 200, Color.Purple, Color.White);
+            _viewPortBox = Art.CreateRectangleTexture(MainGame.Viewport.Bounds.Width, MainGame.Viewport.Bounds.Height, Color.DarkRed * 0.5f, Color.Red);
 
             _currentSolarSystem = new TestSystem1();
 
@@ -104,13 +108,15 @@ namespace SpaceGame.Scenes
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            DrawMinimapTexture(gameTime, spriteBatch);
+
             // Locked to screen
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
             spriteBatch.Draw(Art.Backgrounds.BlueNebula1, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White * 0.75f);
             spriteBatch.End();
 
             // Locked to world
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, MainGame.Camera.Transform);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, MainGame.Camera.Transform);
             DrawStarTiles(spriteBatch, _starTile1, Color.White, 0.8f);
             DrawStarTiles(spriteBatch, _starTile2, Color.White, 0.5f);
             DrawStarTiles(spriteBatch, Art.Backgrounds.Starfield1, Color.White, 0.1f);
@@ -132,6 +138,34 @@ namespace SpaceGame.Scenes
             spriteBatch.DrawString(Art.DebugFont, fpsText, new Vector2(fpsX, 5), Color.White);
             DrawDebug(spriteBatch);
             spriteBatch.End();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred);
+            spriteBatch.Draw(_minimapContainer, new Rectangle(9, 29, 202, 202), Color.White);
+            spriteBatch.Draw(MainGame.RenderTarget, new Rectangle(10, 30, 200, 200), Color.White);
+            spriteBatch.End();
+        }
+
+        private void DrawMinimapTexture(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            var screenOrigin = new Vector2(MainGame.Viewport.Width / 2, MainGame.Viewport.Height / 2);
+            // Set the render target
+            MainGame.Instance.GraphicsDevice.SetRenderTarget(MainGame.RenderTarget);
+            //MainGame.Instance.GraphicsDevice.DepthStencilState = new DepthStencilState() { DepthBufferEnable = true };
+
+            // Draw the scene
+            MainGame.Instance.GraphicsDevice.Clear(Color.Black);
+
+            spriteBatch.Begin(SpriteSortMode.Deferred);
+            spriteBatch.End();
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, MainGame.Camera.TransformMini);
+            spriteBatch.Draw(_viewPortBox, _player.WorldPosition, null, Color.White, 0f, screenOrigin, 1 / MainGame.Camera.Scale, SpriteEffects.None, 1f);
+            _currentSolarSystem.DrawMini(gameTime, spriteBatch);
+            //EntityManager.Draw(spriteBatch, Matrix.Identity);
+            spriteBatch.End();
+
+            // Drop the render target
+            MainGame.Instance.GraphicsDevice.SetRenderTarget(null);
         }
 
         private void DrawDebug(SpriteBatch spriteBatch)

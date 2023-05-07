@@ -14,5 +14,6 @@ namespace SpaceGame.SolarSystems
         public List<Planet> Planets { get; }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch);
+        public void DrawMini(GameTime gameTime, SpriteBatch spriteBatch);
     }
 }

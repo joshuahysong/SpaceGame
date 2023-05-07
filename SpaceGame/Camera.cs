@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.Entities;
 
 namespace SpaceGame
@@ -10,6 +11,7 @@ namespace SpaceGame
         public Vector2 Origin { get; set; }
         public float Scale { get; set; }
         public Matrix Transform { get; set; }
+        public Matrix TransformMini { get; set; }
         public IFocusable Focus { get; set; }
 
         private int _previousScrollValue;
@@ -27,6 +29,12 @@ namespace SpaceGame
                     Matrix.CreateRotationZ(Rotation) *
                     Matrix.CreateScale(new Vector3(Scale, Scale, 1)) *
                     Matrix.CreateTranslation(new Vector3(MainGame.ScreenCenter.X, MainGame.ScreenCenter.Y, 0));
+
+                var renderCenter = new Vector2(MainGame.RenderTarget.Width / 2, MainGame.RenderTarget.Height / 2);
+                TransformMini = Matrix.CreateTranslation(new Vector3(-Focus.WorldPosition.X, -Focus.WorldPosition.Y, 0)) *
+                    Matrix.CreateRotationZ(Rotation) *
+                    Matrix.CreateScale(new Vector3(1, 1, 1)) *
+                    Matrix.CreateTranslation(new Vector3(renderCenter.X, renderCenter.Y, 0));
 
                 Origin = MainGame.ScreenCenter / Scale;
                 Position = Focus.WorldPosition;

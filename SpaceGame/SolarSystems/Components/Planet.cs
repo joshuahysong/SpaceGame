@@ -27,6 +27,7 @@ namespace SpaceGame.SolarSystems.Models
         private Rectangle _rectangle;
         private Vector2 _origin;
         private Texture2D _boundingBoxTexture;
+        private Texture2D _minimapTexture;
 
         public Planet(
             FactionType faction,
@@ -45,6 +46,7 @@ namespace SpaceGame.SolarSystems.Models
             _origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             _rectangle = new Rectangle(0, 0, (int)Math.Floor(Texture.Width * Scale), (int)Math.Floor(Texture.Height * Scale));
             _boundingBoxTexture = Art.CreateRectangleTexture(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
+            _minimapTexture = Art.CreateCircleTexture((int)Math.Floor(Texture.Width * Scale / 2), Color.White);
             CollisionManager.Add(this);
         }
 
@@ -56,6 +58,13 @@ namespace SpaceGame.SolarSystems.Models
             {
                 spriteBatch.Draw(_boundingBoxTexture, BoundingRectangle, Color.White);
             }
+        }
+
+        public void DrawMini(SpriteBatch spriteBatch, Matrix parentTransform)
+        {
+            spriteBatch.Draw(Texture, Position, null, Color.White, 0f, _origin, Scale, 0, 0);
+            //var miniPosition = Position + new Vector2(3000, 3000);
+            //spriteBatch.Draw(Texture, miniPosition, null, Color.White, 0f, _origin, Scale, 0, 0);
         }
     }
 }

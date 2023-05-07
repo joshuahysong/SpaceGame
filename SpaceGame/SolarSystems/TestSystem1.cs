@@ -30,6 +30,14 @@ namespace SpaceGame.SolarSystems
             }
         }
 
+        public void DrawMini(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            foreach (var planet in Planets)
+            {
+                planet.DrawMini(spriteBatch, Matrix.Identity);
+            }
+        }
+
         private Planet CreatePlanet1()
         {
             var description = new List<string>();
