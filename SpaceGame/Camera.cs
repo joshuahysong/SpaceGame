@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.Entities;
 
 namespace SpaceGame
@@ -13,8 +12,6 @@ namespace SpaceGame
         public Matrix Transform { get; set; }
         public Matrix TransformMini { get; set; }
         public IFocusable Focus { get; set; }
-
-        private int _previousScrollValue;
 
         public Camera()
         {
@@ -39,31 +36,6 @@ namespace SpaceGame
                 Origin = MainGame.ScreenCenter / Scale;
                 Position = Focus.WorldPosition;
             }
-        }
-
-        public void HandleInput()
-        {
-            var zoomStep = 0.1f;
-            var maximumZoom = 3f;
-            var minimumZoom = 0.3f;
-
-            if (Input.MouseScrollWheelValue < _previousScrollValue)
-            {
-                Scale -= zoomStep;
-                if (Scale < minimumZoom)
-                {
-                    Scale = minimumZoom;
-                }
-            }
-            else if (Input.MouseScrollWheelValue > _previousScrollValue)
-            {
-                Scale += zoomStep;
-                if (Scale > maximumZoom)
-                {
-                    Scale = maximumZoom;
-                }
-            }
-            _previousScrollValue = Input.MouseScrollWheelValue;
         }
     }
 }

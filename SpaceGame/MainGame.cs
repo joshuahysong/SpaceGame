@@ -60,6 +60,9 @@ namespace SpaceGame
 
         protected override void Update(GameTime gameTime)
         {
+            if (IsActive)
+                HandleInput();
+
             if (_currentScene != null)
                 _currentScene.Update(gameTime);
 

@@ -9,7 +9,6 @@ namespace SpaceGame
         public static List<Keys> ManagedKeys { get; set; }
         public static Vector2 ScreenMousePosition { get; private set; }
         public static Vector2 WorldMousePosition { get; private set; }
-        public static int MouseScrollWheelValue { get; private set; }
 
         private static MouseState _mouseState;
         private static KeyboardState _keyboardState;
@@ -17,6 +16,8 @@ namespace SpaceGame
         private static MouseState _lastMouseState;
         private static GamePadState _gamepadState;
         private static GamePadState _lastGamepadState;
+        private static int _mouseScrollWheelValue;
+        private static int _previousMouseScrollWheelValue;
 
         public static void Update(Camera camera = null)
         {
@@ -32,7 +33,8 @@ namespace SpaceGame
             ScreenMousePosition = new Vector2(_mouseState.X, _mouseState.Y);
             WorldMousePosition = camera == null
                 ? Vector2.Zero : Vector2.Transform(_mouseState.Position.ToVector2(), Matrix.Invert(camera.Transform));
-            MouseScrollWheelValue = _mouseState.ScrollWheelValue;
+            _previousMouseScrollWheelValue = _mouseScrollWheelValue;
+            _mouseScrollWheelValue = _mouseState.ScrollWheelValue;
         }
 
         public static bool IsKeyPressed(Keys key)
@@ -63,6 +65,16 @@ namespace SpaceGame
         public static bool WasLeftMouseButtonClicked()
         {
             return _lastMouseState.LeftButton == ButtonState.Released && _mouseState.LeftButton == ButtonState.Pressed;
+        }
+
+        public static bool WasMouseScrollValueDecreased()
+        {
+            return _mouseScrollWheelValue < _previousMouseScrollWheelValue;
+        }
+
+        public static bool WasMouseScrollValueIncreased()
+        {
+            return _mouseScrollWheelValue > _previousMouseScrollWheelValue;
         }
     }
 }

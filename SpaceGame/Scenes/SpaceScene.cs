@@ -66,8 +66,6 @@ namespace SpaceGame.Scenes
             {
                 Input.Update(_camera);
                 HandleInput();
-                if (!_isLanded)
-                    _camera.HandleInput();
             }
 
             if (_isPaused)
@@ -156,7 +154,6 @@ namespace SpaceGame.Scenes
             var screenOrigin = new Vector2(MainGame.Viewport.Width / 2, MainGame.Viewport.Height / 2);
             // Set the render target
             MainGame.Instance.GraphicsDevice.SetRenderTarget(MainGame.RenderTarget);
-            //MainGame.Instance.GraphicsDevice.DepthStencilState = new DepthStencilState() { DepthBufferEnable = true };
 
             // Draw the scene
             MainGame.Instance.GraphicsDevice.Clear(Color.Black);
@@ -277,6 +274,26 @@ namespace SpaceGame.Scenes
             if (Input.WasKeyPressed(Keys.M))
             {
                 MainGame.SetScene(new UniverseMapScene());
+            }
+
+            if (!_isLanded)
+            {
+                var zoomStep = 0.1f;
+                var maximumZoom = 3f;
+                var minimumZoom = 0.3f;
+
+                if (Input.WasMouseScrollValueDecreased())
+                {
+                    _camera.Scale -= zoomStep;
+                    if (_camera.Scale < minimumZoom)
+                        _camera.Scale = minimumZoom;
+                }
+                else if (Input.WasMouseScrollValueIncreased())
+                {
+                    _camera.Scale += zoomStep;
+                    if (_camera.Scale > maximumZoom)
+                         _camera.Scale = maximumZoom;
+                }
             }
         }
 
