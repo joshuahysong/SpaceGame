@@ -4,7 +4,6 @@ using SpaceGame.Common;
 using SpaceGame.Managers;
 using SpaceGame.Projectiles;
 using SpaceGame.Ships.Parts;
-using SpaceGame.SolarSystems.Models;
 using SpaceGame.Weapons;
 using System;
 using System.Collections.Generic;
@@ -60,6 +59,7 @@ namespace SpaceGame.Ships
         private float _currentShield;
         private float _shieldRegen;
         private bool _showHealthBars;
+        private Texture2D _minimizedTexture;
 
         public ShipBase(
             FactionType faction,
@@ -97,6 +97,7 @@ namespace SpaceGame.Ships
             _boundingBoxTexture = Art.CreateRectangleTexture(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
             _healthBarOffset = (Texture.Width > Texture.Height ? Texture.Width : Texture.Height) / 2 * Scale + 10;
             _showHealthBars = showHealthBars;
+            _minimizedTexture = Art.CreateRectangleTexture(100, 100, Color.Green, Color.Green);
 
             CollisionManager.Add(this);
         }
@@ -155,7 +156,7 @@ namespace SpaceGame.Ships
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
+        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform, bool drawMinimized = false)
         {
             Matrix globalTransform = LocalTransform * parentTransform;
 
@@ -168,7 +169,12 @@ namespace SpaceGame.Ships
                 _isThrusting = false;
             }
 
-            spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
+            var texture = Texture;
+            if (drawMinimized)
+            {
+                texture = _minimizedTexture;
+            }
+            spriteBatch.Draw(texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
 
             if (_showHealthBars && _currentHealth < _maxHealth || _currentShield < _maxShield)
             {

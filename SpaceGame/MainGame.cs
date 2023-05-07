@@ -47,7 +47,7 @@ namespace SpaceGame
         protected override void Initialize()
         {
             Camera = new Camera();
-            RenderTarget = new RenderTarget2D(GraphicsDevice, 6000, 6000);
+            RenderTarget = new RenderTarget2D(GraphicsDevice, 4000, 4000);
             base.Initialize();
         }
 

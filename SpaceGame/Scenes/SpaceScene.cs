@@ -57,7 +57,7 @@ namespace SpaceGame.Scenes
             }
 
             var buttonTexture = Art.CreateRectangleTexture(250, 40, Color.Black, Color.White);
-            _landingButton = new Button(buttonTexture, "Land", TextSize.Small, Vector2.Zero + new Vector2(5, 5), 100, 20, Color.White, LandOnPlanet);
+            _landingButton = new Button(buttonTexture, "Land", TextSize.Small, new Vector2(10, 5), 100, 20, Color.White, LandOnPlanet);
         }
 
         public void Update(GameTime gameTime)
@@ -116,7 +116,7 @@ namespace SpaceGame.Scenes
 
             // Locked to screen
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
-            spriteBatch.Draw(Art.Backgrounds.BlueNebula1, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White * 0.75f);
+            spriteBatch.Draw(_currentSolarSystem.Background, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White * 0.75f);
             spriteBatch.End();
 
             // Locked to world
@@ -165,7 +165,7 @@ namespace SpaceGame.Scenes
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.GetTransform(renderCenter));
             spriteBatch.Draw(_viewPortBox, _player.WorldPosition, null, Color.White, 0f, screenOrigin, 1 / _camera.Scale, SpriteEffects.None, 1f);
             _currentSolarSystem.DrawMini(gameTime, spriteBatch);
-            //EntityManager.Draw(spriteBatch, Matrix.Identity);
+            EntityManager.Draw(spriteBatch, Matrix.Identity, true);
             spriteBatch.End();
 
             // Drop the render target

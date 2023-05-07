@@ -12,6 +12,7 @@ namespace SpaceGame.SolarSystems
         public Vector2 MapLocation { get; }
         public List<string> NeighborsByName { get; }
         public List<Planet> Planets { get; }
+        public Texture2D Background { get; }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch);
         public void DrawMini(GameTime gameTime, SpriteBatch spriteBatch);

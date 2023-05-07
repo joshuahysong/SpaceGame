@@ -7,7 +7,6 @@ namespace SpaceGame
     {
         public Vector2 Position { get; set; }
         public float Rotation { get; set; }
-        public Vector2 Origin { get; set; }
         public float Scale { get; set; }
         public IFocusable Focus { get; set; }
 
@@ -20,7 +19,6 @@ namespace SpaceGame
         {
             if (Focus != null)
             {
-                Origin = MainGame.ScreenCenter / Scale;
                 Position = Focus.WorldPosition;
             }
         }

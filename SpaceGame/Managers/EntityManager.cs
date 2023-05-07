@@ -54,11 +54,11 @@ namespace SpaceGame.Managers
             _entities = _entities.Where(x => !x.IsExpired).ToList();
         }
 
-        public static void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
+        public static void Draw(SpriteBatch spriteBatch, Matrix parentTransform, bool drawMinimized = false)
         {
             foreach (IEntity entity in _entities)
             {
-                entity.Draw(spriteBatch, parentTransform);
+                entity.Draw(spriteBatch, parentTransform, drawMinimized);
             }
         }
 

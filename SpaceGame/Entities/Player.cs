@@ -26,9 +26,9 @@ namespace SpaceGame.Entities
             Ship.Update(gameTime, parentTransform);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
+        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform, bool drawMinimized = false)
         {
-            Ship.Draw(spriteBatch, parentTransform);
+            Ship.Draw(spriteBatch, parentTransform, drawMinimized);
         }
 
         private void HandleInput(float deltaTime)

@@ -86,8 +86,10 @@ namespace SpaceGame.ParticleEffects
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
+        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform, bool drawMinimized = false)
         {
+            if (drawMinimized) return;
+
             spriteBatch.Draw(ParticleEffect);
         }
     }

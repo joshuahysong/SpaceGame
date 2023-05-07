@@ -10,6 +10,6 @@ namespace SpaceGame.Common
 
         public abstract void Update(GameTime gameTime, Matrix parentTransform);
 
-        public abstract void Draw(SpriteBatch spriteBatch, Matrix parentTransform);
+        public abstract void Draw(SpriteBatch spriteBatch, Matrix parentTransform, bool drawMinimized);
     }
 }

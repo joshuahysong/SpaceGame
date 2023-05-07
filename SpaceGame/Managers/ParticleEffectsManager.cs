@@ -58,7 +58,7 @@ namespace SpaceGame.Managers
         {
             foreach (IParticleEffect effect in _effects)
             {
-                effect.Draw(spriteBatch, parentTransform);
+                effect.Draw(spriteBatch, parentTransform, false);
             }
         }
 
