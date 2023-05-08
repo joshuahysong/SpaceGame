@@ -28,7 +28,7 @@ namespace SpaceGame.ParticleEffects
             var random = new Random();
             var time = random.Next(300, 600);
 
-            var textureRegion = new TextureRegion2D(Art.Pixel);
+            var textureRegion = new TextureRegion2D(Art.Misc.Pixel);
             ParticleEffect = new ParticleEffect(autoTrigger: false)
             {
                 Position = position,

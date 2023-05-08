@@ -23,13 +23,14 @@ namespace SpaceGame
             }
         }
 
-        public Matrix GetTransform(Vector2 cameraCenter)
+        public Matrix GetTransform(Vector2 cameraCenter, float? scale = null)
         {
             var focus = Focus == null ? Vector2.Zero : Focus.WorldPosition;
+            var transformScale = scale ?? Scale;
 
             return Matrix.CreateTranslation(new Vector3(-focus.X, -focus.Y, 0)) *
                     Matrix.CreateRotationZ(Rotation) *
-                    Matrix.CreateScale(new Vector3(Scale, Scale, 1)) *
+                    Matrix.CreateScale(new Vector3(transformScale, transformScale, 1)) *
                     Matrix.CreateTranslation(new Vector3(cameraCenter.X, cameraCenter.Y, 0));
         }
     }

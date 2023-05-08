@@ -50,21 +50,29 @@ namespace SpaceGame.SolarSystems.Models
             CollisionManager.Add(this);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
+        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform, bool drawMinimized = false)
         {
+            if (drawMinimized)
+            {
+                var scale = ((float)Texture.Width / Art.Misc.CircleOutline.Width) * Scale;
+                var origin = new Vector2(Art.Misc.CircleOutline.Width / 2, Art.Misc.CircleOutline.Height / 2);
+                var color = Faction switch
+                {
+                    FactionType.None => Color.LightGray,
+                    FactionType.Player => Color.Green,
+                    FactionType.Enemy => Color.Red,
+                    _ => Color.White,
+                };
+                spriteBatch.Draw(Art.Misc.CircleOutline, Position, null, color, 0f, origin, scale, 0, 0);
+                return;
+            }
+
             spriteBatch.Draw(Texture, Position, null, Color.White, 0f, _origin, Scale, 0, 0);
 
             if (MainGame.IsDebugging)
             {
                 spriteBatch.Draw(_boundingBoxTexture, BoundingRectangle, Color.White);
             }
-        }
-
-        public void DrawMini(SpriteBatch spriteBatch, Matrix parentTransform)
-        {
-            spriteBatch.Draw(Texture, Position, null, Color.White, 0f, _origin, Scale, 0, 0);
-            //var miniPosition = Position + new Vector2(3000, 3000);
-            //spriteBatch.Draw(Texture, miniPosition, null, Color.White, 0f, _origin, Scale, 0, 0);
         }
     }
 }

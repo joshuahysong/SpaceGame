@@ -17,7 +17,7 @@ namespace SpaceGame.Scenes
             _camera = new Camera();
 
             var buttonPosition = MainGame.ScreenCenter - new Vector2(100, 50);
-            var buttonTexture = Art.CreateRectangleTexture(200, 40, Color.Black, Color.White);
+            var buttonTexture = Art.CreateRectangleTexture(200, 40, Color.Black, Color.White, 2);
             _buttons.Add(new Button(buttonTexture, "New Game", TextSize.Large, buttonPosition, 200, 40, Color.White, StartNewGame));
 
             buttonPosition = MainGame.ScreenCenter - new Vector2(100, -30);

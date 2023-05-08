@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using SpaceGame.Managers;
 using SpaceGame.Scenes;
 using System;
 using System.Collections.Generic;
@@ -47,7 +46,7 @@ namespace SpaceGame
         protected override void Initialize()
         {
             Camera = new Camera();
-            RenderTarget = new RenderTarget2D(GraphicsDevice, 4000, 4000);
+            RenderTarget = new RenderTarget2D(GraphicsDevice, 6000, 6000);
             base.Initialize();
         }
 
@@ -104,16 +103,16 @@ namespace SpaceGame
         {
             _spriteBatch.Begin(SpriteSortMode.Deferred);
             var fpsText = $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}";
-            var fpsX = (int)(Viewport.Width - 5 - Art.DebugFont.MeasureString(fpsText).X);
-            _spriteBatch.DrawString(Art.DebugFont, fpsText, new Vector2(fpsX, 5), Color.White);
+            var fpsX = (int)(Viewport.Width - 5 - Art.Fonts.DebugFont.MeasureString(fpsText).X);
+            _spriteBatch.DrawString(Art.Fonts.DebugFont, fpsText, new Vector2(fpsX, 5), Color.White);
             if (IsDebugging && _systemDebugEntries.Any())
             {
                 var yTextOffset = 20;
                 foreach (KeyValuePair<string, string> debugEntry in _systemDebugEntries)
                 {
                     var text = $"{debugEntry.Key}: {debugEntry.Value}";
-                    var xTextOffset = (int)(Viewport.Width - 5 - Art.DebugFont.MeasureString(text).X);
-                    _spriteBatch.DrawString(Art.DebugFont, text, new Vector2(xTextOffset, yTextOffset), Color.White);
+                    var xTextOffset = (int)(Viewport.Width - 5 - Art.Fonts.DebugFont.MeasureString(text).X);
+                    _spriteBatch.DrawString(Art.Fonts.DebugFont, text, new Vector2(xTextOffset, yTextOffset), Color.White);
                     yTextOffset += 15;
                 }
             }

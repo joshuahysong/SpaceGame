@@ -160,6 +160,21 @@ namespace SpaceGame.Ships
         {
             Matrix globalTransform = LocalTransform * parentTransform;
 
+            if (drawMinimized)
+            {
+                var scale = ((float)Texture.Width / Art.Misc.CircleFilled.Width) * Scale * 2;
+                var origin = new Vector2(Art.Misc.CircleOutline.Width / 2, Art.Misc.CircleFilled.Height / 2);
+                var color = Faction switch
+                {
+                    FactionType.None => Color.LightGray,
+                    FactionType.Player => Color.Green,
+                    FactionType.Enemy => Color.Red,
+                    _ => Color.White,
+                };
+                spriteBatch.Draw(Art.Misc.CircleFilled, Position, null, color, Heading, origin, scale, SpriteEffects.None, 0);
+                return;
+            }
+
             if (_thrusters.Any() && _isThrusting)
             {
                 foreach (var thrustEffect in _thrusters)
@@ -169,12 +184,7 @@ namespace SpaceGame.Ships
                 _isThrusting = false;
             }
 
-            var texture = Texture;
-            if (drawMinimized)
-            {
-                texture = _minimizedTexture;
-            }
-            spriteBatch.Draw(texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
 
             if (_showHealthBars && _currentHealth < _maxHealth || _currentShield < _maxShield)
             {

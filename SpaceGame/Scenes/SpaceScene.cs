@@ -23,7 +23,6 @@ namespace SpaceGame.Scenes
         private Texture2D _starTile1;
         private Texture2D _starTile2;
         private Texture2D _minimapContainer;
-        private Texture2D _viewPortBox;
         private Button _landingButton;
         private ISolarSystem _currentSolarSystem;
         private LandingScene _landingScene;
@@ -44,7 +43,6 @@ namespace SpaceGame.Scenes
             _starTile1 = GetStarsTexture(1000);
             _starTile2 = GetStarsTexture(1000);
             _minimapContainer = Art.CreateRectangleTexture(200, 200, Color.Purple, Color.White);
-            _viewPortBox = Art.CreateRectangleTexture(MainGame.Viewport.Bounds.Width, MainGame.Viewport.Bounds.Height, Color.DarkRed * 0.5f, Color.Red);
 
             _currentSolarSystem = new TestSystem1();
 
@@ -85,7 +83,6 @@ namespace SpaceGame.Scenes
             }
 
             _camera.Update();
-
             EntityManager.Update(gameTime, Matrix.Identity);
             CollisionManager.Update();
             ParticleEffectsManager.Update(gameTime, Matrix.Identity);
@@ -133,8 +130,9 @@ namespace SpaceGame.Scenes
                 _landingScene.Draw(gameTime, spriteBatch);
 
             spriteBatch.Begin(SpriteSortMode.Deferred);
-            spriteBatch.Draw(_minimapContainer, new Rectangle(9, 29, 202, 202), Color.White);
-            spriteBatch.Draw(MainGame.RenderTarget, new Rectangle(10, 30, 200, 200), Color.White);
+            var minimapX = MainGame.Viewport.Width - 220;
+            spriteBatch.Draw(_minimapContainer, new Rectangle(minimapX - 1, 19, 202, 202), Color.White);
+            spriteBatch.Draw(MainGame.RenderTarget, new Rectangle(minimapX, 20, 200, 200), Color.White);
             spriteBatch.End();
 
             // Locked to screen
@@ -143,32 +141,23 @@ namespace SpaceGame.Scenes
                 _landingButton.Draw(spriteBatch);
 
             var fpsText = $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}";
-            var fpsX = (int)(MainGame.Viewport.Width - 5 - Art.DebugFont.MeasureString(fpsText).X);
-            spriteBatch.DrawString(Art.DebugFont, fpsText, new Vector2(fpsX, 5), Color.White);
+            var fpsX = (int)(MainGame.Viewport.Width - 5 - Art.Fonts.DebugFont.MeasureString(fpsText).X);
+            spriteBatch.DrawString(Art.Fonts.DebugFont, fpsText, new Vector2(fpsX, 5), Color.White);
             DrawDebug(spriteBatch);
             spriteBatch.End();
         }
 
         private void DrawMinimapTexture(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            var screenOrigin = new Vector2(MainGame.Viewport.Width / 2, MainGame.Viewport.Height / 2);
-            // Set the render target
             MainGame.Instance.GraphicsDevice.SetRenderTarget(MainGame.RenderTarget);
-
-            // Draw the scene
             MainGame.Instance.GraphicsDevice.Clear(Color.Black);
 
-            spriteBatch.Begin(SpriteSortMode.Deferred);
-            spriteBatch.End();
-
             var renderCenter = new Vector2(MainGame.RenderTarget.Width / 2, MainGame.RenderTarget.Height / 2);
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.GetTransform(renderCenter));
-            spriteBatch.Draw(_viewPortBox, _player.WorldPosition, null, Color.White, 0f, screenOrigin, 1 / _camera.Scale, SpriteEffects.None, 1f);
-            _currentSolarSystem.DrawMini(gameTime, spriteBatch);
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, _camera.GetTransform(renderCenter, 1f));
+            _currentSolarSystem.Draw(gameTime, spriteBatch, true);
             EntityManager.Draw(spriteBatch, Matrix.Identity, true);
             spriteBatch.End();
 
-            // Drop the render target
             MainGame.Instance.GraphicsDevice.SetRenderTarget(null);
         }
 
@@ -179,11 +168,11 @@ namespace SpaceGame.Scenes
                 var yTextOffset = 5;
                 if (_playerDebugEntries.Any())
                 {
-                    spriteBatch.DrawString(Art.DebugFont, "Player", new Vector2(5, yTextOffset), Color.White);
+                    spriteBatch.DrawString(Art.Fonts.DebugFont, "Player", new Vector2(5, yTextOffset), Color.White);
                     foreach (KeyValuePair<string, string> debugEntry in _playerDebugEntries)
                     {
                         yTextOffset += 15;
-                        spriteBatch.DrawString(Art.DebugFont, $"{debugEntry.Key}: {debugEntry.Value}", new Vector2(5, yTextOffset), Color.White);
+                        spriteBatch.DrawString(Art.Fonts.DebugFont, $"{debugEntry.Key}: {debugEntry.Value}", new Vector2(5, yTextOffset), Color.White);
                     }
                 }
 
@@ -193,8 +182,8 @@ namespace SpaceGame.Scenes
                     foreach (KeyValuePair<string, string> debugEntry in _systemDebugEntries)
                     {
                         var text = $"{debugEntry.Key}: {debugEntry.Value}";
-                        var xTextOffset = (int)(MainGame.Viewport.Width - 5 - Art.DebugFont.MeasureString(text).X);
-                        spriteBatch.DrawString(Art.DebugFont, text, new Vector2(xTextOffset, yTextOffset), Color.White);
+                        var xTextOffset = (int)(MainGame.Viewport.Width - 5 - Art.Fonts.DebugFont.MeasureString(text).X);
+                        spriteBatch.DrawString(Art.Fonts.DebugFont, text, new Vector2(xTextOffset, yTextOffset), Color.White);
                         yTextOffset += 15;
                     }
                 }
@@ -280,8 +269,8 @@ namespace SpaceGame.Scenes
             if (!_isLanded)
             {
                 var zoomStep = 0.1f;
-                var maximumZoom = 3f;
-                var minimumZoom = 0.3f;
+                var maximumZoom = 2f;
+                var minimumZoom = 0.5f;
 
                 if (Input.WasMouseScrollValueDecreased())
                 {

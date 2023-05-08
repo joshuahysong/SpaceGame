@@ -35,10 +35,10 @@ namespace SpaceGame.UI
             _textSize = textSize;
             _assignedColor = color;
             _font = _textSize == TextSize.Small
-                ? Art.UISmalFont
+                ? Art.Fonts.UISmalFont
                 : _textSize == TextSize.Medium
-                    ? Art.UIMediumFont
-                    : Art.UILargeFont;
+                    ? Art.Fonts.UIMediumFont
+                    : Art.Fonts.UILargeFont;
             _color = _assignedColor * 0.75f;
         }
 

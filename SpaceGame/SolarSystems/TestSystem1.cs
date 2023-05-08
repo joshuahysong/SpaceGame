@@ -24,19 +24,11 @@ namespace SpaceGame.SolarSystems
             Background = Art.Backgrounds.BlueNebula1;
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, bool drawMinimized = false)
         {
             foreach (var planet in Planets)
             {
-                planet.Draw(spriteBatch, Matrix.Identity);
-            }
-        }
-
-        public void DrawMini(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            foreach (var planet in Planets)
-            {
-                planet.DrawMini(spriteBatch, Matrix.Identity);
+                planet.Draw(spriteBatch, Matrix.Identity, drawMinimized);
             }
         }
 

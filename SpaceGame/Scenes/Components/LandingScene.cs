@@ -49,9 +49,9 @@ namespace SpaceGame.Scenes.Components
             var textY = MainGame.Viewport.Height / 2 - _testTexture.Height / 2 + 10;
             foreach (var text in _description)
             {
-                var splitText = text.WrapText(Art.UISmalFont, 620);
-                spriteBatch.DrawString(Art.UISmalFont, splitText, new Vector2(textX, textY), Color.White);
-                textY += (splitText.Count(x => x == '\n') + 2) * ((int)Art.UISmalFont.MeasureString(text).Y);
+                var splitText = text.WrapText(Art.Fonts.UISmalFont, 620);
+                spriteBatch.DrawString(Art.Fonts.UISmalFont, splitText, new Vector2(textX, textY), Color.White);
+                textY += (splitText.Count(x => x == '\n') + 2) * ((int)Art.Fonts.UISmalFont.MeasureString(text).Y);
             }
 
             _button1.Draw(spriteBatch);

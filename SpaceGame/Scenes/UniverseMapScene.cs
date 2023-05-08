@@ -33,7 +33,7 @@ namespace SpaceGame.Scenes
                     (x, y) => (x.MapLocation + _solarSystemOrigin, _solarSystemNameLookup[y].MapLocation + _solarSystemOrigin))
                 .Distinct()
                 .ToList();
-            _solarSystemFont = Art.UIMediumFont;
+            _solarSystemFont = Art.Fonts.UIMediumFont;
         }
 
         public void Update(GameTime gameTime)
