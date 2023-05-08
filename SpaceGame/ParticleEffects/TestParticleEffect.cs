@@ -28,7 +28,7 @@ namespace SpaceGame.ParticleEffects
             var random = new Random();
             var time = random.Next(300, 600);
 
-            var textureRegion = new TextureRegion2D(Art.Pixel);
+            var textureRegion = new TextureRegion2D(Art.Misc.Pixel);
             ParticleEffect = new ParticleEffect(autoTrigger: false)
             {
                 Position = position,
@@ -86,8 +86,10 @@ namespace SpaceGame.ParticleEffects
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
+        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform, bool drawMinimized = false)
         {
+            if (drawMinimized) return;
+
             spriteBatch.Draw(ParticleEffect);
         }
     }

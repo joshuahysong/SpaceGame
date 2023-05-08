@@ -12,6 +12,7 @@ namespace SpaceGame.SolarSystems
         public Vector2 MapLocation { get; }
         public List<string> NeighborsByName { get; }
         public List<Planet> Planets { get; }
+        public Texture2D Background { get; }
 
         public TestSystem1()
         {
@@ -20,13 +21,14 @@ namespace SpaceGame.SolarSystems
             MapLocation = new Vector2(50, 50);
             NeighborsByName = new List<string> { "Test System 2" };
             Planets = new List<Planet> { CreatePlanet1() };
+            Background = Art.Backgrounds.BlueNebula1;
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, bool drawMinimized = false)
         {
             foreach (var planet in Planets)
             {
-                planet.Draw(spriteBatch, Matrix.Identity);
+                planet.Draw(spriteBatch, Matrix.Identity, drawMinimized);
             }
         }
 

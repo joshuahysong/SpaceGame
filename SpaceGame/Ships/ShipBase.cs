@@ -4,7 +4,6 @@ using SpaceGame.Common;
 using SpaceGame.Managers;
 using SpaceGame.Projectiles;
 using SpaceGame.Ships.Parts;
-using SpaceGame.SolarSystems.Models;
 using SpaceGame.Weapons;
 using System;
 using System.Collections.Generic;
@@ -60,6 +59,7 @@ namespace SpaceGame.Ships
         private float _currentShield;
         private float _shieldRegen;
         private bool _showHealthBars;
+        private Texture2D _minimizedTexture;
 
         public ShipBase(
             FactionType faction,
@@ -97,6 +97,7 @@ namespace SpaceGame.Ships
             _boundingBoxTexture = Art.CreateRectangleTexture(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
             _healthBarOffset = (Texture.Width > Texture.Height ? Texture.Width : Texture.Height) / 2 * Scale + 10;
             _showHealthBars = showHealthBars;
+            _minimizedTexture = Art.CreateRectangleTexture(100, 100, Color.Green, Color.Green);
 
             CollisionManager.Add(this);
         }
@@ -155,9 +156,24 @@ namespace SpaceGame.Ships
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
+        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform, bool drawMinimized = false)
         {
             Matrix globalTransform = LocalTransform * parentTransform;
+
+            if (drawMinimized)
+            {
+                var scale = ((float)Texture.Width / Art.Misc.CircleFilled.Width) * Scale * 2;
+                var origin = new Vector2(Art.Misc.CircleOutline.Width / 2, Art.Misc.CircleFilled.Height / 2);
+                var color = Faction switch
+                {
+                    FactionType.None => Color.LightGray,
+                    FactionType.Player => Color.Green,
+                    FactionType.Enemy => Color.Red,
+                    _ => Color.White,
+                };
+                spriteBatch.Draw(Art.Misc.CircleFilled, Position, null, color, Heading, origin, scale, SpriteEffects.None, 0);
+                return;
+            }
 
             if (_thrusters.Any() && _isThrusting)
             {

@@ -7,12 +7,15 @@ namespace SpaceGame.Scenes
 {
     public class PauseMenuScene : IScene
     {
+        private Camera _camera;
         private List<Button> _buttons = new();
 
         public PauseMenuScene()
         {
+            _camera = new Camera();
+
             var buttonPosition = MainGame.ScreenCenter - new Vector2(125, 80);
-            var buttonTexture = Art.CreateRectangleTexture(250, 40, Color.Black, Color.White);
+            var buttonTexture = Art.CreateRectangleTexture(250, 40, Color.Black, Color.White, 2);
             _buttons.Add(new Button(buttonTexture, "Resume", TextSize.Large, buttonPosition, 250, 40, Color.White, Resume));
 
             buttonPosition = MainGame.ScreenCenter - new Vector2(125, 20);
@@ -24,6 +27,12 @@ namespace SpaceGame.Scenes
 
         public void Update(GameTime gameTime)
         {
+            if (MainGame.Instance.IsActive)
+            {
+                Input.Update();
+            }
+            _camera.Update();
+
             foreach (var button in _buttons)
             {
                 button.Update();

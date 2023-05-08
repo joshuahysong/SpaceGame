@@ -75,11 +75,14 @@ namespace SpaceGame
         #endregion
 
         #region Fonts
-        public static SpriteFont DebugFont { get; set; }
-        public static SpriteFont HeaderFont { get; set; }
-        public static SpriteFont UISmalFont { get; set; }
-        public static SpriteFont UIMediumFont { get; set; }
-        public static SpriteFont UILargeFont { get; set; }
+        public static class Fonts
+        {
+            public static SpriteFont DebugFont { get; set; }
+            public static SpriteFont HeaderFont { get; set; }
+            public static SpriteFont UISmalFont { get; set; }
+            public static SpriteFont UIMediumFont { get; set; }
+            public static SpriteFont UILargeFont { get; set; }
+        }
         #endregion
 
         #region Map
@@ -89,7 +92,14 @@ namespace SpaceGame
         }
         #endregion
 
-        public static Texture2D Pixel { get; set; }
+        #region Misc
+        public static class Misc
+        {
+            public static Texture2D Pixel { get; set; }
+            public static Texture2D CircleFilled { get; set; }
+            public static Texture2D CircleOutline { get; set; }
+        }
+        #endregion
 
         public static void Load(ContentManager content)
         {
@@ -123,31 +133,42 @@ namespace SpaceGame
 
             Thruster1 = content.Load<Texture2D>("Effects/thruster-1");
 
-            DebugFont = content.Load<SpriteFont>("Fonts/Debug");
-            HeaderFont = content.Load<SpriteFont>("Fonts/Header");
-            UISmalFont = content.Load<SpriteFont>("Fonts/UI_Small");
-            UIMediumFont = content.Load<SpriteFont>("Fonts/UI_Medium");
-            UILargeFont = content.Load<SpriteFont>("Fonts/UI_Large");
+            Fonts.DebugFont = content.Load<SpriteFont>("Fonts/Debug");
+            Fonts.HeaderFont = content.Load<SpriteFont>("Fonts/Header");
+            Fonts.UISmalFont = content.Load<SpriteFont>("Fonts/UI_Small");
+            Fonts.UIMediumFont = content.Load<SpriteFont>("Fonts/UI_Medium");
+            Fonts.UILargeFont = content.Load<SpriteFont>("Fonts/UI_Large");
 
             Map.SolarSystem = content.Load<Texture2D>("Map/solar-system");
 
-            Pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            Pixel.SetData(new[] { Color.White });
+            Misc.CircleFilled = content.Load<Texture2D>("Misc/circle-filled");
+            Misc.CircleOutline = content.Load<Texture2D>("Misc/circle-outline");
+            Misc.Pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            Misc.Pixel.SetData(new[] { Color.White });
         }
 
-        public static Texture2D CreateRectangleTexture(int width, int height, Color fillColor, Color borderColor)
+        public static Texture2D CreateRectangleTexture(int width, int height, Color fillColor, Color borderColor, int thickness = 1)
         {
             Texture2D texture = new Texture2D(MainGame.Instance.GraphicsDevice, width, height);
             Color[] data = new Color[width * height];
-            for (int i = 0; i < data.Length; ++i)
+            for (var i = 0; i < data.Length; ++i)
             {
-                if (i < width || i % width == 0 || i > width * height - width || (i + 1) % width == 0)
+                if (i < width * thickness ||
+                    i > width * height - width * thickness)
                 {
                     data[i] = borderColor;
                 }
                 else
                 {
                     data[i] = fillColor;
+                }
+                for (var x = 0; x < thickness; x++)
+                {
+                    if (i % width - x == 0 ||
+                        (i + 1 + x) % width == 0)
+                    {
+                        data[i] = borderColor;
+                    }
                 }
             }
             texture.SetData(data);
@@ -192,7 +213,7 @@ namespace SpaceGame
         {
             var origin = new Vector2(0f, 0.5f);
             var scale = new Vector2(length, thickness);
-            spriteBatch.Draw(Pixel, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(Misc.Pixel, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
         }
 
         public static void DrawCircle(this SpriteBatch spriteBatch, Vector2 position, int radius, Color borderColor)

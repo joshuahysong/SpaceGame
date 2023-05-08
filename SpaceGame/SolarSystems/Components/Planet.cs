@@ -27,6 +27,7 @@ namespace SpaceGame.SolarSystems.Models
         private Rectangle _rectangle;
         private Vector2 _origin;
         private Texture2D _boundingBoxTexture;
+        private Texture2D _minimapTexture;
 
         public Planet(
             FactionType faction,
@@ -45,11 +46,27 @@ namespace SpaceGame.SolarSystems.Models
             _origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             _rectangle = new Rectangle(0, 0, (int)Math.Floor(Texture.Width * Scale), (int)Math.Floor(Texture.Height * Scale));
             _boundingBoxTexture = Art.CreateRectangleTexture(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);
+            _minimapTexture = Art.CreateCircleTexture((int)Math.Floor(Texture.Width * Scale / 2), Color.White);
             CollisionManager.Add(this);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
+        public void Draw(SpriteBatch spriteBatch, Matrix parentTransform, bool drawMinimized = false)
         {
+            if (drawMinimized)
+            {
+                var scale = ((float)Texture.Width / Art.Misc.CircleOutline.Width) * Scale;
+                var origin = new Vector2(Art.Misc.CircleOutline.Width / 2, Art.Misc.CircleOutline.Height / 2);
+                var color = Faction switch
+                {
+                    FactionType.None => Color.LightGray,
+                    FactionType.Player => Color.Green,
+                    FactionType.Enemy => Color.Red,
+                    _ => Color.White,
+                };
+                spriteBatch.Draw(Art.Misc.CircleOutline, Position, null, color, 0f, origin, scale, 0, 0);
+                return;
+            }
+
             spriteBatch.Draw(Texture, Position, null, Color.White, 0f, _origin, Scale, 0, 0);
 
             if (MainGame.IsDebugging)
