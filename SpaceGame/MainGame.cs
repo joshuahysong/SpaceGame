@@ -36,6 +36,8 @@ namespace SpaceGame
             };
             graphics.ApplyChanges();
 
+            Window.AllowUserResizing = true;
+            Window.AllowAltF4 = true;
             Content.RootDirectory = "Content";
             Instance = this;
             IsDebugging = false;

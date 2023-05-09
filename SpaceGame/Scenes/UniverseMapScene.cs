@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using SpaceGame.SolarSystems;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,7 @@ namespace SpaceGame.Scenes
             if (MainGame.Instance.IsActive)
             {
                 Input.Update();
+                HandleInput();
             }
             _camera.Update();
         }
@@ -60,12 +62,20 @@ namespace SpaceGame.Scenes
             }
             foreach (var solarSystem in _solarSystems)
             {
-                spriteBatch.Draw(Art.Map.SolarSystem, solarSystem.MapLocation, null, Color.Gray, 0f, _solarSystemOrigin, 0.2f, 0, 0);
+                spriteBatch.Draw(Art.Map.SolarSystem, solarSystem.MapLocation, null, Color.Gray, 0f, _solarSystemOrigin, 0.15f, 0, 0);
                 var textSize = _solarSystemFont.MeasureString(solarSystem.Name);
                 var textLocation = solarSystem.MapLocation - new Vector2(textSize.X / 2, textSize.Y + 22) + _solarSystemOrigin;
                 spriteBatch.DrawString(_solarSystemFont, solarSystem.Name, textLocation, Color.White);
             }
             spriteBatch.End();
+        }
+
+        private void HandleInput()
+        {
+            if (Input.WasKeyPressed(Keys.M))
+            {
+                MainGame.SwitchToPreviousScene();
+            }
         }
     }
 }

@@ -130,9 +130,9 @@ namespace SpaceGame.Scenes
                 _landingScene.Draw(gameTime, spriteBatch);
 
             spriteBatch.Begin(SpriteSortMode.Deferred);
-            var minimapX = MainGame.Viewport.Width - 220;
-            spriteBatch.Draw(_minimapContainer, new Rectangle(minimapX - 1, 19, 202, 202), Color.White);
-            spriteBatch.Draw(MainGame.RenderTarget, new Rectangle(minimapX, 20, 200, 200), Color.White);
+            var minimapX = MainGame.Viewport.Width - 270;
+            spriteBatch.Draw(_minimapContainer, new Rectangle(minimapX - 1, 19, 252, 252), Color.White);
+            spriteBatch.Draw(MainGame.RenderTarget, new Rectangle(minimapX, 20, 250, 250), Color.White);
             spriteBatch.End();
 
             // Locked to screen
@@ -153,7 +153,7 @@ namespace SpaceGame.Scenes
             MainGame.Instance.GraphicsDevice.Clear(Color.Black);
 
             var renderCenter = new Vector2(MainGame.RenderTarget.Width / 2, MainGame.RenderTarget.Height / 2);
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, _camera.GetTransform(renderCenter, 1f));
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.GetTransform(renderCenter, 1f));
             _currentSolarSystem.Draw(gameTime, spriteBatch, true);
             EntityManager.Draw(spriteBatch, Matrix.Identity, true);
             spriteBatch.End();
