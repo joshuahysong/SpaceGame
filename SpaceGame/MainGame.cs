@@ -24,17 +24,20 @@ namespace SpaceGame
         private SpriteBatch _spriteBatch;
         private static IScene _previousScene;
         private static IScene _currentScene;
+        private static GraphicsDeviceManager _graphics;
+        private int _windowWidth;
+        private int _windowHeight;
 
         public MainGame()
         {
-            var graphics = new GraphicsDeviceManager(this)
+            _graphics = new GraphicsDeviceManager(this)
             {
                 IsFullScreen = false,
                 PreferredBackBufferHeight = 1080,
                 PreferredBackBufferWidth = 1920,
                 SynchronizeWithVerticalRetrace = false
             };
-            graphics.ApplyChanges();
+            _graphics.ApplyChanges();
 
             Window.AllowUserResizing = true;
             Window.AllowAltF4 = true;
@@ -126,6 +129,23 @@ namespace SpaceGame
             if (Input.WasKeyPressed(Keys.F4))
             {
                 IsDebugging = !IsDebugging;
+            }
+            if ((Input.IsKeyPressed(Keys.LeftAlt) || Input.IsKeyPressed(Keys.RightAlt)) && Input.WasKeyPressed(Keys.Enter))
+            {
+                if (_graphics.IsFullScreen)
+                {
+                    _graphics.PreferredBackBufferWidth = _windowWidth;
+                    _graphics.PreferredBackBufferHeight = _windowHeight;
+                    _graphics.HardwareModeSwitch = false;
+                    _graphics.IsFullScreen = false;
+                }
+                else
+                {
+                    _windowWidth = Window.ClientBounds.Width;
+                    _windowHeight = Window.ClientBounds.Height;
+                    _graphics.IsFullScreen = true;
+                }
+                _graphics.ApplyChanges();
             }
         }
     }
