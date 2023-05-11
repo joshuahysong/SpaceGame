@@ -9,6 +9,7 @@ namespace SpaceGame.UI
         private Texture2D _texture;
         private string _label;
         private Vector2 _position;
+        private bool _lockToScreen;
         private int _width;
         private int _height;
         private Action _callback;
@@ -42,6 +43,20 @@ namespace SpaceGame.UI
             _color = _assignedColor * 0.75f;
         }
 
+        public Button(Texture2D texture,
+            string label,
+            TextSize textSize,
+            Vector2 position,
+            int width,
+            int height,
+            Color color,
+            Action callback,
+            bool lockToScreen)
+            : this(texture, label, textSize, position, width, height, color, callback)
+        {
+            _lockToScreen = lockToScreen;
+        }
+
         public void Update()
         {
             if (IsMouseInButton())
@@ -60,19 +75,21 @@ namespace SpaceGame.UI
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, new Rectangle((int)_position.X, (int)_position.Y, _width, _height), _color);
+            var position = _lockToScreen ? MainGame.ScreenCenter - _position : _position;
+            spriteBatch.Draw(_texture, new Rectangle((int)position.X, (int)position.Y, _width, _height), _color);
             var labelSize = _font.MeasureString(_label);
             var textX = (_width / 2) - (labelSize.X / 2);
             var textY = (_height / 2) - (labelSize.Y / 2);
-            spriteBatch.DrawString(_font, _label, new Vector2(_position.X + textX, _position.Y + textY), _color);
+            spriteBatch.DrawString(_font, _label, new Vector2(position.X + textX, position.Y + textY), _color);
         }
 
         public bool IsMouseInButton()
         {
-            return Input.ScreenMousePosition.X < _position.X + _width &&
-                Input.ScreenMousePosition.X > _position.X &&
-                Input.ScreenMousePosition.Y < _position.Y + _height &&
-                Input.ScreenMousePosition.Y > _position.Y;
+            var position = _lockToScreen ? MainGame.ScreenCenter - _position : _position;
+            return Input.ScreenMousePosition.X < position.X + _width &&
+                Input.ScreenMousePosition.X > position.X &&
+                Input.ScreenMousePosition.Y < position.Y + _height &&
+                Input.ScreenMousePosition.Y > position.Y;
         }
     }
 }
