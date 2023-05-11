@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using SpaceGame.Common;
 using SpaceGame.Managers;
 using System;
@@ -54,8 +55,6 @@ namespace SpaceGame.SolarSystems.Models
         {
             if (drawMinimized)
             {
-                var scale = ((float)Texture.Width / Art.Misc.CircleOutline.Width) * Scale;
-                var origin = new Vector2(Art.Misc.CircleOutline.Width / 2, Art.Misc.CircleOutline.Height / 2);
                 var color = Faction switch
                 {
                     FactionType.None => Color.LightGray,
@@ -63,7 +62,7 @@ namespace SpaceGame.SolarSystems.Models
                     FactionType.Enemy => Color.Red,
                     _ => Color.White,
                 };
-                spriteBatch.Draw(Art.Misc.CircleOutline, Position, null, color, 0f, origin, scale, 0, 0);
+                spriteBatch.DrawCircle(Position, Texture.Width / 2, 32, color, 30);
                 return;
             }
 

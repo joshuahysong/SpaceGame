@@ -11,7 +11,7 @@ namespace SpaceGame.Projectiles
                   position,
                   velocity,
                   heading,
-                  texture: Art.OrangeLaser,
+                  texture: Art.Projectiles.OrangeLaser,
                   timeToLiveInSeconds: 5,
                   scale: ScaleType.Half)
         {

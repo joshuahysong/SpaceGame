@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
 using SpaceGame.SolarSystems;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,6 @@ namespace SpaceGame.Scenes
     public class UniverseMapScene : IScene
     {
         private Camera _camera;
-        private Texture2D _solarSystemTexture;
-        private Vector2 _solarSystemOrigin;
         private List<ISolarSystem> _solarSystems;
         private Dictionary<string, ISolarSystem> _solarSystemNameLookup;
         private List<(Vector2, Vector2)> _linesToDraw;
@@ -20,8 +19,6 @@ namespace SpaceGame.Scenes
         public UniverseMapScene()
         {
             _camera = new Camera();
-            _solarSystemTexture = Art.CreateCircleTexture(10, Color.White);
-            _solarSystemOrigin = new Vector2(_solarSystemTexture.Width / 2, _solarSystemTexture.Height / 2);
             _solarSystems = new List<ISolarSystem>
             {
                 new TestSystem1(),
@@ -31,7 +28,7 @@ namespace SpaceGame.Scenes
             _linesToDraw = _solarSystems
                 .Where(x => x.NeighborsByName.All(y => _solarSystemNameLookup.ContainsKey(y)))
                 .SelectMany(x => x.NeighborsByName,
-                    (x, y) => (x.MapLocation + _solarSystemOrigin, _solarSystemNameLookup[y].MapLocation + _solarSystemOrigin))
+                    (x, y) => (x.MapLocation, _solarSystemNameLookup[y].MapLocation))
                 .Distinct()
                 .ToList();
             _solarSystemFont = Art.Fonts.UIMediumFont;
@@ -55,16 +52,17 @@ namespace SpaceGame.Scenes
             spriteBatch.End();
 
             // Locked to world
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.GetTransform(MainGame.ScreenCenter));
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, _camera.GetTransform(MainGame.ScreenCenter));
             foreach (var lineToDraw in _linesToDraw)
             {
                 Art.DrawLine(spriteBatch, lineToDraw.Item1, lineToDraw.Item2, Color.Gray, 2);
             }
             foreach (var solarSystem in _solarSystems)
             {
-                spriteBatch.Draw(Art.Map.SolarSystem, solarSystem.MapLocation, null, Color.Gray, 0f, _solarSystemOrigin, 0.15f, 0, 0);
+                spriteBatch.DrawCircle(solarSystem.MapLocation, 8, 32, Color.Gray, 3);
+                spriteBatch.DrawCircle(solarSystem.MapLocation, 5, 32, Color.Black, 10);
                 var textSize = _solarSystemFont.MeasureString(solarSystem.Name);
-                var textLocation = solarSystem.MapLocation - new Vector2(textSize.X / 2, textSize.Y + 22) + _solarSystemOrigin;
+                var textLocation = solarSystem.MapLocation - new Vector2(textSize.X / 2, textSize.Y + 22);
                 spriteBatch.DrawString(_solarSystemFont, solarSystem.Name, textLocation, Color.White);
             }
             spriteBatch.End();

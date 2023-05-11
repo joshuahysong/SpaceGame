@@ -60,18 +60,26 @@ namespace SpaceGame
         #endregion
 
         #region Ships
-        public static Texture2D TestShip1 { get; set; }
-        public static Texture2D TestShip2 { get; set; }
+        public static class Ships
+        {
+            public static Texture2D TestShip1 { get; set; }
+            public static Texture2D TestShip2 { get; set; }
+        }
+        #endregion
+
+        #region Parts
+        public static class Parts
+        {
+            public static Texture2D Thruster1 { get; set; }
+        }
         #endregion
 
         #region Projectiles
-        public static Texture2D Bullet { get; set; }
-        public static Texture2D GreenBullet { get; set; }
-        public static Texture2D OrangeLaser { get; set; }
-        #endregion
-
-        #region Effects
-        public static Texture2D Thruster1 { get; set; }
+        public static class Projectiles
+        {
+            public static Texture2D GreenBullet { get; set; }
+            public static Texture2D OrangeLaser { get; set; }
+        }
         #endregion
 
         #region Fonts
@@ -85,19 +93,10 @@ namespace SpaceGame
         }
         #endregion
 
-        #region Map
-        public static class Map
-        {
-            public static Texture2D SolarSystem { get; set; }
-        }
-        #endregion
-
         #region Misc
         public static class Misc
         {
             public static Texture2D Pixel { get; set; }
-            public static Texture2D CircleFilled { get; set; }
-            public static Texture2D CircleOutline { get; set; }
         }
         #endregion
 
@@ -124,14 +123,13 @@ namespace SpaceGame
             Planets.Cloudy4 = content.Load<Texture2D>("Planets/cloudy-4");
             Planets.RedPlanet = content.Load<Texture2D>("Planets/red-planet");
 
-            TestShip1 = content.Load<Texture2D>("Ships/TestShip1");
-            TestShip2 = content.Load<Texture2D>("Ships/TestShip2");
+            Ships.TestShip1 = content.Load<Texture2D>("Ships/TestShip1");
+            Ships.TestShip2 = content.Load<Texture2D>("Ships/TestShip2");
 
-            Bullet = CreateRectangleTexture(5, 5, Color.White, Color.White);
-            GreenBullet = content.Load<Texture2D>("Projectiles/green_bullet");
-            OrangeLaser = content.Load<Texture2D>("Projectiles/orange_laser");
+            Projectiles.GreenBullet = content.Load<Texture2D>("Projectiles/green_bullet");
+            Projectiles.OrangeLaser = content.Load<Texture2D>("Projectiles/orange_laser");
 
-            Thruster1 = content.Load<Texture2D>("Effects/thruster-1");
+            Parts.Thruster1 = content.Load<Texture2D>("Parts/thruster-1");
 
             Fonts.DebugFont = content.Load<SpriteFont>("Fonts/Debug");
             Fonts.HeaderFont = content.Load<SpriteFont>("Fonts/Header");
@@ -139,10 +137,6 @@ namespace SpaceGame
             Fonts.UIMediumFont = content.Load<SpriteFont>("Fonts/UI_Medium");
             Fonts.UILargeFont = content.Load<SpriteFont>("Fonts/UI_Large");
 
-            Map.SolarSystem = content.Load<Texture2D>("Map/solar-system");
-
-            Misc.CircleFilled = content.Load<Texture2D>("Misc/circle-filled");
-            Misc.CircleOutline = content.Load<Texture2D>("Misc/circle-outline");
             Misc.Pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             Misc.Pixel.SetData(new[] { Color.White });
         }
@@ -214,19 +208,6 @@ namespace SpaceGame
             var origin = new Vector2(0f, 0.5f);
             var scale = new Vector2(length, thickness);
             spriteBatch.Draw(Misc.Pixel, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
-        }
-
-        public static void DrawCircle(this SpriteBatch spriteBatch, Vector2 position, int radius, Color borderColor)
-        {
-            var circle = CreateCircleTexture(radius, borderColor);
-            var circlePosition = new Vector2(position.X - radius, position.Y - radius);
-            spriteBatch.Draw(circle, circlePosition, null, borderColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
-        }
-
-        public static void DrawRectangle(this SpriteBatch spriteBatch, Vector2 position, Vector2 size, float heading, Color borderColor)
-        {
-            var rectangle = CreateRectangleTexture((int)Math.Ceiling(size.X), (int)Math.Ceiling(size.Y), Color.Transparent, borderColor);
-            spriteBatch.Draw(rectangle, position, null, borderColor, heading, size / 2f, 1f, SpriteEffects.None, 0);
         }
 
         public static Color[] GetScaledTextureData(Texture2D texture, float scale)

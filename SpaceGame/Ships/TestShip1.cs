@@ -10,7 +10,7 @@ namespace SpaceGame.Ships
             : base(faction,
                 spawnPosition,
                 spawnHeading,
-                texture: Art.TestShip1,
+                texture: Art.Ships.TestShip1,
                 thrust: 300f,
                 maxTurnRate: 2f,
                 maneuveringThrust: 0.05f,
@@ -21,8 +21,8 @@ namespace SpaceGame.Ships
                 scale: ScaleType.Half)
         {
             _weapons.Add(new TestWeapon(new Vector2(Texture.Width / 2 * Scale, 0)));
-            _thrusters.Add(new Thruster1(Art.Thruster1, new Vector2(-29.5f, -13), Vector2.Zero, ScaleType.Half));
-            _thrusters.Add(new Thruster1(Art.Thruster1, new Vector2(-29.5f, 13.5f), Vector2.Zero, ScaleType.Half));
+            _thrusters.Add(new Thruster1(Art.Parts.Thruster1, new Vector2(-29.5f, -13), Vector2.Zero, ScaleType.Half));
+            _thrusters.Add(new Thruster1(Art.Parts.Thruster1, new Vector2(-29.5f, 13.5f), Vector2.Zero, ScaleType.Half));
         }
     }
 }

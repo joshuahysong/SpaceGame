@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using SpaceGame.Common;
 using SpaceGame.Managers;
 using SpaceGame.Projectiles;
@@ -160,8 +161,7 @@ namespace SpaceGame.Ships
 
             if (drawMinimized)
             {
-                var scale = ((float)Texture.Width / Art.Misc.CircleFilled.Width) * Scale * 2;
-                var origin = new Vector2(Art.Misc.CircleOutline.Width / 2, Art.Misc.CircleFilled.Height / 2);
+                var size = Texture.Width > Texture.Height ? Texture.Width : Texture.Height;
                 var color = Faction switch
                 {
                     FactionType.None => Color.LightGray,
@@ -169,7 +169,7 @@ namespace SpaceGame.Ships
                     FactionType.Enemy => Color.Red,
                     _ => Color.White,
                 };
-                spriteBatch.Draw(Art.Misc.CircleFilled, Position, null, color, Heading, origin, scale, SpriteEffects.None, 0);
+                spriteBatch.DrawCircle(Position, size / 2, 32, color, size);
                 return;
             }
 
