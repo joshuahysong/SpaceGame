@@ -7,6 +7,8 @@ namespace SpaceGame.Scenes
 {
     public class PauseMenuScene : IScene
     {
+        public string Name => SceneNames.PauseMenu;
+
         private Camera _camera;
         private List<Button> _buttons = new();
 
@@ -52,7 +54,7 @@ namespace SpaceGame.Scenes
 
         private void ReturnToMainMenu()
         {
-            MainGame.SetScene(new MainMenuScene());
+            MainGame.SwitchToScene(SceneNames.MainMenu);
         }
 
         private void Quit()

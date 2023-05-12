@@ -24,4 +24,13 @@
     {
         public const float LandingSpeed = 200f;
     }
+
+    public static class SceneNames
+    {
+        public const string MainMenu = "Main Menu";
+        public const string GameOver = "Game Over";
+        public const string PauseMenu = "Pause Menu";
+        public const string Space = "Space";
+        public const string UniverseMap = "Universe Map";
+    }
 }

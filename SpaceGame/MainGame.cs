@@ -22,11 +22,12 @@ namespace SpaceGame
         private Dictionary<string, string> _systemDebugEntries = new();
 
         private SpriteBatch _spriteBatch;
-        private static IScene _previousScene;
-        private static IScene _currentScene;
         private static GraphicsDeviceManager _graphics;
         private int _windowWidth;
         private int _windowHeight;
+        private static Dictionary<string, IScene> _scenes;
+        private static string _currentSceneName;
+        private static string _previousSceneName;
 
         public MainGame()
         {
@@ -59,7 +60,17 @@ namespace SpaceGame
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             Art.Load(Content);
-            _currentScene = new MainMenuScene();
+
+            _scenes = new Dictionary<string, IScene>
+            {
+                [SceneNames.MainMenu] = new MainMenuScene(),
+                [SceneNames.GameOver] = new GameOverScene(),
+                [SceneNames.PauseMenu] = new PauseMenuScene(),
+                [SceneNames.Space] = new SpaceScene(),
+                [SceneNames.UniverseMap] = new UniverseMapScene()
+            };
+
+            _currentSceneName = SceneNames.MainMenu;
         }
 
         protected override void Update(GameTime gameTime)
@@ -67,8 +78,8 @@ namespace SpaceGame
             if (IsActive)
                 HandleInput();
 
-            if (_currentScene != null)
-                _currentScene.Update(gameTime);
+            if (_scenes != null && _scenes.ContainsKey(_currentSceneName))
+                _scenes[_currentSceneName].Update(gameTime);
 
             if (IsDebugging)
             {
@@ -82,26 +93,35 @@ namespace SpaceGame
         {
             GraphicsDevice.Clear(Color.Black);
 
-            if (_currentScene != null)
-                _currentScene.Draw(gameTime, _spriteBatch);
+            if (_scenes != null && _scenes.ContainsKey(_currentSceneName))
+                _scenes[_currentSceneName].Draw(gameTime, _spriteBatch);
 
             DrawDebug(gameTime);
 
             base.Draw(gameTime);
         }
 
-        public static void SetScene(IScene scene)
+        public static void SwitchToScene(IScene scene)
         {
-            if (_currentScene != null)
-                _previousScene = _currentScene;
+            if (scene != null &&_scenes != null && _scenes.ContainsKey(scene.Name))
+                _scenes[scene.Name] = scene;
 
-            _currentScene = scene;
+            SwitchToScene(scene.Name);
         }
 
         public static void SwitchToPreviousScene()
         {
-            _currentScene = _previousScene;
-            _previousScene = null;
+            _currentSceneName = _previousSceneName;
+            _previousSceneName = null;
+        }
+
+        public static void SwitchToScene(string sceneName)
+        {
+            if (_scenes != null && _scenes.ContainsKey(sceneName))
+            {
+                _previousSceneName = _currentSceneName;
+                _currentSceneName = sceneName;
+            }
         }
 
         private void DrawDebug(GameTime gameTime)

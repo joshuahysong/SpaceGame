@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
 using SpaceGame.UI;
 using System;
 using System.Collections.Generic;
@@ -9,6 +8,8 @@ namespace SpaceGame.Scenes
 {
     public class MainMenuScene : IScene
     {
+        public string Name => SceneNames.MainMenu;
+
         private Camera _camera;
         private Texture2D _background;
         private List<Button> _buttons = new();
@@ -56,7 +57,7 @@ namespace SpaceGame.Scenes
 
         private void StartNewGame()
         {
-            MainGame.SetScene(new SpaceScene());
+            MainGame.SwitchToScene(new SpaceScene());
         }
 
         private void Quit()

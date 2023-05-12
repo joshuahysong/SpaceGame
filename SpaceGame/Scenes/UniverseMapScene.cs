@@ -10,6 +10,8 @@ namespace SpaceGame.Scenes
 {
     public class UniverseMapScene : IScene
     {
+        public string Name => SceneNames.UniverseMap;
+
         private Camera _camera;
         private List<ISolarSystem> _solarSystems;
         private Dictionary<string, ISolarSystem> _solarSystemNameLookup;

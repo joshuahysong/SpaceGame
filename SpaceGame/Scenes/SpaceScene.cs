@@ -16,6 +16,8 @@ namespace SpaceGame.Scenes
 {
     public class SpaceScene : IScene
     {
+        public string Name => SceneNames.Space;
+
         private Dictionary<string, string> _playerDebugEntries = new();
         private Dictionary<string, string> _systemDebugEntries = new();
 
@@ -72,7 +74,7 @@ namespace SpaceGame.Scenes
 
             if (_player.Ship.IsExpired)
             {
-                MainGame.SetScene(new GameOverScene());
+                MainGame.SwitchToScene(SceneNames.GameOver);
             }
 
             if (_isLanded)
@@ -252,7 +254,7 @@ namespace SpaceGame.Scenes
         {
             if (Input.WasButtonPressed(Buttons.Back) || Input.WasKeyPressed(Keys.Escape))
             {
-                MainGame.SetScene(new PauseMenuScene());
+                MainGame.SwitchToScene(SceneNames.PauseMenu);
             }
             if (Input.WasKeyPressed(Keys.Pause))
             {
@@ -264,7 +266,7 @@ namespace SpaceGame.Scenes
             }
             if (Input.WasKeyPressed(Keys.M))
             {
-                MainGame.SetScene(new UniverseMapScene());
+                MainGame.SwitchToScene(SceneNames.UniverseMap);
             }
 
             if (!_isLanded)
