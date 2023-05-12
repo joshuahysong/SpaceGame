@@ -1,11 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SpaceGame.Scenes.Components;
 using System.Collections.Generic;
 
-namespace SpaceGame.SolarSystems
+namespace SpaceGame.Scenes.Components
 {
-    public class TestSystem1 : ISolarSystem
+    public class SolarSystem
     {
         public string Name { get; }
         public FactionType Faction { get; }
@@ -14,14 +13,19 @@ namespace SpaceGame.SolarSystems
         public List<Planet> Planets { get; }
         public Texture2D Background { get; }
 
-        public TestSystem1()
+        public SolarSystem(string name,
+            FactionType faction,
+            Vector2 mapLocation,
+            List<string> neighborsByName,
+            List<Planet> planets,
+            Texture2D background)
         {
-            Name = "Test System 1";
-            Faction = FactionType.None;
-            MapLocation = new Vector2(50, 50);
-            NeighborsByName = new List<string> { "Test System 2" };
+            Name = name;
+            Faction = faction;
+            MapLocation = mapLocation;
+            NeighborsByName = neighborsByName;
             Planets = new List<Planet> { CreatePlanet1() };
-            Background = Art.Backgrounds.BlueNebula1;
+            Background = background;
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, bool drawMinimized = false)

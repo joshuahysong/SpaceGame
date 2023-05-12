@@ -100,6 +100,7 @@ namespace SpaceGame.Scenes
                 _playerDebugEntries["Heading"] = $"{Math.Round(_player.Ship.Heading, 2)}";
                 _playerDebugEntries["Velocity Heading"] = $"{Math.Round(_player.Ship.Velocity.ToAngle(), 2)}";
                 _playerDebugEntries["Current Turn Rate"] = $"{Math.Round(_player.Ship.CurrentTurnRate, 2)}";
+                _playerDebugEntries["Current Solar System"] = $"{_currentSolarSystem.Name}";
 
                 _systemDebugEntries["Mouse World Position"] = $"{Math.Round(Input.WorldMousePosition.X)}, {Math.Round(Input.WorldMousePosition.Y)}";
                 _systemDebugEntries["Camera Focus"] = $"{_camera.Focus?.GetType().Name}";
@@ -142,10 +143,6 @@ namespace SpaceGame.Scenes
             spriteBatch.Begin(SpriteSortMode.Deferred);
             if (_player.Ship.DockableLocation != null)
                 _landingButton.Draw(spriteBatch);
-
-            var fpsText = $"FPS: {Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds)}";
-            var fpsX = (int)(MainGame.Viewport.Width - 5 - Art.Fonts.DebugFont.MeasureString(fpsText).X);
-            spriteBatch.DrawString(Art.Fonts.DebugFont, fpsText, new Vector2(fpsX, 5), Color.White);
             DrawDebug(spriteBatch);
             spriteBatch.End();
         }

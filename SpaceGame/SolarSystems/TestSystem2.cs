@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SpaceGame.SolarSystems.Models;
+using SpaceGame.Scenes.Components;
 using System.Collections.Generic;
 
 namespace SpaceGame.SolarSystems

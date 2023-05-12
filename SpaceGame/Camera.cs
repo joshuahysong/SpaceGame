@@ -25,7 +25,7 @@ namespace SpaceGame
 
         public Matrix GetTransform(Vector2 cameraCenter, float? scale = null)
         {
-            var focus = Focus == null ? Vector2.Zero : Focus.WorldPosition;
+            var focus = Focus == null ? Position : Focus.WorldPosition;
             var transformScale = scale ?? Scale;
 
             return Matrix.CreateTranslation(new Vector3(-focus.X, -focus.Y, 0)) *
