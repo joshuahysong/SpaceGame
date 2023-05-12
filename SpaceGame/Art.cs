@@ -56,6 +56,11 @@ namespace SpaceGame
         {
             public static Texture2D Cloudy4 { get; set; }
             public static Texture2D RedPlanet { get; set; }
+            public static List<Texture2D> All => new()
+            {
+                Cloudy4,
+                RedPlanet
+            };
         }
         #endregion
 

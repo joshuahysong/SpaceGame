@@ -35,6 +35,7 @@ namespace SpaceGame.Scenes
             //    .Distinct()
             //    .ToList();
             _solarSystemFont = Art.Fonts.UIMediumFont;
+            MainGame.SetCurrentSolarSystem(_solarSystems.First());
         }
 
         public void Update(GameTime gameTime)
@@ -159,12 +160,17 @@ namespace SpaceGame.Scenes
             for (var i = 0; i < 100; i++)
             {
                 var location = GetRandomPoint(random);
+                var index = random.Next(0, Art.Backgrounds.All.Count - 1);
+                var background = Art.Backgrounds.All.ToArray()[index];
                 var newSystem = new SolarSystem(
                     i.ToString(),
                     FactionType.None,
                     new Vector2(location.X, location.Y),
-                    null, null, Art.Backgrounds.GreenNebula1);
-                // TODO Minimum distance
+                    null,
+                    CreateTestPlanet(random),
+                    background);
+
+                // TODO Minimum distance between systems
                 _solarSystems.Add(newSystem);
             }
         }
@@ -176,6 +182,28 @@ namespace SpaceGame.Scenes
             var x = 0 + radius * Math.Cos(angle);
             var y = 0 + radius * Math.Sin(angle);
             return new Vector2((float)x, (float)y);
+        }
+
+        private List<Planet> CreateTestPlanet(Random random)
+        {
+            var index = random.Next(0, Art.Planets.All.Count - 1);
+            var texture = Art.Planets.All.ToArray()[index];
+
+            // TODO Generated text
+            var description = new List<string>();
+            //description.Add($"The sun beats down on the empty spaceport, its harsh rays reflecting off the sand dunes." +
+            //    $"The only sound is the wind whistling through the abandoned buildings." +
+            //    $"The spaceport is a reminder of a time when this planet was thriving, but now it is nothing more than a ghost town.");
+            //description.Add($"The once-busy spaceport is now deserted. The docking bays are empty, the hangars are closed, and the control tower is silent." +
+            //    $"The only signs of life are the occasional sand lizards that scuttle across the tarmac.");
+            //description.Add($"The spaceport is a relic of a bygone era." +
+            //    $"It was once a hub of commerce and trade, but now it is nothing more than a monument to a lost civilization. The buildings are crumbling," +
+            //    $"the ships are rusting, and the sand is slowly encroaching on the tarmac.");
+            //description.Add($"The spaceport is a reminder of the fragility of life." +
+            //    $"It is a reminder that even the most prosperous civilizations can be brought to ruin. It is a reminder that nothing lasts forever.");
+
+            description.Add($"Some interesting description here...");
+            return new List<Planet> { new Planet(FactionType.None, Vector2.Zero, texture, description) };
         }
     }
 }

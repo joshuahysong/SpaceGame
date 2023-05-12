@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceGame.Scenes;
+using SpaceGame.Scenes.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace SpaceGame
         public static MainGame Instance { get; private set; }
         public static bool IsDebugging { get; private set; }
         public static RenderTarget2D RenderTarget { get; private set; }
+        public static SolarSystem CurrentSolarSystem { get; private set; }
 
         public static Viewport Viewport => Instance.GraphicsDevice.Viewport;
         public static Vector2 ScreenCenter => new(Viewport.Width / 2, Viewport.Height / 2);
@@ -119,6 +121,12 @@ namespace SpaceGame
                 _previousSceneName = _currentSceneName;
                 _currentSceneName = sceneName;
             }
+        }
+
+        public static void SetCurrentSolarSystem(SolarSystem solarSystem)
+        {
+            if (solarSystem != null)
+                CurrentSolarSystem = solarSystem;
         }
 
         private void DrawDebug(GameTime gameTime)
