@@ -13,19 +13,19 @@ namespace SpaceGame.Scenes.Components
         public List<Planet> Planets { get; }
         public Texture2D Background { get; }
 
-        public SolarSystem(string name,
+        public SolarSystem(
+            string name,
             FactionType faction,
             Vector2 mapLocation,
-            List<string> neighborsByName,
             List<Planet> planets,
             Texture2D background)
         {
             Name = name;
             Faction = faction;
             MapLocation = mapLocation;
-            NeighborsByName = neighborsByName;
             Planets = planets;
             Background = background;
+            NeighborsByName = new List<string>();
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, bool drawMinimized = false)

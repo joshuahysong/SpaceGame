@@ -38,13 +38,14 @@ namespace SpaceGame.Generators
                     tempName.ToString(),
                     FactionType.None,
                     new Vector2(newLocation.X, newLocation.Y),
-                    null,
                     CreateTestPlanet(random),
                 background);
 
                 solarSystems.Add(newSystem);
                 tempName++;
             }
+
+            SetNeightbors(solarSystems);
 
             return solarSystems;
         }
@@ -56,6 +57,30 @@ namespace SpaceGame.Generators
             var x = 0 + radius * Math.Cos(angle);
             var y = 0 + radius * Math.Sin(angle);
             return new Vector2((float)x, (float)y);
+        }
+
+        private static void SetNeightbors(List<SolarSystem> solarSystems)
+        {
+            var neighborDistance = 100;
+            var minNeighbors = 3;
+            var maxNeighbors = 6;
+            while (solarSystems.Any(x => x.NeighborsByName.Count < minNeighbors))
+            {
+                foreach (var solarSystem in solarSystems)
+                {
+                    // Get all neighbors reachable by each solarSystem
+                    foreach (var potentialNeighbor in solarSystems.Where(x => x.Name != solarSystem.Name))
+                    {
+                        if (solarSystem.NeighborsByName.Count >= maxNeighbors) break;
+                        if (Vector2.Distance(potentialNeighbor.MapLocation, solarSystem.MapLocation) <= neighborDistance
+                            && !solarSystem.NeighborsByName.Contains(potentialNeighbor.Name))
+                        {
+                            solarSystem.NeighborsByName.Add(potentialNeighbor.Name);
+                        }
+                    }
+                }
+                neighborDistance += 10;
+            }
         }
 
         private static List<Planet> CreateTestPlanet(Random random)
