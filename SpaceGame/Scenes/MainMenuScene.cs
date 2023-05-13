@@ -19,7 +19,7 @@ namespace SpaceGame.Scenes
             _camera = new Camera();
 
             var buttonTexture = Art.CreateRectangleTexture(200, 40, Color.Black, Color.White, 2);
-            _buttons.Add(new Button(buttonTexture, "New Game", TextSize.Large, new Vector2(100, 50), 200, 40, Color.White, StartNewGame, true));
+            _buttons.Add(new Button(buttonTexture, "New Game", TextSize.Large, new Vector2(100, 50), 200, 40, Color.White, MainGame.StartNewGame, true));
             _buttons.Add(new Button(buttonTexture, "Quit", TextSize.Large, new Vector2(100, -30), 200, 40, Color.White, Quit, true));
         }
 
@@ -53,11 +53,6 @@ namespace SpaceGame.Scenes
                 button.Draw(spriteBatch);
             }
             spriteBatch.End();
-        }
-
-        private void StartNewGame()
-        {
-            MainGame.SwitchToScene(new SpaceScene());
         }
 
         private void Quit()

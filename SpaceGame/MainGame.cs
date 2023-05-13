@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SpaceGame.Generators;
 using SpaceGame.Scenes;
 using SpaceGame.Scenes.Components;
 using System;
@@ -64,9 +65,7 @@ namespace SpaceGame
             {
                 [SceneNames.MainMenu] = new MainMenuScene(),
                 [SceneNames.GameOver] = new GameOverScene(),
-                [SceneNames.PauseMenu] = new PauseMenuScene(),
-                [SceneNames.Space] = new SpaceScene(),
-                [SceneNames.UniverseMap] = new UniverseMapScene()
+                [SceneNames.PauseMenu] = new PauseMenuScene()
             };
 
             _currentSceneName = SceneNames.MainMenu;
@@ -100,14 +99,6 @@ namespace SpaceGame
             base.Draw(gameTime);
         }
 
-        public static void SwitchToScene(IScene scene)
-        {
-            if (scene != null &&_scenes != null && _scenes.ContainsKey(scene.Name))
-                _scenes[scene.Name] = scene;
-
-            SwitchToScene(scene.Name);
-        }
-
         public static void SwitchToPreviousScene()
         {
             _currentSceneName = _previousSceneName;
@@ -127,6 +118,27 @@ namespace SpaceGame
         {
             if (solarSystem != null)
                 CurrentSolarSystem = solarSystem;
+        }
+
+        public static void StartNewGame()
+        {
+            var universeRadius = 1000;
+            var numberofSystems = 100;
+            var solarSystems = UniverseGenerator.GenerateSolarSystems(universeRadius, numberofSystems);
+            CurrentSolarSystem = solarSystems.First();
+
+            _scenes[SceneNames.Space] = new SpaceScene();
+            _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems, universeRadius);
+            SwitchToScene(SceneNames.Space);
+        }
+
+        public static void DebugRegenerateUniverse()
+        {
+            var universeRadius = 1000;
+            var numberofSystems = 100;
+            var solarSystems = UniverseGenerator.GenerateSolarSystems(universeRadius, numberofSystems);
+            _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems, universeRadius);
+            SwitchToScene(SceneNames.UniverseMap);
         }
 
         private void DrawDebug(GameTime gameTime)
