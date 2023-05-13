@@ -152,26 +152,50 @@ namespace SpaceGame.Scenes
                 if (_camera.Scale > maximumZoom)
                     _camera.Scale = maximumZoom;
             }
+
+            if (MainGame.IsDebugging && Input.WasKeyPressed(Keys.R))
+            {
+                GenerateSolarSystems();
+            }
         }
 
         private void GenerateSolarSystems()
         {
             var random = new Random();
-            for (var i = 0; i < 100; i++)
+            var systemsToAdd = 100;
+            var tempName = 0;
+            var minimumDistance = 50;
+            _solarSystems = new List<SolarSystem>();
+            while (_solarSystems.Count < systemsToAdd)
             {
-                var location = GetRandomPoint(random);
+                var newLocation = GetRandomPoint(random);
+
+                // Check minimum distance (This is not a gross implementation but works)
+                var closeNeighborFound = false;
+                foreach (var mapLocation in _solarSystems.Select(x => x.MapLocation))
+                {
+                    if (Vector2.Distance(newLocation, mapLocation) < minimumDistance)
+                    {
+                        closeNeighborFound = true;
+                        break;
+                    }
+                }
+
+                if (closeNeighborFound)
+                    continue;
+
                 var index = random.Next(0, Art.Backgrounds.All.Count - 1);
                 var background = Art.Backgrounds.All.ToArray()[index];
                 var newSystem = new SolarSystem(
-                    i.ToString(),
+                    tempName.ToString(),
                     FactionType.None,
-                    new Vector2(location.X, location.Y),
+                    new Vector2(newLocation.X, newLocation.Y),
                     null,
                     CreateTestPlanet(random),
                     background);
 
-                // TODO Minimum distance between systems
                 _solarSystems.Add(newSystem);
+                tempName++;
             }
         }
 
