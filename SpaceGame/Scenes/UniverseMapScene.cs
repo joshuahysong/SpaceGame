@@ -71,6 +71,10 @@ namespace SpaceGame.Scenes
             {
                 spriteBatch.DrawCircle(solarSystem.MapLocation, 8, 32, Color.Gray, 3);
                 spriteBatch.DrawCircle(solarSystem.MapLocation, 5, 32, Color.Black, 10);
+                if (solarSystem == MainGame.CurrentSolarSystem)
+                {
+                    spriteBatch.DrawCircle(solarSystem.MapLocation, 12, 32, Color.Cyan, 2);
+                }
             }
             foreach (var solarSystem in _solarSystems)
             {

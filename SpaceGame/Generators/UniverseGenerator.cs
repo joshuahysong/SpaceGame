@@ -11,9 +11,9 @@ namespace SpaceGame.Generators
         public static List<SolarSystem> GenerateSolarSystems()
         {
             var random = new Random();
-            var tempName = 0;
             var minimumDistance = 50;
             var solarSystems = new List<SolarSystem>();
+            var names = SolarSystemNameGenerator.GetNames(Constants.NumberOfSystems);
             while (solarSystems.Count < Constants.NumberOfSystems)
             {
                 var newLocation = GetRandomPoint(random, Constants.UniverseRadius);
@@ -35,14 +35,13 @@ namespace SpaceGame.Generators
                 var index = random.Next(0, Art.Backgrounds.All.Count - 1);
                 var background = Art.Backgrounds.All.ToArray()[index];
                 var newSystem = new SolarSystem(
-                    tempName.ToString(),
+                    names[solarSystems.Count],
                     FactionType.None,
                     new Vector2(newLocation.X, newLocation.Y),
                     CreateTestPlanet(random),
                 background);
 
                 solarSystems.Add(newSystem);
-                tempName++;
             }
 
             SetNeightbors(solarSystems);
