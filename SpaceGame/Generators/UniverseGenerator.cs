@@ -8,15 +8,15 @@ namespace SpaceGame.Generators
 {
     public static class UniverseGenerator
     {
-        public static List<SolarSystem> GenerateSolarSystems(int universeRadius, int numberOfSystems)
+        public static List<SolarSystem> GenerateSolarSystems()
         {
             var random = new Random();
             var tempName = 0;
             var minimumDistance = 50;
             var solarSystems = new List<SolarSystem>();
-            while (solarSystems.Count < numberOfSystems)
+            while (solarSystems.Count < Constants.NumberOfSystems)
             {
-                var newLocation = GetRandomPoint(random, universeRadius);
+                var newLocation = GetRandomPoint(random, Constants.UniverseRadius);
 
                 // Check minimum distance (This is not a gross implementation but works)
                 var closeNeighborFound = false;
@@ -61,25 +61,40 @@ namespace SpaceGame.Generators
 
         private static void SetNeightbors(List<SolarSystem> solarSystems)
         {
-            var neighborDistance = 100;
-            var minNeighbors = 3;
-            var maxNeighbors = 6;
-            while (solarSystems.Any(x => x.NeighborsByName.Count < minNeighbors))
+            // Set neighbors for each solar system to be ALL other solar systems. We will trim below.
+            // TODO Instead of all systems create a delauny triangulation.
+            solarSystems.ForEach(solarSystem => solarSystem.NeighborsByName.AddRange(solarSystems.Where(x => x != solarSystem).Select(x => x.Name)));
+
+            // Create minimum spanning tree of connections
+            var paths = new List<(Vector2, Vector2)>();
+            var systemsToCheck = new List<SolarSystem> { solarSystems.First() };
+            while (solarSystems.Any(x => systemsToCheck.All(y => y.Name != x.Name)))
             {
-                foreach (var solarSystem in solarSystems)
+                var pathsToCompare = new List<(Vector2, Vector2)>();
+                foreach (var systemToCheck in systemsToCheck)
                 {
-                    // Get all neighbors reachable by each solarSystem
-                    foreach (var potentialNeighbor in solarSystems.Where(x => x.Name != solarSystem.Name))
-                    {
-                        if (solarSystem.NeighborsByName.Count >= maxNeighbors) break;
-                        if (Vector2.Distance(potentialNeighbor.MapLocation, solarSystem.MapLocation) <= neighborDistance
-                            && !solarSystem.NeighborsByName.Contains(potentialNeighbor.Name))
-                        {
-                            solarSystem.NeighborsByName.Add(potentialNeighbor.Name);
-                        }
-                    }
+                    pathsToCompare.AddRange(systemToCheck.NeighborsByName
+                        .Where(x => !systemsToCheck.Select(y => y.Name).Contains(x))
+                        .Select(x => (systemToCheck.MapLocation, solarSystems.First(y => y.Name == x).MapLocation))
+                        .Where(x => !paths.Contains(x) && !paths.Contains((x.Item2, x.Item1)))
+                        .ToList());
                 }
-                neighborDistance += 10;
+
+                var newPath = pathsToCompare
+                    .Select(x => new { Path = x, Distance = Vector2.Distance(x.Item1, x.Item2) })
+                    .OrderBy(x => x.Distance)
+                    .Select(x => x.Path)
+                    .First();
+                paths.Add(newPath);
+
+                systemsToCheck.Add(solarSystems.First(y => y.MapLocation == newPath.Item2));
+            }
+
+            foreach(var solarSystem in solarSystems)
+            {
+                var matchingPaths = paths.Where(x => x.Item1 == solarSystem.MapLocation || x.Item2 == solarSystem.MapLocation).ToList();
+                var neighbors = solarSystems.Where(x => x != solarSystem && matchingPaths.Any(y => y.Item1 == x.MapLocation || y.Item2 == x.MapLocation));
+                solarSystem.SetNeighbors(neighbors.Select(x => x.Name));
             }
         }
 

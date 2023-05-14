@@ -23,6 +23,8 @@
     public class Constants
     {
         public const float LandingSpeed = 200f;
+        public const int UniverseRadius = 1000;
+        public const int NumberOfSystems = 100;
     }
 
     public static class SceneNames

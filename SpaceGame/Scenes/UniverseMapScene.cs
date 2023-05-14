@@ -17,15 +17,15 @@ namespace SpaceGame.Scenes
         private List<SolarSystem> _solarSystems = new();
 
         private Camera _camera;
-        private int _universeRadius;
+        private float _cameraMaxY;
+        private float _cameraMaxX;
         private Dictionary<string, SolarSystem> _solarSystemNameLookup;
         private List<(Vector2, Vector2)> _linesToDraw;
         private SpriteFont _solarSystemFont;
 
-        public UniverseMapScene(List<SolarSystem> solarSystems, int universeRadius)
+        public UniverseMapScene(List<SolarSystem> solarSystems)
         {
             _camera = new Camera();
-            _universeRadius = universeRadius;
             _solarSystems = solarSystems;
             _solarSystemNameLookup = _solarSystems.ToDictionary(x => x.Name, y => y);
             _linesToDraw = _solarSystems
@@ -35,6 +35,9 @@ namespace SpaceGame.Scenes
                 .Distinct()
                 .ToList();
             _solarSystemFont = Art.Fonts.UIMediumFont;
+            _camera.Position = MainGame.CurrentSolarSystem.MapLocation;
+            _cameraMaxY = _solarSystems.Max(x => x.MapLocation.Y);
+            _cameraMaxX = _solarSystems.Max(x => x.MapLocation.X);
         }
 
         public void Update(GameTime gameTime)
@@ -48,6 +51,7 @@ namespace SpaceGame.Scenes
 
             _systemDebugEntries["Mouse World Position"] = $"{Math.Round(Input.WorldMousePosition.X)}, {Math.Round(Input.WorldMousePosition.Y)}";
             _systemDebugEntries["Camera Zoom"] = $"{Math.Round(_camera.Scale, 2)}";
+            _systemDebugEntries["Camera Position"] = $"{Math.Round(_camera.Position.X)}, {Math.Round(_camera.Position.Y)}";
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -112,26 +116,26 @@ namespace SpaceGame.Scenes
             }
             if (Input.WasKeyPressed(Keys.W) || Input.IsKeyPressed(Keys.W))
             {
-                _camera.Position = _camera.Position.Y < -_universeRadius / 2
-                    ? new Vector2(_camera.Position.X, -_universeRadius / 2)
+                _camera.Position = _camera.Position.Y < -_cameraMaxY
+                    ? new Vector2(_camera.Position.X, -_cameraMaxY)
                     : new Vector2(_camera.Position.X, _camera.Position.Y - cameraSpeed);
             }
             if (Input.WasKeyPressed(Keys.S) || Input.IsKeyPressed(Keys.S))
             {
-                _camera.Position = _camera.Position.Y > _universeRadius / 2
-                    ? new Vector2(_camera.Position.X, _universeRadius / 2)
+                _camera.Position = _camera.Position.Y > _cameraMaxY
+                    ? new Vector2(_camera.Position.X, _cameraMaxY)
                     : new Vector2(_camera.Position.X, _camera.Position.Y + cameraSpeed);
             }
             if (Input.WasKeyPressed(Keys.A) || Input.IsKeyPressed(Keys.A))
             {
-                _camera.Position = _camera.Position.X < -_universeRadius / 2
-                    ? new Vector2(-_universeRadius / 2, _camera.Position.Y)
+                _camera.Position = _camera.Position.X < -_cameraMaxX
+                    ? new Vector2(-_cameraMaxX, _camera.Position.Y)
                     : new Vector2(_camera.Position.X - cameraSpeed, _camera.Position.Y);
             }
             if (Input.WasKeyPressed(Keys.D) || Input.IsKeyPressed(Keys.D))
             {
-                _camera.Position = _camera.Position.X > _universeRadius / 2
-                    ? new Vector2(_universeRadius / 2, _camera.Position.Y)
+                _camera.Position = _camera.Position.X > _cameraMaxX
+                    ? new Vector2(_cameraMaxX, _camera.Position.Y)
                     : new Vector2(_camera.Position.X + cameraSpeed, _camera.Position.Y);
             }
 

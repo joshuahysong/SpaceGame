@@ -122,22 +122,18 @@ namespace SpaceGame
 
         public static void StartNewGame()
         {
-            var universeRadius = 1000;
-            var numberofSystems = 100;
-            var solarSystems = UniverseGenerator.GenerateSolarSystems(universeRadius, numberofSystems);
+            var solarSystems = UniverseGenerator.GenerateSolarSystems();
             CurrentSolarSystem = solarSystems.First();
 
             _scenes[SceneNames.Space] = new SpaceScene();
-            _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems, universeRadius);
+            _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems);
             SwitchToScene(SceneNames.Space);
         }
 
         public static void DebugRegenerateUniverse()
         {
-            var universeRadius = 1000;
-            var numberofSystems = 100;
-            var solarSystems = UniverseGenerator.GenerateSolarSystems(universeRadius, numberofSystems);
-            _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems, universeRadius);
+            var solarSystems = UniverseGenerator.GenerateSolarSystems();
+            _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems);
             SwitchToScene(SceneNames.UniverseMap);
         }
 
