@@ -149,6 +149,11 @@ namespace SpaceGame.Scenes
             spriteBatch.End();
         }
 
+        public void HandleSolarSystemSelectionChanged(SolarSystem selectedSolarSystem)
+        {
+            _selectedSolarSystem = selectedSolarSystem;
+        }
+
         private void DrawMinimapTexture(GameTime gameTime, SpriteBatch spriteBatch)
         {
             MainGame.Instance.GraphicsDevice.SetRenderTarget(MainGame.RenderTarget);
@@ -267,6 +272,10 @@ namespace SpaceGame.Scenes
             {
                 MainGame.SwitchToScene(SceneNames.UniverseMap);
             }
+            if (Input.WasKeyPressed(Keys.J))
+            {
+                JumpToSystem();
+            }
 
             if (!_isLanded)
             {
@@ -296,9 +305,13 @@ namespace SpaceGame.Scenes
             _isLanded = true;
         }
 
-        public void HandleSolarSystemSelectionChanged(SolarSystem selectedSolarSystem)
+        private void JumpToSystem()
         {
-            _selectedSolarSystem = selectedSolarSystem;
+            if (_selectedSolarSystem != null)
+            {
+                MainGame.SetCurrentSolarSystem(_selectedSolarSystem);
+                _selectedSolarSystem = null;
+            }
         }
 
         #region Dispose
