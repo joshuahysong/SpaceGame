@@ -40,11 +40,10 @@ namespace SpaceGame.Generators
                     new Vector2(newLocation.X, newLocation.Y),
                     CreateTestPlanet(random),
                 background);
-
                 solarSystems.Add(newSystem);
             }
 
-            SetNeightbors(solarSystems);
+            SetupPaths(solarSystems);
 
             return solarSystems;
         }
@@ -58,7 +57,7 @@ namespace SpaceGame.Generators
             return new Vector2((float)x, (float)y);
         }
 
-        private static void SetNeightbors(List<SolarSystem> solarSystems)
+        private static void SetupPaths(List<SolarSystem> solarSystems)
         {
             // Set neighbors for each solar system to be ALL other solar systems. We will trim below.
             // TODO Instead of all systems create a delauny triangulation.
@@ -67,14 +66,16 @@ namespace SpaceGame.Generators
             // Create minimum spanning tree of connections
             var paths = new List<(Vector2, Vector2)>();
             var systemsToCheck = new List<SolarSystem> { solarSystems.First() };
+            var solarSystemNameLookup = solarSystems.ToDictionary(x => x.Name, y => y);
             while (solarSystems.Any(x => systemsToCheck.All(y => y.Name != x.Name)))
             {
+                var systemsToCheckNameLookup = systemsToCheck.ToDictionary(x => x.Name, y => y);
                 var pathsToCompare = new List<(Vector2, Vector2)>();
                 foreach (var systemToCheck in systemsToCheck)
                 {
                     pathsToCompare.AddRange(systemToCheck.NeighborsByName
-                        .Where(x => !systemsToCheck.Select(y => y.Name).Contains(x))
-                        .Select(x => (systemToCheck.MapLocation, solarSystems.First(y => y.Name == x).MapLocation))
+                        .Where(x => !systemsToCheckNameLookup.ContainsKey(x))
+                        .Select(x => (systemToCheck.MapLocation, solarSystemNameLookup[x].MapLocation))
                         .Where(x => !paths.Contains(x) && !paths.Contains((x.Item2, x.Item1)))
                         .ToList());
                 }

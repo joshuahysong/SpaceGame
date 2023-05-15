@@ -122,8 +122,11 @@ namespace SpaceGame
 
         public static void StartNewGame()
         {
+            // TODO Loading screen
             var solarSystems = UniverseGenerator.GenerateSolarSystems();
-            CurrentSolarSystem = solarSystems.First();
+            var random = new Random();
+            var index = random.Next(0, solarSystems.Count - 1);
+            CurrentSolarSystem = solarSystems.ToArray()[index];
 
             _scenes[SceneNames.Space] = new SpaceScene();
             _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems);

@@ -62,9 +62,7 @@ namespace SpaceGame.Generators
             return listOfNames
                 .GroupBy(x => x)
                 .ToDictionary(x => x.Key, y => y
-                    .Select((z, i) => i == 0 ? z : $"{z} {new string('I', i + 1)}")
-                    .ToList()
-                    )
+                    .Select((z, i) => i == 0 ? z : $"{z} {new string('I', i + 1)}"))
                 .SelectMany(x => x.Value)
                 .OrderByDescending(x => x)
                 .ToList();

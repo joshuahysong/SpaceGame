@@ -264,7 +264,7 @@
 /processorParam:TextureFormat=Color
 /build:Map/solar-system.png
 
-#begin Misc/circle-filled.png
+#begin Misc/solar-system.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -274,19 +274,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Misc/circle-filled.png
-
-#begin Misc/circle-outline.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Misc/circle-outline.png
+/build:Misc/solar-system.png
 
 #begin Parts/thruster-1.png
 /importer:TextureImporter

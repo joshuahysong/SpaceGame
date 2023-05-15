@@ -9,6 +9,7 @@ namespace SpaceGame
         public static List<Keys> ManagedKeys { get; set; }
         public static Vector2 ScreenMousePosition { get; private set; }
         public static Vector2 WorldMousePosition { get; private set; }
+        public static Vector2 PreviousWorldMousePosition { get; private set; }
 
         private static MouseState _mouseState;
         private static KeyboardState _keyboardState;
@@ -31,6 +32,8 @@ namespace SpaceGame
             _gamepadState = GamePad.GetState(PlayerIndex.One);
 
             ScreenMousePosition = new Vector2(_mouseState.X, _mouseState.Y);
+            PreviousWorldMousePosition = camera == null
+                ? Vector2.Zero : Vector2.Transform(_lastMouseState.Position.ToVector2(), Matrix.Invert(camera.GetTransform(MainGame.ScreenCenter)));
             WorldMousePosition = camera == null
                 ? Vector2.Zero : Vector2.Transform(_mouseState.Position.ToVector2(), Matrix.Invert(camera.GetTransform(MainGame.ScreenCenter)));
             _previousMouseScrollWheelValue = _mouseScrollWheelValue;
@@ -60,6 +63,11 @@ namespace SpaceGame
         public static bool WasButtonPressed(Buttons button)
         {
             return _lastGamepadState.IsButtonUp(button) && _gamepadState.IsButtonDown(button);
+        }
+
+        public static bool IsLeftMouseButtonClicked()
+        {
+            return _mouseState.LeftButton == ButtonState.Pressed;
         }
 
         public static bool WasLeftMouseButtonClicked()

@@ -15,26 +15,24 @@ namespace SpaceGame.Scenes
 
         private Dictionary<string, string> _systemDebugEntries = new();
         private List<SolarSystem> _solarSystems = new();
+        private SpriteFont _solarSystemFont = Art.Fonts.UIMediumFont;
 
         private Camera _camera;
         private float _cameraMaxY;
         private float _cameraMaxX;
-        private Dictionary<string, SolarSystem> _solarSystemNameLookup;
-        private List<(Vector2, Vector2)> _linesToDraw;
-        private SpriteFont _solarSystemFont;
+        private IEnumerable<(Vector2, Vector2)> _linesToDraw;
+        private SolarSystem _selectedSolarSystem;
 
         public UniverseMapScene(List<SolarSystem> solarSystems)
         {
             _camera = new Camera();
             _solarSystems = solarSystems;
-            _solarSystemNameLookup = _solarSystems.ToDictionary(x => x.Name, y => y);
+            var solarSystemNameLookup = _solarSystems.ToDictionary(x => x.Name, y => y);
             _linesToDraw = _solarSystems
-                .Where(x => x.NeighborsByName != null && x.NeighborsByName.All(y => _solarSystemNameLookup.ContainsKey(y)))
+                .Where(x => x.NeighborsByName != null && x.NeighborsByName.All(y => solarSystemNameLookup.ContainsKey(y)))
                 .SelectMany(x => x.NeighborsByName,
-                    (x, y) => (x.MapLocation, _solarSystemNameLookup[y].MapLocation))
-                .Distinct()
-                .ToList();
-            _solarSystemFont = Art.Fonts.UIMediumFont;
+                    (x, y) => (x.MapLocation, solarSystemNameLookup[y].MapLocation))
+                .Distinct();
             _camera.Position = MainGame.CurrentSolarSystem.MapLocation;
             _cameraMaxY = _solarSystems.Max(x => x.MapLocation.Y);
             _cameraMaxX = _solarSystems.Max(x => x.MapLocation.X);
@@ -62,19 +60,19 @@ namespace SpaceGame.Scenes
             spriteBatch.End();
 
             // Locked to world
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, _camera.GetTransform(MainGame.ScreenCenter));
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.GetTransform(MainGame.ScreenCenter));
             foreach (var lineToDraw in _linesToDraw)
             {
                 Art.DrawLine(spriteBatch, lineToDraw.Item1, lineToDraw.Item2, Color.Gray, 2);
             }
             foreach (var solarSystem in _solarSystems)
             {
-                spriteBatch.DrawCircle(solarSystem.MapLocation, 8, 32, Color.Gray, 3);
-                spriteBatch.DrawCircle(solarSystem.MapLocation, 5, 32, Color.Black, 10);
+                var origin = new Vector2(Art.Misc.SolarSystem.Width / 2, Art.Misc.SolarSystem.Height / 2);
+                spriteBatch.Draw(Art.Misc.SolarSystem, solarSystem.MapLocation, null, Color.Gray, 0f, origin, 0.25f, SpriteEffects.None, 1f);
                 if (solarSystem == MainGame.CurrentSolarSystem)
-                {
+                    spriteBatch.DrawCircle(solarSystem.MapLocation, 12, 32, Color.Yellow, 2);
+                else if (solarSystem == _selectedSolarSystem)
                     spriteBatch.DrawCircle(solarSystem.MapLocation, 12, 32, Color.Cyan, 2);
-                }
             }
             foreach (var solarSystem in _solarSystems)
             {
@@ -84,9 +82,7 @@ namespace SpaceGame.Scenes
             }
             spriteBatch.End();
 
-            spriteBatch.Begin();
             DrawDebug(spriteBatch);
-            spriteBatch.End();
         }
 
         private void DrawDebug(SpriteBatch spriteBatch)
@@ -95,6 +91,7 @@ namespace SpaceGame.Scenes
             {
                 if (_systemDebugEntries.Any())
                 {
+                    spriteBatch.Begin();
                     var yTextOffset = 35;
                     foreach (KeyValuePair<string, string> debugEntry in _systemDebugEntries)
                     {
@@ -103,13 +100,13 @@ namespace SpaceGame.Scenes
                         spriteBatch.DrawString(Art.Fonts.DebugFont, text, new Vector2(xTextOffset, yTextOffset), Color.White);
                         yTextOffset += 15;
                     }
+                    spriteBatch.End();
                 }
             }
         }
 
         private void HandleInput(GameTime gameTime)
         {
-            float cameraSpeed = 400f * (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (Input.WasButtonPressed(Buttons.Back) || Input.WasKeyPressed(Keys.Escape))
             {
                 MainGame.SwitchToScene(SceneNames.PauseMenu);
@@ -118,6 +115,12 @@ namespace SpaceGame.Scenes
             {
                 MainGame.SwitchToScene(SceneNames.Space);
             }
+            if (MainGame.IsDebugging && Input.WasKeyPressed(Keys.R))
+            {
+                MainGame.DebugRegenerateUniverse();
+            }
+
+            float cameraSpeed = 400f * (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (Input.WasKeyPressed(Keys.W) || Input.IsKeyPressed(Keys.W))
             {
                 _camera.Position = _camera.Position.Y < -_cameraMaxY
@@ -142,11 +145,18 @@ namespace SpaceGame.Scenes
                     ? new Vector2(_cameraMaxX, _camera.Position.Y)
                     : new Vector2(_camera.Position.X + cameraSpeed, _camera.Position.Y);
             }
+            if (Input.IsLeftMouseButtonClicked())
+            {
+                _camera.Position += Input.PreviousWorldMousePosition - Input.WorldMousePosition;
+                if (_camera.Position.Y < -_cameraMaxY) _camera.Position = new Vector2(_camera.Position.X, -_cameraMaxY);
+                if (_camera.Position.Y > _cameraMaxY) _camera.Position = new Vector2(_camera.Position.X, _cameraMaxY);
+                if (_camera.Position.X < -_cameraMaxX) _camera.Position = new Vector2(-_cameraMaxX, _camera.Position.Y);
+                if (_camera.Position.X > _cameraMaxX) _camera.Position = new Vector2(_cameraMaxX, _camera.Position.Y);
+            }
 
             var zoomStep = 0.1f;
             var maximumZoom = 1f;
             var minimumZoom = 0.5f;
-
             if (Input.WasMouseScrollValueDecreased())
             {
                 _camera.Scale -= zoomStep;
@@ -160,9 +170,16 @@ namespace SpaceGame.Scenes
                     _camera.Scale = maximumZoom;
             }
 
-            if (MainGame.IsDebugging && Input.WasKeyPressed(Keys.R))
+            if (Input.WasLeftMouseButtonClicked())
             {
-                MainGame.DebugRegenerateUniverse();
+                foreach (var solarSystem  in _solarSystems)
+                {
+                    if (Vector2.Distance(Input.WorldMousePosition, solarSystem.MapLocation) <= 16)
+                    {
+                        _selectedSolarSystem = solarSystem;
+                        break;
+                    }
+                }
             }
         }
     }
