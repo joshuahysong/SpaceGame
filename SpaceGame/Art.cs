@@ -56,6 +56,11 @@ namespace SpaceGame
         {
             public static Texture2D Cloudy4 { get; set; }
             public static Texture2D RedPlanet { get; set; }
+            public static List<Texture2D> All => new()
+            {
+                Cloudy4,
+                RedPlanet
+            };
         }
         #endregion
 
@@ -97,6 +102,7 @@ namespace SpaceGame
         public static class Misc
         {
             public static Texture2D Pixel { get; set; }
+            public static Texture2D SolarSystem { get; set; }
         }
         #endregion
 
@@ -139,6 +145,7 @@ namespace SpaceGame
 
             Misc.Pixel = new Texture2D(MainGame.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             Misc.Pixel.SetData(new[] { Color.White });
+            Misc.SolarSystem = content.Load<Texture2D>("Misc/solar-system");
         }
 
         public static Texture2D CreateRectangleTexture(int width, int height, Color fillColor, Color borderColor, int thickness = 1)

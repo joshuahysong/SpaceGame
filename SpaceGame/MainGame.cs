@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SpaceGame.Generators;
 using SpaceGame.Scenes;
+using SpaceGame.Scenes.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +15,7 @@ namespace SpaceGame
         public static MainGame Instance { get; private set; }
         public static bool IsDebugging { get; private set; }
         public static RenderTarget2D RenderTarget { get; private set; }
-
-        public Camera Camera { get; private set; }
+        public static SolarSystem CurrentSolarSystem { get; private set; }
 
         public static Viewport Viewport => Instance.GraphicsDevice.Viewport;
         public static Vector2 ScreenCenter => new(Viewport.Width / 2, Viewport.Height / 2);
@@ -51,7 +52,6 @@ namespace SpaceGame
 
         protected override void Initialize()
         {
-            Camera = new Camera();
             RenderTarget = new RenderTarget2D(GraphicsDevice, 6000, 6000);
             base.Initialize();
         }
@@ -65,9 +65,7 @@ namespace SpaceGame
             {
                 [SceneNames.MainMenu] = new MainMenuScene(),
                 [SceneNames.GameOver] = new GameOverScene(),
-                [SceneNames.PauseMenu] = new PauseMenuScene(),
-                [SceneNames.Space] = new SpaceScene(),
-                [SceneNames.UniverseMap] = new UniverseMapScene()
+                [SceneNames.PauseMenu] = new PauseMenuScene()
             };
 
             _currentSceneName = SceneNames.MainMenu;
@@ -101,14 +99,6 @@ namespace SpaceGame
             base.Draw(gameTime);
         }
 
-        public static void SwitchToScene(IScene scene)
-        {
-            if (scene != null &&_scenes != null && _scenes.ContainsKey(scene.Name))
-                _scenes[scene.Name] = scene;
-
-            SwitchToScene(scene.Name);
-        }
-
         public static void SwitchToPreviousScene()
         {
             _currentSceneName = _previousSceneName;
@@ -122,6 +112,35 @@ namespace SpaceGame
                 _previousSceneName = _currentSceneName;
                 _currentSceneName = sceneName;
             }
+        }
+
+        public static void SetCurrentSolarSystem(SolarSystem solarSystem)
+        {
+            if (solarSystem != null)
+                CurrentSolarSystem = solarSystem;
+        }
+
+        public static void StartNewGame()
+        {
+            // TODO Loading screen
+            var solarSystems = UniverseGenerator.GenerateSolarSystems();
+            var random = new Random();
+            var index = random.Next(0, solarSystems.Count - 1);
+            CurrentSolarSystem = solarSystems.ToArray()[index];
+
+            if (_scenes.ContainsKey(SceneNames.Space)) _scenes[SceneNames.Space].Dispose();
+            if (_scenes.ContainsKey(SceneNames.UniverseMap)) _scenes[SceneNames.UniverseMap].Dispose();
+
+            _scenes[SceneNames.Space] = new SpaceScene();
+            _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems);
+            SwitchToScene(SceneNames.Space);
+        }
+
+        public static void DebugRegenerateUniverse()
+        {
+            var solarSystems = UniverseGenerator.GenerateSolarSystems();
+            _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems);
+            SwitchToScene(SceneNames.UniverseMap);
         }
 
         private void DrawDebug(GameTime gameTime)

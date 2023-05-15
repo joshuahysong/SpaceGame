@@ -13,13 +13,14 @@ namespace SpaceGame.Scenes
         private Camera _camera;
         private Texture2D _background;
         private List<Button> _buttons = new();
+        private bool disposedValue;
 
         public MainMenuScene()
         {
             _camera = new Camera();
 
             var buttonTexture = Art.CreateRectangleTexture(200, 40, Color.Black, Color.White, 2);
-            _buttons.Add(new Button(buttonTexture, "New Game", TextSize.Large, new Vector2(100, 50), 200, 40, Color.White, StartNewGame, true));
+            _buttons.Add(new Button(buttonTexture, "New Game", TextSize.Large, new Vector2(100, 50), 200, 40, Color.White, MainGame.StartNewGame, true));
             _buttons.Add(new Button(buttonTexture, "Quit", TextSize.Large, new Vector2(100, -30), 200, 40, Color.White, Quit, true));
         }
 
@@ -55,14 +56,25 @@ namespace SpaceGame.Scenes
             spriteBatch.End();
         }
 
-        private void StartNewGame()
-        {
-            MainGame.SwitchToScene(new SpaceScene());
-        }
-
         private void Quit()
         {
             MainGame.Instance.Exit();
         }
+
+        #region Dispose
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SpaceGame.UI;
+using System;
 using System.Collections.Generic;
 
 namespace SpaceGame.Scenes
@@ -11,6 +12,7 @@ namespace SpaceGame.Scenes
 
         private Camera _camera;
         private List<Button> _buttons = new();
+        private bool disposedValue;
 
         public PauseMenuScene()
         {
@@ -61,5 +63,21 @@ namespace SpaceGame.Scenes
         {
             MainGame.Instance.Exit();
         }
+
+        #region Dispose
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

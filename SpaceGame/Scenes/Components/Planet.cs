@@ -6,7 +6,7 @@ using SpaceGame.Managers;
 using System;
 using System.Collections.Generic;
 
-namespace SpaceGame.SolarSystems.Models
+namespace SpaceGame.Scenes.Components
 {
     public class Planet : IDockable
     {
