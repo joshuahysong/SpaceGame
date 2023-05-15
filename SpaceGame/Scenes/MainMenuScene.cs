@@ -13,6 +13,7 @@ namespace SpaceGame.Scenes
         private Camera _camera;
         private Texture2D _background;
         private List<Button> _buttons = new();
+        private bool disposedValue;
 
         public MainMenuScene()
         {
@@ -59,5 +60,21 @@ namespace SpaceGame.Scenes
         {
             MainGame.Instance.Exit();
         }
+
+        #region Dispose
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

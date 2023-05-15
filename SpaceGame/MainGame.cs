@@ -128,6 +128,9 @@ namespace SpaceGame
             var index = random.Next(0, solarSystems.Count - 1);
             CurrentSolarSystem = solarSystems.ToArray()[index];
 
+            if (_scenes.ContainsKey(SceneNames.Space)) _scenes[SceneNames.Space].Dispose();
+            if (_scenes.ContainsKey(SceneNames.UniverseMap)) _scenes[SceneNames.UniverseMap].Dispose();
+
             _scenes[SceneNames.Space] = new SpaceScene();
             _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems);
             SwitchToScene(SceneNames.Space);

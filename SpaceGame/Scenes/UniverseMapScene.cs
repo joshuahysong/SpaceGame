@@ -13,6 +13,8 @@ namespace SpaceGame.Scenes
     {
         public string Name => SceneNames.UniverseMap;
 
+        public static event Action<SolarSystem> SolarSystemSelectionChanged;
+
         private Dictionary<string, string> _systemDebugEntries = new();
         private List<SolarSystem> _solarSystems = new();
         private SpriteFont _solarSystemFont = Art.Fonts.UIMediumFont;
@@ -22,6 +24,7 @@ namespace SpaceGame.Scenes
         private float _cameraMaxX;
         private IEnumerable<(Vector2, Vector2)> _linesToDraw;
         private SolarSystem _selectedSolarSystem;
+        private bool disposedValue;
 
         public UniverseMapScene(List<SolarSystem> solarSystems)
         {
@@ -177,10 +180,27 @@ namespace SpaceGame.Scenes
                     if (Vector2.Distance(Input.WorldMousePosition, solarSystem.MapLocation) <= 16)
                     {
                         _selectedSolarSystem = solarSystem;
+                        SolarSystemSelectionChanged?.Invoke(_selectedSolarSystem);
                         break;
                     }
                 }
             }
         }
+
+        #region Dispose
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

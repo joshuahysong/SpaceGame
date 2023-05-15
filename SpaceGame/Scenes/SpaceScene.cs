@@ -28,9 +28,13 @@ namespace SpaceGame.Scenes
         private LandingScene _landingScene;
         private bool _isLanded;
         private bool _isPaused;
+        private SolarSystem _selectedSolarSystem;
+        private bool disposedValue;
 
         public SpaceScene()
         {
+            UniverseMapScene.SolarSystemSelectionChanged += HandleSolarSystemSelectionChanged;
+
             EntityManager.Initialize();
             CollisionManager.Initialize();
             ParticleEffectsManager.Initialize();
@@ -96,6 +100,7 @@ namespace SpaceGame.Scenes
                 _playerDebugEntries["Velocity Heading"] = $"{Math.Round(_player.Ship.Velocity.ToAngle(), 2)}";
                 _playerDebugEntries["Current Turn Rate"] = $"{Math.Round(_player.Ship.CurrentTurnRate, 2)}";
                 _playerDebugEntries["Current Solar System"] = $"{MainGame.CurrentSolarSystem?.Name}";
+                _playerDebugEntries["Selected Solar System"] = $"{_selectedSolarSystem?.Name}";
 
                 _systemDebugEntries["Mouse World Position"] = $"{Math.Round(Input.WorldMousePosition.X)}, {Math.Round(Input.WorldMousePosition.Y)}";
                 _systemDebugEntries["Camera Focus"] = $"{_camera.Focus?.GetType().Name}";
@@ -290,5 +295,27 @@ namespace SpaceGame.Scenes
             _landingScene = new LandingScene(dockable.Description);
             _isLanded = true;
         }
+
+        public void HandleSolarSystemSelectionChanged(SolarSystem selectedSolarSystem)
+        {
+            _selectedSolarSystem = selectedSolarSystem;
+        }
+
+        #region Dispose
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                UniverseMapScene.SolarSystemSelectionChanged -= HandleSolarSystemSelectionChanged;
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }
