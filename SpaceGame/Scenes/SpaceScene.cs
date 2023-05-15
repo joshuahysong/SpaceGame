@@ -132,6 +132,14 @@ namespace SpaceGame.Scenes
             ParticleEffectsManager.Draw(spriteBatch, Matrix.Identity);
             spriteBatch.End();
 
+            if (_player.Ship.IsJumping && Vector2.Distance(Vector2.Zero, _player.Ship.Position) > 100000)
+            {
+                // Locked to screen
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
+                spriteBatch.Draw(Art.Misc.Pixel, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White);
+                spriteBatch.End();
+            }
+
             if (_isLanded)
                 _landingScene.Draw(gameTime, spriteBatch);
 
@@ -274,7 +282,7 @@ namespace SpaceGame.Scenes
             }
             if (Input.WasKeyPressed(Keys.J))
             {
-                JumpToSystem();
+                StartJumpToSystem();
             }
 
             if (!_isLanded)
@@ -305,12 +313,14 @@ namespace SpaceGame.Scenes
             _isLanded = true;
         }
 
-        private void JumpToSystem()
+        private void StartJumpToSystem()
         {
             if (_selectedSolarSystem != null)
             {
-                MainGame.SetCurrentSolarSystem(_selectedSolarSystem);
-                _selectedSolarSystem = null;
+                _player.Ship.StartJump();
+
+                //MainGame.SetCurrentSolarSystem(_selectedSolarSystem);
+                //_selectedSolarSystem = null;
             }
         }
 
