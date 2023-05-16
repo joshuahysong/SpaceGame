@@ -29,11 +29,15 @@ namespace SpaceGame.Scenes
         private bool _isLanded;
         private bool _isPaused;
         private SolarSystem _selectedSolarSystem;
+        private SolarSystem _currentSolarSystem;
+        private Dictionary<string, SolarSystem> _solarSystemNameLookup;
         private bool disposedValue;
 
-        public SpaceScene()
+        public SpaceScene(List<SolarSystem> solarSystems)
         {
             UniverseMapScene.SolarSystemSelectionChanged += HandleSolarSystemSelectionChanged;
+
+            _solarSystemNameLookup = solarSystems.ToDictionary(x => x.Name, y => y);
 
             EntityManager.Initialize();
             CollisionManager.Initialize();
@@ -41,6 +45,11 @@ namespace SpaceGame.Scenes
 
             _camera = new Camera();
             _player = new Player(new TestShip1(FactionType.Player, Vector2.Zero, 0));
+
+            var random = new Random();
+            var index = random.Next(0, solarSystems.Count - 1);
+            _player.CurrentSolarSystemName = solarSystems.ToArray()[index]?.Name;
+
             _camera.Focus = _player;
             EntityManager.Add(_player);
 
@@ -68,13 +77,11 @@ namespace SpaceGame.Scenes
                 HandleInput();
             }
 
-            if (_isPaused)
-                return;
-
-            if (_player.Ship.IsExpired)
-            {
-                MainGame.SwitchToScene(SceneNames.GameOver);
-            }
+            if (_isPaused) return;
+            if (_player.Ship.IsExpired) MainGame.SwitchToScene(SceneNames.GameOver);
+            if (!_solarSystemNameLookup.TryGetValue(_player.CurrentSolarSystemName, out _currentSolarSystem)) return;
+            if (_player.Ship.IsJumping && _player.Ship.Velocity.LengthSquared() > Constants.JumpSpeed * Constants.JumpSpeed)
+                FinishJumpToSystem();
 
             if (_isLanded)
             {
@@ -89,8 +96,7 @@ namespace SpaceGame.Scenes
             CollisionManager.Update();
             ParticleEffectsManager.Update(gameTime, Matrix.Identity);
 
-            if (_player.Ship.DockableLocation != null)
-                _landingButton.Update();
+            if (_player.Ship.DockableLocation != null) _landingButton.Update();
 
             if (MainGame.IsDebugging)
             {
@@ -99,7 +105,7 @@ namespace SpaceGame.Scenes
                 _playerDebugEntries["Heading"] = $"{Math.Round(_player.Ship.Heading, 2)}";
                 _playerDebugEntries["Velocity Heading"] = $"{Math.Round(_player.Ship.Velocity.ToAngle(), 2)}";
                 _playerDebugEntries["Current Turn Rate"] = $"{Math.Round(_player.Ship.CurrentTurnRate, 2)}";
-                _playerDebugEntries["Current Solar System"] = $"{MainGame.CurrentSolarSystem?.Name}";
+                _playerDebugEntries["Current Solar System"] = $"{_player.CurrentSolarSystemName}";
                 _playerDebugEntries["Selected Solar System"] = $"{_selectedSolarSystem?.Name}";
 
                 _systemDebugEntries["Mouse World Position"] = $"{Math.Round(Input.WorldMousePosition.X)}, {Math.Round(Input.WorldMousePosition.Y)}";
@@ -113,13 +119,13 @@ namespace SpaceGame.Scenes
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            if (MainGame.CurrentSolarSystem == null) return;
+            if (string.IsNullOrWhiteSpace(_player.CurrentSolarSystemName) || _currentSolarSystem == null) return;
 
             DrawMinimapTexture(gameTime, spriteBatch);
 
             // Locked to screen
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
-            spriteBatch.Draw(MainGame.CurrentSolarSystem.Background, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White * 0.5f);
+            spriteBatch.Draw(_currentSolarSystem.Background, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White * 0.5f);
             spriteBatch.End();
 
             // Locked to world
@@ -127,18 +133,10 @@ namespace SpaceGame.Scenes
             DrawStarTiles(spriteBatch, _starTile1, Color.White, 0.8f);
             DrawStarTiles(spriteBatch, _starTile2, Color.White, 0.5f);
             DrawStarTiles(spriteBatch, Art.Backgrounds.Starfield1, Color.White, 0.1f);
-            MainGame.CurrentSolarSystem.Draw(gameTime, spriteBatch);
+            _currentSolarSystem.Draw(gameTime, spriteBatch);
             EntityManager.Draw(spriteBatch, Matrix.Identity);
             ParticleEffectsManager.Draw(spriteBatch, Matrix.Identity);
             spriteBatch.End();
-
-            if (_player.Ship.IsJumping && Vector2.Distance(Vector2.Zero, _player.Ship.Position) > 100000)
-            {
-                // Locked to screen
-                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
-                spriteBatch.Draw(Art.Misc.Pixel, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White);
-                spriteBatch.End();
-            }
 
             if (_isLanded)
                 _landingScene.Draw(gameTime, spriteBatch);
@@ -155,10 +153,19 @@ namespace SpaceGame.Scenes
                 _landingButton.Draw(spriteBatch);
             DrawDebug(spriteBatch);
             spriteBatch.End();
+
+            if (_player.Ship.IsJumping && _player.Ship.Velocity.LengthSquared() > (Constants.JumpSpeed * 0.98) * (Constants.JumpSpeed * 0.98))
+            {
+                // Locked to screen
+                spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicWrap);
+                spriteBatch.Draw(Art.Misc.Pixel, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White * 0.5f);
+                spriteBatch.End();
+            }
         }
 
         public void HandleSolarSystemSelectionChanged(SolarSystem selectedSolarSystem)
         {
+
             _selectedSolarSystem = selectedSolarSystem;
         }
 
@@ -169,7 +176,7 @@ namespace SpaceGame.Scenes
 
             var renderCenter = new Vector2(MainGame.RenderTarget.Width / 2, MainGame.RenderTarget.Height / 2);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.GetTransform(renderCenter, 1f));
-            MainGame.CurrentSolarSystem.Draw(gameTime, spriteBatch, true);
+            _currentSolarSystem.Draw(gameTime, spriteBatch, true);
             EntityManager.Draw(spriteBatch, Matrix.Identity, true);
             spriteBatch.End();
 
@@ -318,9 +325,15 @@ namespace SpaceGame.Scenes
             if (_selectedSolarSystem != null)
             {
                 _player.Ship.StartJump();
+            }
+        }
 
-                //MainGame.SetCurrentSolarSystem(_selectedSolarSystem);
-                //_selectedSolarSystem = null;
+        private void FinishJumpToSystem()
+        {
+            if (_selectedSolarSystem != null)
+            {
+                _player.CurrentSolarSystemName = _selectedSolarSystem.Name;
+                _player.Ship.FinishJump();
             }
         }
 

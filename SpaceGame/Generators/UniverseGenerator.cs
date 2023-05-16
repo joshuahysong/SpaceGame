@@ -32,7 +32,7 @@ namespace SpaceGame.Generators
                 if (closeNeighborFound)
                     continue;
 
-                var index = random.Next(0, Art.Backgrounds.All.Count - 1);
+                var index = random.Next(0, Art.Backgrounds.All.Count);
                 var background = Art.Backgrounds.All.ToArray()[index];
                 var newSystem = new SolarSystem(
                     names[solarSystems.Count],
@@ -100,7 +100,7 @@ namespace SpaceGame.Generators
 
         private static List<Planet> CreateTestPlanet(Random random)
         {
-            var index = random.Next(0, Art.Planets.All.Count - 1);
+            var index = random.Next(0, Art.Planets.All.Count);
             var texture = Art.Planets.All.ToArray()[index];
 
             // TODO Generated text

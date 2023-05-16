@@ -27,6 +27,7 @@ namespace SpaceGame.Ships
         public float Heading;
         public float CurrentTurnRate;
         public bool IsManeuvering;
+        public bool AreControlsLocked;
         public bool IsJumping;
 
         public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f) * Scale)
@@ -61,8 +62,10 @@ namespace SpaceGame.Ships
         private float _currentShield;
         private float _shieldRegen;
         private bool _showHealthBars;
-        private bool _isManeuveringToJump;
+        private bool _isManeuveringToStartJump;
+        private bool _isSlowingToFinishJump;
         private float _jumpHeading;
+        private float _jumpThrust = 2000f;
 
         public ShipBase(
             FactionType faction,
@@ -108,7 +111,7 @@ namespace SpaceGame.Ships
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (_isManeuveringToJump || IsJumping)
+            if (_isManeuveringToStartJump || IsJumping)
                 DoJumpManeuvers(deltaTime);
 
             // Continue rotation until turn rate reaches zero to simulate slowing
@@ -124,7 +127,7 @@ namespace SpaceGame.Ships
             Velocity += _acceleration * deltaTime;
 
             // Cap velocity to max velocity
-            if (Velocity.LengthSquared() > _maxVelocity * _maxVelocity)
+            if (!IsJumping && Velocity.LengthSquared() > _maxVelocity * _maxVelocity)
             {
                 Velocity.Normalize();
                 Velocity *= _maxVelocity;
@@ -301,13 +304,21 @@ namespace SpaceGame.Ships
 
         public void StartJump()
         {
-            _isManeuveringToJump = true;
+            AreControlsLocked = true;
+            _isManeuveringToStartJump = true;
             _jumpHeading = 0f; // TODO Replace with actual heading
+        }
+
+        public void FinishJump()
+        {
+            _isSlowingToFinishJump = true;
+            var distanceFromCenter = 4000;
+            Position = -new Vector2(distanceFromCenter * (float)Math.Cos(0), distanceFromCenter * (float)Math.Sin(0));
         }
 
         private void DoJumpManeuvers(float deltaTime)
         {
-            if (_isManeuveringToJump && Velocity != Vector2.Zero)
+            if (_isManeuveringToStartJump && Velocity != Vector2.Zero)
             {
                 RotateToRetro(deltaTime, true);
             }
@@ -317,14 +328,23 @@ namespace SpaceGame.Ships
                 {
                     RotateToHeading(_jumpHeading, deltaTime, false);
                 }
+                else if (_isSlowingToFinishJump && Velocity.LengthSquared() > _maxVelocity * _maxVelocity)
+                {
+                    _acceleration.X -= _jumpThrust * (float)Math.Cos(Heading);
+                    _acceleration.Y -= _jumpThrust * (float)Math.Sin(Heading);
+                }
+                else if (_isSlowingToFinishJump && Velocity.LengthSquared() <= _maxVelocity * _maxVelocity)
+                {
+                    IsJumping = false;
+                    _isSlowingToFinishJump = false;
+                    AreControlsLocked = false;
+                }
                 else
                 {
-                    _isManeuveringToJump = false;
+                    _isManeuveringToStartJump = false;
                     IsJumping = true;
-                    _maxVelocity = 50000f;
-                    _thrust += 5f;
-                    _acceleration.X += _thrust * (float)Math.Cos(Heading);
-                    _acceleration.Y += _thrust * (float)Math.Sin(Heading);
+                    _acceleration.X += _jumpThrust * (float)Math.Cos(Heading);
+                    _acceleration.Y += _jumpThrust * (float)Math.Sin(Heading);
                     _isThrusting = true;
                 }
             }

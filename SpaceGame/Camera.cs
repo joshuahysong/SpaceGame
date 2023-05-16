@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using SpaceGame.Entities;
+using SpaceGame.Common;
 
 namespace SpaceGame
 {

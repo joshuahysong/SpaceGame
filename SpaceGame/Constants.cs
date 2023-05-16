@@ -25,6 +25,7 @@
         public const float LandingSpeed = 200f;
         public const int UniverseRadius = 1000;
         public const int NumberOfSystems = 100;
+        public const float JumpSpeed = 3000f;
     }
 
     public static class SceneNames
