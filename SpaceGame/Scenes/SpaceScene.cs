@@ -29,6 +29,7 @@ namespace SpaceGame.Scenes
         private bool _isLanded;
         private bool _isPaused;
         private SolarSystem _selectedSolarSystem;
+        private float _angleToSelectedSolarSystem;
         private SolarSystem _currentSolarSystem;
         private Dictionary<string, SolarSystem> _solarSystemNameLookup;
         private bool disposedValue;
@@ -79,9 +80,9 @@ namespace SpaceGame.Scenes
 
             if (_isPaused) return;
             if (_player.Ship.IsExpired) MainGame.SwitchToScene(SceneNames.GameOver);
-            if (!_solarSystemNameLookup.TryGetValue(_player.CurrentSolarSystemName, out _currentSolarSystem)) return;
             if (_player.Ship.IsJumping && _player.Ship.Velocity.LengthSquared() > Constants.JumpSpeed * Constants.JumpSpeed)
                 FinishJumpToSystem();
+            if (!_solarSystemNameLookup.TryGetValue(_player.CurrentSolarSystemName, out _currentSolarSystem)) return;
 
             if (_isLanded)
             {
@@ -165,8 +166,8 @@ namespace SpaceGame.Scenes
 
         public void HandleSolarSystemSelectionChanged(SolarSystem selectedSolarSystem)
         {
-
             _selectedSolarSystem = selectedSolarSystem;
+            _angleToSelectedSolarSystem = (_selectedSolarSystem.MapLocation - _currentSolarSystem.MapLocation).ToAngle();
         }
 
         private void DrawMinimapTexture(GameTime gameTime, SpriteBatch spriteBatch)
@@ -324,7 +325,7 @@ namespace SpaceGame.Scenes
         {
             if (_selectedSolarSystem != null)
             {
-                _player.Ship.StartJump();
+                _player.Ship.StartJump(_angleToSelectedSolarSystem);
             }
         }
 

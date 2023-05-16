@@ -302,18 +302,18 @@ namespace SpaceGame.Ships
             }
         }
 
-        public void StartJump()
+        public void StartJump(float jumpHeading)
         {
             AreControlsLocked = true;
             _isManeuveringToStartJump = true;
-            _jumpHeading = 0f; // TODO Replace with actual heading
+            _jumpHeading = jumpHeading;
         }
 
         public void FinishJump()
         {
             _isSlowingToFinishJump = true;
             var distanceFromCenter = 4000;
-            Position = -new Vector2(distanceFromCenter * (float)Math.Cos(0), distanceFromCenter * (float)Math.Sin(0));
+            Position = -new Vector2(distanceFromCenter * (float)Math.Cos(Heading), distanceFromCenter * (float)Math.Sin(Heading));
         }
 
         private void DoJumpManeuvers(float deltaTime)
