@@ -7,7 +7,7 @@ using System;
 
 namespace SpaceGame.Entities
 {
-    public class Player : IFocusable, IAgent
+    public class Player : IFocusable, IEntity
     {
         public Vector2 Position => Ship?.Position ?? Vector2.Zero;
         public bool IsExpired => Ship?.IsExpired ?? false;
@@ -18,22 +18,21 @@ namespace SpaceGame.Entities
         public string CurrentSolarSystemName {
             get
             {
-                return _currentSolarSystemName;
+                return Ship.CurrentSolarSystemName;
             }
             set
             {
-                _currentSolarSystemName = value;
-                CurrentSolarSystemNameChanged?.Invoke(_currentSolarSystemName);
+                Ship.CurrentSolarSystemName = value;
+                CurrentSolarSystemNameChanged?.Invoke(Ship.CurrentSolarSystemName);
             }
         }
 
         public static event Action<string> CurrentSolarSystemNameChanged;
 
-        private string _currentSolarSystemName;
-
-        public Player(ShipBase ship)
+        public Player(ShipBase ship, string solarSystemName)
         {
             Ship = ship;
+            CurrentSolarSystemName = solarSystemName;
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)

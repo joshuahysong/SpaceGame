@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceGame.Generators;
 using SpaceGame.Scenes;
-using SpaceGame.Scenes.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;

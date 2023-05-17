@@ -15,6 +15,7 @@ namespace SpaceGame.Projectiles
         public Texture2D Texture { get; set; }
         public Color[] TextureData { get; set; }
         public float Scale { get; set; }
+        public string CurrentSolarSystemName { get; set; }
 
         public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f) * Scale)
             * Matrix.CreateRotationZ(_heading)
@@ -39,6 +40,7 @@ namespace SpaceGame.Projectiles
             float heading,
             Texture2D texture,
             long timeToLiveInSeconds,
+            string solarSystemName,
             float scale = 1f)
         {
             Id = Guid.NewGuid();
@@ -47,6 +49,7 @@ namespace SpaceGame.Projectiles
             Texture = texture;
             Scale = scale;
             TextureData = Art.GetScaledTextureData(Texture, Scale);
+            CurrentSolarSystemName = solarSystemName;
             _velocity = velocity;
             _timeToLiveInSeconds = timeToLiveInSeconds;
             _heading = heading;

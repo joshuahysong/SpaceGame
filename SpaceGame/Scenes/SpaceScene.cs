@@ -44,12 +44,12 @@ namespace SpaceGame.Scenes
             CollisionManager.Initialize();
             ParticleEffectsManager.Initialize();
 
-            _camera = new Camera();
-            _player = new Player(new TestShip1(FactionType.Player, Vector2.Zero, 0));
-
             var random = new Random();
             var index = random.Next(0, solarSystems.Count - 1);
-            _player.CurrentSolarSystemName = solarSystems.ToArray()[index]?.Name;
+            var startingSolarSystem = solarSystems.ToArray()[index]?.Name;
+
+            _camera = new Camera();
+            _player = new Player(new TestShip1(FactionType.Player, Vector2.Zero, 0), startingSolarSystem);
 
             _camera.Focus = _player;
             EntityManager.Add(_player);
@@ -62,7 +62,8 @@ namespace SpaceGame.Scenes
             {
                 var enemy = new Enemy(
                     new TestShip2(FactionType.Enemy, new Vector2(i * 200, (i % 2 == 0 ? 1 : -1) * 200), 0),
-                    _player.Ship);
+                    _player.Ship,
+                    startingSolarSystem);
                 EntityManager.Add(enemy);
             }
 
@@ -135,8 +136,8 @@ namespace SpaceGame.Scenes
             DrawStarTiles(spriteBatch, _starTile2, Color.White, 0.5f);
             DrawStarTiles(spriteBatch, Art.Backgrounds.Starfield1, Color.White, 0.1f);
             _currentSolarSystem.Draw(gameTime, spriteBatch);
-            EntityManager.Draw(spriteBatch, Matrix.Identity);
-            ParticleEffectsManager.Draw(spriteBatch, Matrix.Identity);
+            EntityManager.Draw(spriteBatch, Matrix.Identity, _player.CurrentSolarSystemName);
+            ParticleEffectsManager.Draw(spriteBatch, Matrix.Identity, _player.CurrentSolarSystemName);
             spriteBatch.End();
 
             if (_isLanded)
@@ -178,7 +179,7 @@ namespace SpaceGame.Scenes
             var renderCenter = new Vector2(MainGame.RenderTarget.Width / 2, MainGame.RenderTarget.Height / 2);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.GetTransform(renderCenter, 1f));
             _currentSolarSystem.Draw(gameTime, spriteBatch, true);
-            EntityManager.Draw(spriteBatch, Matrix.Identity, true);
+            EntityManager.Draw(spriteBatch, Matrix.Identity, _player.CurrentSolarSystemName, true);
             spriteBatch.End();
 
             MainGame.Instance.GraphicsDevice.SetRenderTarget(null);

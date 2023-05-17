@@ -18,6 +18,7 @@ namespace SpaceGame.Scenes.Components
         public Color[] TextureData { get; private set; }
         public float Scale { get; private set; }
         public List<string> Description { get; private set; }
+        public string CurrentSolarSystemName { get; set; }
 
         public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f) * Scale)
             * Matrix.CreateRotationZ(0f)

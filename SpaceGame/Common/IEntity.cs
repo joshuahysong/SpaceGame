@@ -7,6 +7,7 @@ namespace SpaceGame.Common
     {
         public Vector2 Position { get; }
         public bool IsExpired { get; }
+        public string CurrentSolarSystemName { get; set; }
 
         public abstract void Update(GameTime gameTime, Matrix parentTransform);
 

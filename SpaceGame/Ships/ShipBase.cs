@@ -22,6 +22,7 @@ namespace SpaceGame.Ships
         public float Scale { get; set; }
         public bool IsExpired { get; set; }
         public IDockable DockableLocation { get; set; }
+        public string CurrentSolarSystemName { get; set; }
 
         public Vector2 Velocity;
         public float Heading;
@@ -216,7 +217,7 @@ namespace SpaceGame.Ships
         #region Movement
         public void FireWeapons()
         {
-            _weapons.ForEach(weapon => weapon.Fire(Faction, Heading, Velocity, Position));
+            _weapons.ForEach(weapon => weapon.Fire(Faction, Heading, Velocity, Position, CurrentSolarSystemName));
         }
 
         public void ApplyForwardThrust()

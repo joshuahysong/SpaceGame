@@ -54,9 +54,9 @@ namespace SpaceGame.Managers
             _effects = _effects.Where(x => !x.IsExpired).ToList();
         }
 
-        public static void Draw(SpriteBatch spriteBatch, Matrix parentTransform)
+        public static void Draw(SpriteBatch spriteBatch, Matrix parentTransform, string solarSystemName)
         {
-            foreach (IParticleEffect effect in _effects)
+            foreach (IParticleEffect effect in _effects.Where(x => x.CurrentSolarSystemName == solarSystemName))
             {
                 effect.Draw(spriteBatch, parentTransform, false);
             }

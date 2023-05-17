@@ -6,20 +6,32 @@ using System.Collections.Generic;
 
 namespace SpaceGame.Entities
 {
-    public class Enemy : IAgent
+    public class Enemy : IEntity
     {
         public Vector2 Position => Ship?.Position ?? Vector2.Zero;
         public bool IsExpired => Ship?.IsExpired ?? false;
 
         public ShipBase Ship { get; }
-        public string CurrentSolarSystemName { get; set; }
+
+        public string CurrentSolarSystemName
+        {
+            get
+            {
+                return Ship.CurrentSolarSystemName;
+            }
+            set
+            {
+                Ship.CurrentSolarSystemName = value;
+            }
+        }
 
         private List<IEnumerator<int>> _behaviours;
         private ShipBase _target;
 
-        public Enemy(ShipBase ship, ShipBase target)
+        public Enemy(ShipBase ship, ShipBase target, string solarSystemName)
         {
             Ship = ship;
+            CurrentSolarSystemName = solarSystemName;
             _target = target;
             _behaviours = new();
             //AddBehavior(HuntPlayer());
