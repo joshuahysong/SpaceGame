@@ -43,7 +43,7 @@ namespace SpaceGame.Scenes
             if (_background == null)
             {
                 var random = new Random();
-                var index = random.Next(0, Art.Backgrounds.All.Count - 1);
+                var index = random.Next(0, Art.Backgrounds.All.Count);
                 _background = Art.Backgrounds.All.ToArray()[index];
             }
 

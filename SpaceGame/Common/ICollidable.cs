@@ -15,5 +15,6 @@ namespace SpaceGame.Common
         public Rectangle BoundingRectangle { get; }
         public float Scale { get; }
         public bool IsExpired { get; }
+        public string CurrentSolarSystemName { get; set; }
     }
 }

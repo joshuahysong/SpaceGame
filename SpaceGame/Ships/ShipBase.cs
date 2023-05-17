@@ -22,11 +22,14 @@ namespace SpaceGame.Ships
         public float Scale { get; set; }
         public bool IsExpired { get; set; }
         public IDockable DockableLocation { get; set; }
+        public string CurrentSolarSystemName { get; set; }
 
         public Vector2 Velocity;
         public float Heading;
         public float CurrentTurnRate;
         public bool IsManeuvering;
+        public bool AreControlsLocked;
+        public bool IsJumping;
 
         public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f) * Scale)
             * Matrix.CreateRotationZ(Heading)
@@ -60,6 +63,10 @@ namespace SpaceGame.Ships
         private float _currentShield;
         private float _shieldRegen;
         private bool _showHealthBars;
+        private bool _isManeuveringToStartJump;
+        private bool _isSlowingToFinishJump;
+        private float _jumpHeading;
+        private float _jumpThrust = 2000f;
 
         public ShipBase(
             FactionType faction,
@@ -105,6 +112,9 @@ namespace SpaceGame.Ships
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            if (_isManeuveringToStartJump || IsJumping)
+                DoJumpManeuvers(deltaTime);
+
             // Continue rotation until turn rate reaches zero to simulate slowing
             if (CurrentTurnRate > 0)
             {
@@ -118,7 +128,7 @@ namespace SpaceGame.Ships
             Velocity += _acceleration * deltaTime;
 
             // Cap velocity to max velocity
-            if (Velocity.LengthSquared() > _maxVelocity * _maxVelocity)
+            if (!IsJumping && Velocity.LengthSquared() > _maxVelocity * _maxVelocity)
             {
                 Velocity.Normalize();
                 Velocity *= _maxVelocity;
@@ -126,6 +136,8 @@ namespace SpaceGame.Ships
             _acceleration.X = 0;
             _acceleration.Y = 0;
             Position += Velocity * deltaTime;
+
+            if (IsJumping) return;
 
             if (!IsManeuvering)
             {
@@ -205,7 +217,7 @@ namespace SpaceGame.Ships
         #region Movement
         public void FireWeapons()
         {
-            _weapons.ForEach(weapon => weapon.Fire(Faction, Heading, Velocity, Position));
+            _weapons.ForEach(weapon => weapon.Fire(Faction, Heading, Velocity, Position, CurrentSolarSystemName));
         }
 
         public void ApplyForwardThrust()
@@ -233,12 +245,18 @@ namespace SpaceGame.Ships
 
         public void RotateToRetro(float deltaTime, bool IsBraking)
         {
-            IsManeuvering = true;
             float movementHeading = Velocity.ToAngle();
             float retroHeading = movementHeading < 0 ? movementHeading + (float)Math.PI : movementHeading - (float)Math.PI;
-            if (Heading != retroHeading && !IsWithinBrakingRange())
+            if (Velocity == Vector2.Zero) retroHeading = Heading;
+            RotateToHeading(retroHeading, deltaTime, IsBraking);
+        }
+
+        public void RotateToHeading(float headingGoal, float deltaTime, bool IsBraking)
+        {
+            IsManeuvering = true;
+            if (Heading != headingGoal)
             {
-                double retroDegrees = (retroHeading + Math.PI) * (180.0 / Math.PI);
+                double retroDegrees = (headingGoal + Math.PI) * (180.0 / Math.PI);
                 double headingDegrees = (Heading + Math.PI) * (180.0 / Math.PI);
                 double turnRateDegrees = Math.PI * 2 * (CurrentTurnRate * deltaTime) / 100 * 360 * 2;
                 turnRateDegrees = turnRateDegrees < 0 ? turnRateDegrees * -1 : turnRateDegrees;
@@ -249,7 +267,7 @@ namespace SpaceGame.Ships
 
                 if (retroOffset >= 360 - turnRateDegrees || retroOffset <= turnRateDegrees)
                 {
-                    Heading = retroHeading;
+                    Heading = headingGoal;
                     CurrentTurnRate = 0;
                 }
                 else if (retroOffset > thrustMagnitude && 360 - retroOffset > thrustMagnitude)
@@ -276,11 +294,59 @@ namespace SpaceGame.Ships
                 {
                     Velocity = Vector2.Zero;
                 }
-                else if (Heading == retroHeading)
+                else if (Heading == headingGoal)
                 {
                     _isThrusting = true;
                     _acceleration.X += _thrust * (float)Math.Cos(Heading);
                     _acceleration.Y += _thrust * (float)Math.Sin(Heading);
+                }
+            }
+        }
+
+        public void StartJump(float jumpHeading)
+        {
+            AreControlsLocked = true;
+            _isManeuveringToStartJump = true;
+            _jumpHeading = jumpHeading;
+        }
+
+        public void FinishJump()
+        {
+            _isSlowingToFinishJump = true;
+            var distanceFromCenter = 4000;
+            Position = -new Vector2(distanceFromCenter * (float)Math.Cos(Heading), distanceFromCenter * (float)Math.Sin(Heading));
+        }
+
+        private void DoJumpManeuvers(float deltaTime)
+        {
+            if (_isManeuveringToStartJump && Velocity != Vector2.Zero)
+            {
+                RotateToRetro(deltaTime, true);
+            }
+            else
+            {
+                if (Heading != _jumpHeading)
+                {
+                    RotateToHeading(_jumpHeading, deltaTime, false);
+                }
+                else if (_isSlowingToFinishJump && Velocity.LengthSquared() > _maxVelocity * _maxVelocity)
+                {
+                    _acceleration.X -= _jumpThrust * (float)Math.Cos(Heading);
+                    _acceleration.Y -= _jumpThrust * (float)Math.Sin(Heading);
+                }
+                else if (_isSlowingToFinishJump && Velocity.LengthSquared() <= _maxVelocity * _maxVelocity)
+                {
+                    IsJumping = false;
+                    _isSlowingToFinishJump = false;
+                    AreControlsLocked = false;
+                }
+                else
+                {
+                    _isManeuveringToStartJump = false;
+                    IsJumping = true;
+                    _acceleration.X += _jumpThrust * (float)Math.Cos(Heading);
+                    _acceleration.Y += _jumpThrust * (float)Math.Sin(Heading);
+                    _isThrusting = true;
                 }
             }
         }

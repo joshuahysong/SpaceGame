@@ -32,13 +32,14 @@ namespace SpaceGame.Generators
                 if (closeNeighborFound)
                     continue;
 
-                var index = random.Next(0, Art.Backgrounds.All.Count - 1);
+                var index = random.Next(0, Art.Backgrounds.All.Count);
                 var background = Art.Backgrounds.All.ToArray()[index];
+                var solarSystemName = names[solarSystems.Count];
                 var newSystem = new SolarSystem(
-                    names[solarSystems.Count],
+                    solarSystemName,
                     FactionType.None,
                     new Vector2(newLocation.X, newLocation.Y),
-                    CreateTestPlanet(random),
+                    CreateTestPlanet(random, solarSystemName),
                 background);
                 solarSystems.Add(newSystem);
             }
@@ -98,9 +99,9 @@ namespace SpaceGame.Generators
             }
         }
 
-        private static List<Planet> CreateTestPlanet(Random random)
+        private static List<Planet> CreateTestPlanet(Random random, string solarSystemName)
         {
-            var index = random.Next(0, Art.Planets.All.Count - 1);
+            var index = random.Next(0, Art.Planets.All.Count);
             var texture = Art.Planets.All.ToArray()[index];
 
             // TODO Generated text
@@ -116,8 +117,9 @@ namespace SpaceGame.Generators
             //description.Add($"The spaceport is a reminder of the fragility of life." +
             //    $"It is a reminder that even the most prosperous civilizations can be brought to ruin. It is a reminder that nothing lasts forever.");
 
+            description.Add($"System Name: {solarSystemName}");
             description.Add($"Some interesting description here...");
-            return new List<Planet> { new Planet(FactionType.None, Vector2.Zero, texture, description) };
+            return new List<Planet> { new Planet(FactionType.None, Vector2.Zero, texture, description, solarSystemName) };
         }
     }
 }

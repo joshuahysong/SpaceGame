@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace SpaceGame.Entities
+namespace SpaceGame.Common
 {
     public interface IFocusable
     {
-        Vector2 WorldPosition { get; }
+        public Vector2 WorldPosition { get; }
     }
 }

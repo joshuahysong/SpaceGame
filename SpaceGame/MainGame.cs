@@ -2,8 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceGame.Generators;
+using SpaceGame.Managers;
 using SpaceGame.Scenes;
-using SpaceGame.Scenes.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,6 @@ namespace SpaceGame
         public static MainGame Instance { get; private set; }
         public static bool IsDebugging { get; private set; }
         public static RenderTarget2D RenderTarget { get; private set; }
-        public static SolarSystem CurrentSolarSystem { get; private set; }
 
         public static Viewport Viewport => Instance.GraphicsDevice.Viewport;
         public static Vector2 ScreenCenter => new(Viewport.Width / 2, Viewport.Height / 2);
@@ -114,25 +113,20 @@ namespace SpaceGame
             }
         }
 
-        public static void SetCurrentSolarSystem(SolarSystem solarSystem)
-        {
-            if (solarSystem != null)
-                CurrentSolarSystem = solarSystem;
-        }
-
         public static void StartNewGame()
         {
             // TODO Loading screen
+            EntityManager.Initialize();
+            CollisionManager.Initialize();
+            ParticleEffectsManager.Initialize();
+
             var solarSystems = UniverseGenerator.GenerateSolarSystems();
-            var random = new Random();
-            var index = random.Next(0, solarSystems.Count - 1);
-            CurrentSolarSystem = solarSystems.ToArray()[index];
 
             if (_scenes.ContainsKey(SceneNames.Space)) _scenes[SceneNames.Space].Dispose();
             if (_scenes.ContainsKey(SceneNames.UniverseMap)) _scenes[SceneNames.UniverseMap].Dispose();
 
-            _scenes[SceneNames.Space] = new SpaceScene();
             _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems);
+            _scenes[SceneNames.Space] = new SpaceScene(solarSystems);
             SwitchToScene(SceneNames.Space);
         }
 

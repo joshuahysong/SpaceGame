@@ -54,9 +54,9 @@ namespace SpaceGame.Managers
             _entities = _entities.Where(x => !x.IsExpired).ToList();
         }
 
-        public static void Draw(SpriteBatch spriteBatch, Matrix parentTransform, bool drawMinimized = false)
+        public static void Draw(SpriteBatch spriteBatch, Matrix parentTransform, string solarSystemName, bool drawMinimized = false)
         {
-            foreach (IEntity entity in _entities)
+            foreach (IEntity entity in _entities.Where(x => x.CurrentSolarSystemName == solarSystemName))
             {
                 entity.Draw(spriteBatch, parentTransform, drawMinimized);
             }

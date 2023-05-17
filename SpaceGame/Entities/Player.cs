@@ -3,10 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceGame.Common;
 using SpaceGame.Ships;
+using System;
 
 namespace SpaceGame.Entities
 {
-    public class Player : IEntity, IFocusable
+    public class Player : IFocusable, IEntity
     {
         public Vector2 Position => Ship?.Position ?? Vector2.Zero;
         public bool IsExpired => Ship?.IsExpired ?? false;
@@ -14,15 +15,31 @@ namespace SpaceGame.Entities
 
         public ShipBase Ship { get; }
 
-        public Player(ShipBase ship)
+        public string CurrentSolarSystemName {
+            get
+            {
+                return Ship.CurrentSolarSystemName;
+            }
+            set
+            {
+                Ship.CurrentSolarSystemName = value;
+                CurrentSolarSystemNameChanged?.Invoke(Ship.CurrentSolarSystemName);
+            }
+        }
+
+        public static event Action<string> CurrentSolarSystemNameChanged;
+
+        public Player(ShipBase ship, string solarSystemName)
         {
             Ship = ship;
+            CurrentSolarSystemName = solarSystemName;
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            HandleInput(deltaTime);
+            if (!Ship.AreControlsLocked)
+                HandleInput(deltaTime);
             Ship.Update(gameTime, parentTransform);
         }
 

@@ -40,7 +40,7 @@ namespace SpaceGame.Weapons
             }
         }
 
-        public void Fire(FactionType faction, float heading, Vector2 relativeVelocity, Vector2 shipLocation)
+        public void Fire(FactionType faction, float heading, Vector2 relativeVelocity, Vector2 shipLocation, string solarSystemName)
         {
             if (_cooldownRemaining <= 0)
             {
@@ -52,7 +52,13 @@ namespace SpaceGame.Weapons
                 Vector2 velocity = MathUtilities.FromPolar(heading + randomSpread, _speed);
 
                 Vector2 offset = Vector2.Transform(_relativePosition, aimQuat);
-                EntityManager.Add((ProjectileBase)Activator.CreateInstance(_projectileType, faction, shipLocation + offset, velocity + relativeVelocity, heading));
+                EntityManager.Add((ProjectileBase)Activator.CreateInstance(
+                    _projectileType,
+                    faction,
+                    shipLocation + offset,
+                    velocity + relativeVelocity,
+                    heading,
+                    solarSystemName));
             }
         }
     }

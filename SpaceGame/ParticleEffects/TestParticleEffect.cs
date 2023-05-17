@@ -18,12 +18,14 @@ namespace SpaceGame.ParticleEffects
         public Vector2 Position { get; set; }
         public Vector2 Rotation { get; set; }
         public bool IsExpired { get; set; }
+        public string CurrentSolarSystemName { get; set; }
 
         private float _particleAliveTime = 0;
 
-        public TestParticleEffect(Vector2 position)
+        public TestParticleEffect(Vector2 position, string solarSystemName)
         {
             Position = position;
+            CurrentSolarSystemName = solarSystemName;
             _particleAliveTime = 0.2f;
             var random = new Random();
             var time = random.Next(300, 600);

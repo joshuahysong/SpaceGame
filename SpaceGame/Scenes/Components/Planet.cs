@@ -18,6 +18,7 @@ namespace SpaceGame.Scenes.Components
         public Color[] TextureData { get; private set; }
         public float Scale { get; private set; }
         public List<string> Description { get; private set; }
+        public string CurrentSolarSystemName { get; set; }
 
         public Matrix Transform => Matrix.CreateTranslation(new Vector3(-_origin, 0.0f) * Scale)
             * Matrix.CreateRotationZ(0f)
@@ -34,6 +35,7 @@ namespace SpaceGame.Scenes.Components
             Vector2 position,
             Texture2D texture,
             List<string> description,
+            string solarSystemName,
             float scale = 1f)
         {
             Id = Guid.NewGuid();
@@ -43,6 +45,7 @@ namespace SpaceGame.Scenes.Components
             Scale = scale;
             TextureData = Art.GetScaledTextureData(Texture, Scale);
             Description = description;
+            CurrentSolarSystemName = solarSystemName;
             _origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
             _rectangle = new Rectangle(0, 0, (int)Math.Floor(Texture.Width * Scale), (int)Math.Floor(Texture.Height * Scale));
             _boundingBoxTexture = Art.CreateRectangleTexture(BoundingRectangle.Width, BoundingRectangle.Height, Color.Transparent, Color.White);

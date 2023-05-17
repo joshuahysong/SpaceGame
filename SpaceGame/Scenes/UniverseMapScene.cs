@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using SpaceGame.Entities;
 using SpaceGame.Scenes.Components;
 using System;
 using System.Collections.Generic;
@@ -24,21 +25,25 @@ namespace SpaceGame.Scenes
         private float _cameraMaxX;
         private IEnumerable<(Vector2, Vector2)> _linesToDraw;
         private SolarSystem _selectedSolarSystem;
+        private SolarSystem _playerCurrentSolarSystem;
+        private Dictionary<string, SolarSystem> _solarSystemNameLookup;
         private bool disposedValue;
 
         public UniverseMapScene(List<SolarSystem> solarSystems)
         {
+
             _camera = new Camera();
             _solarSystems = solarSystems;
-            var solarSystemNameLookup = _solarSystems.ToDictionary(x => x.Name, y => y);
+            _solarSystemNameLookup = _solarSystems.ToDictionary(x => x.Name, y => y);
             _linesToDraw = _solarSystems
-                .Where(x => x.NeighborsByName != null && x.NeighborsByName.All(y => solarSystemNameLookup.ContainsKey(y)))
+                .Where(x => x.NeighborsByName != null && x.NeighborsByName.All(y => _solarSystemNameLookup.ContainsKey(y)))
                 .SelectMany(x => x.NeighborsByName,
-                    (x, y) => (x.MapLocation, solarSystemNameLookup[y].MapLocation))
+                    (x, y) => (x.MapLocation, _solarSystemNameLookup[y].MapLocation))
                 .Distinct();
-            _camera.Position = MainGame.CurrentSolarSystem.MapLocation;
             _cameraMaxY = _solarSystems.Max(x => x.MapLocation.Y);
             _cameraMaxX = _solarSystems.Max(x => x.MapLocation.X);
+
+            Player.CurrentSolarSystemNameChanged += HandlePlayerCurrentSolarSystemNameChanged;
         }
 
         public void Update(GameTime gameTime)
@@ -72,7 +77,7 @@ namespace SpaceGame.Scenes
             {
                 var origin = new Vector2(Art.Misc.SolarSystem.Width / 2, Art.Misc.SolarSystem.Height / 2);
                 spriteBatch.Draw(Art.Misc.SolarSystem, solarSystem.MapLocation, null, Color.Gray, 0f, origin, 0.25f, SpriteEffects.None, 1f);
-                if (solarSystem == MainGame.CurrentSolarSystem)
+                if (solarSystem == _playerCurrentSolarSystem)
                     spriteBatch.DrawCircle(solarSystem.MapLocation, 12, 32, Color.Yellow, 2);
                 else if (solarSystem == _selectedSolarSystem)
                     spriteBatch.DrawCircle(solarSystem.MapLocation, 12, 32, Color.Cyan, 2);
@@ -187,11 +192,18 @@ namespace SpaceGame.Scenes
             }
         }
 
+        private void HandlePlayerCurrentSolarSystemNameChanged(string playerCurrentSolarSystemName)
+        {
+            if (!_solarSystemNameLookup.TryGetValue(playerCurrentSolarSystemName, out _playerCurrentSolarSystem)) return;
+            _camera.Position = _playerCurrentSolarSystem.MapLocation;
+        }
+
         #region Dispose
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
+                Player.CurrentSolarSystemNameChanged -= HandlePlayerCurrentSolarSystemNameChanged;
                 disposedValue = true;
             }
         }
