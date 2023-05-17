@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceGame.Generators;
+using SpaceGame.Managers;
 using SpaceGame.Scenes;
 using System;
 using System.Collections.Generic;
@@ -115,6 +116,10 @@ namespace SpaceGame
         public static void StartNewGame()
         {
             // TODO Loading screen
+            EntityManager.Initialize();
+            CollisionManager.Initialize();
+            ParticleEffectsManager.Initialize();
+
             var solarSystems = UniverseGenerator.GenerateSolarSystems();
 
             if (_scenes.ContainsKey(SceneNames.Space)) _scenes[SceneNames.Space].Dispose();

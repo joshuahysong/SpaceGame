@@ -63,7 +63,9 @@ namespace SpaceGame.Managers
             foreach (var collidableToCheck in collidablesToCheck)
             {
                 var entityCollisions = new List<ICollidable>();
-                foreach (var entity in _collidables.Where(x => x != collidableToCheck && collidableToCheck.Faction != x.Faction))
+                foreach (var entity in _collidables.Where(x => x != collidableToCheck &&
+                    collidableToCheck.Faction != x.Faction &&
+                    collidableToCheck.CurrentSolarSystemName == x.CurrentSolarSystemName))
                 {
                     if (collidableToCheck.BoundingRectangle.Intersects(entity.BoundingRectangle))
                     {

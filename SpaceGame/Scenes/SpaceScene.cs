@@ -40,10 +40,6 @@ namespace SpaceGame.Scenes
 
             _solarSystemNameLookup = solarSystems.ToDictionary(x => x.Name, y => y);
 
-            EntityManager.Initialize();
-            CollisionManager.Initialize();
-            ParticleEffectsManager.Initialize();
-
             var random = new Random();
             var index = random.Next(0, solarSystems.Count - 1);
             var startingSolarSystem = solarSystems.ToArray()[index]?.Name;

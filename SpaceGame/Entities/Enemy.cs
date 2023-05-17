@@ -34,7 +34,7 @@ namespace SpaceGame.Entities
             CurrentSolarSystemName = solarSystemName;
             _target = target;
             _behaviours = new();
-            //AddBehavior(HuntPlayer());
+            AddBehavior(HuntPlayer());
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)
