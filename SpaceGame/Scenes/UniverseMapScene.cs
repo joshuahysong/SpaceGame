@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using SpaceGame.Entities;
+using SpaceGame.Generators;
 using SpaceGame.Scenes.Components;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ namespace SpaceGame.Scenes
         public static event Action<SolarSystem> SolarSystemSelectionChanged;
 
         private Dictionary<string, string> _systemDebugEntries = new();
-        private List<SolarSystem> _solarSystems = new();
         private SpriteFont _solarSystemFont = Art.Fonts.UIMediumFont;
 
         private Camera _camera;
@@ -26,22 +26,18 @@ namespace SpaceGame.Scenes
         private IEnumerable<(Vector2, Vector2)> _linesToDraw;
         private SolarSystem _selectedSolarSystem;
         private SolarSystem _playerCurrentSolarSystem;
-        private Dictionary<string, SolarSystem> _solarSystemNameLookup;
         private bool disposedValue;
 
-        public UniverseMapScene(List<SolarSystem> solarSystems)
+        public UniverseMapScene()
         {
-
             _camera = new Camera();
-            _solarSystems = solarSystems;
-            _solarSystemNameLookup = _solarSystems.ToDictionary(x => x.Name, y => y);
-            _linesToDraw = _solarSystems
-                .Where(x => x.NeighborsByName != null && x.NeighborsByName.All(y => _solarSystemNameLookup.ContainsKey(y)))
+            _linesToDraw = UniverseGenerator.SolarSystems
+                .Where(x => x.NeighborsByName != null && x.NeighborsByName.All(y => UniverseGenerator.SolarSystemLookup.ContainsKey(y)))
                 .SelectMany(x => x.NeighborsByName,
-                    (x, y) => (x.MapLocation, _solarSystemNameLookup[y].MapLocation))
+                    (x, y) => (x.MapLocation, UniverseGenerator.SolarSystemLookup[y].MapLocation))
                 .Distinct();
-            _cameraMaxY = _solarSystems.Max(x => x.MapLocation.Y);
-            _cameraMaxX = _solarSystems.Max(x => x.MapLocation.X);
+            _cameraMaxY = UniverseGenerator.SolarSystems.Max(x => x.MapLocation.Y);
+            _cameraMaxX = UniverseGenerator.SolarSystems.Max(x => x.MapLocation.X);
 
             Player.CurrentSolarSystemNameChanged += HandlePlayerCurrentSolarSystemNameChanged;
         }
@@ -73,7 +69,7 @@ namespace SpaceGame.Scenes
             {
                 Art.DrawLine(spriteBatch, lineToDraw.Item1, lineToDraw.Item2, Color.Gray, 2);
             }
-            foreach (var solarSystem in _solarSystems)
+            foreach (var solarSystem in UniverseGenerator.SolarSystems)
             {
                 var origin = new Vector2(Art.Misc.SolarSystem.Width / 2, Art.Misc.SolarSystem.Height / 2);
                 spriteBatch.Draw(Art.Misc.SolarSystem, solarSystem.MapLocation, null, Color.Gray, 0f, origin, 0.25f, SpriteEffects.None, 1f);
@@ -82,7 +78,7 @@ namespace SpaceGame.Scenes
                 else if (solarSystem == _selectedSolarSystem)
                     spriteBatch.DrawCircle(solarSystem.MapLocation, 12, 32, Color.Cyan, 2);
             }
-            foreach (var solarSystem in _solarSystems)
+            foreach (var solarSystem in UniverseGenerator.SolarSystems)
             {
                 var textSize = _solarSystemFont.MeasureString(solarSystem.Name);
                 var textLocation = solarSystem.MapLocation - new Vector2(textSize.X / 2, textSize.Y + 22);
@@ -180,7 +176,7 @@ namespace SpaceGame.Scenes
 
             if (Input.WasLeftMouseButtonClicked())
             {
-                foreach (var solarSystem  in _solarSystems)
+                foreach (var solarSystem  in UniverseGenerator.SolarSystems)
                 {
                     if (Vector2.Distance(Input.WorldMousePosition, solarSystem.MapLocation) <= 16)
                     {
@@ -194,7 +190,7 @@ namespace SpaceGame.Scenes
 
         private void HandlePlayerCurrentSolarSystemNameChanged(string playerCurrentSolarSystemName)
         {
-            if (!_solarSystemNameLookup.TryGetValue(playerCurrentSolarSystemName, out _playerCurrentSolarSystem)) return;
+            if (!UniverseGenerator.SolarSystemLookup.TryGetValue(playerCurrentSolarSystemName, out _playerCurrentSolarSystem)) return;
             _camera.Position = _playerCurrentSolarSystem.MapLocation;
         }
 

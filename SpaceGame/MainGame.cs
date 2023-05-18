@@ -119,21 +119,19 @@ namespace SpaceGame
             EntityManager.Initialize();
             CollisionManager.Initialize();
             ParticleEffectsManager.Initialize();
-
-            var solarSystems = UniverseGenerator.GenerateSolarSystems();
+            UniverseGenerator.GenerateSolarSystems();
 
             if (_scenes.ContainsKey(SceneNames.Space)) _scenes[SceneNames.Space].Dispose();
             if (_scenes.ContainsKey(SceneNames.UniverseMap)) _scenes[SceneNames.UniverseMap].Dispose();
 
-            _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems);
-            _scenes[SceneNames.Space] = new SpaceScene(solarSystems);
+            _scenes[SceneNames.UniverseMap] = new UniverseMapScene();
+            _scenes[SceneNames.Space] = new SpaceScene();
             SwitchToScene(SceneNames.Space);
         }
 
         public static void DebugRegenerateUniverse()
         {
-            var solarSystems = UniverseGenerator.GenerateSolarSystems();
-            _scenes[SceneNames.UniverseMap] = new UniverseMapScene(solarSystems);
+            UniverseGenerator.GenerateSolarSystems();
             SwitchToScene(SceneNames.UniverseMap);
         }
 

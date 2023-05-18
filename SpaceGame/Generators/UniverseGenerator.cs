@@ -8,7 +8,10 @@ namespace SpaceGame.Generators
 {
     public static class UniverseGenerator
     {
-        public static List<SolarSystem> GenerateSolarSystems()
+        public static List<SolarSystem> SolarSystems { get; private set; }
+        public static Dictionary<string, SolarSystem> SolarSystemLookup { get; private set; }
+
+        public static void GenerateSolarSystems()
         {
             var random = new Random();
             var minimumDistance = 50;
@@ -46,7 +49,8 @@ namespace SpaceGame.Generators
 
             SetupPaths(solarSystems);
 
-            return solarSystems;
+            SolarSystems = solarSystems;
+            SolarSystemLookup = SolarSystems.ToDictionary(x => x.Name, y => y);
         }
 
         private static Vector2 GetRandomPoint(Random random, int universeRadius)

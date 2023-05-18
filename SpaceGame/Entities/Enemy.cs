@@ -26,15 +26,12 @@ namespace SpaceGame.Entities
             }
         }
 
-        private List<IEnumerator<int>> _behaviours;
-        private ShipBase _target;
+        private List<IEnumerator<int>> _behaviours = new();
 
         public Enemy(ShipBase ship, ShipBase target, string solarSystemName)
         {
             Ship = ship;
             CurrentSolarSystemName = solarSystemName;
-            _target = target;
-            _behaviours = new();
             var huntTargetBehavior = new HuntTarget(ship, target);
             AddBehavior(huntTargetBehavior.Perform());
         }
@@ -60,9 +57,7 @@ namespace SpaceGame.Entities
             for (int i = 0; i < _behaviours.Count; i++)
             {
                 if (!_behaviours[i].MoveNext())
-                {
                     _behaviours.RemoveAt(i--);
-                }
             }
         }
     }
