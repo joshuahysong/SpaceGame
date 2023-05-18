@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceGame.Entities;
+using SpaceGame.Generators;
 using SpaceGame.Managers;
 using SpaceGame.Scenes.Components;
 using SpaceGame.Ships;
@@ -28,21 +29,14 @@ namespace SpaceGame.Scenes
         private LandingScene _landingScene;
         private bool _isLanded;
         private bool _isPaused;
-        private SolarSystem _selectedSolarSystem;
-        private float _angleToSelectedSolarSystem;
         private SolarSystem _currentSolarSystem;
-        private Dictionary<string, SolarSystem> _solarSystemNameLookup;
         private bool disposedValue;
 
-        public SpaceScene(List<SolarSystem> solarSystems)
+        public SpaceScene()
         {
-            UniverseMapScene.SolarSystemSelectionChanged += HandleSolarSystemSelectionChanged;
-
-            _solarSystemNameLookup = solarSystems.ToDictionary(x => x.Name, y => y);
-
             var random = new Random();
-            var index = random.Next(0, solarSystems.Count - 1);
-            var startingSolarSystem = solarSystems.ToArray()[index]?.Name;
+            var index = random.Next(0, UniverseGenerator.SolarSystems.Count - 1);
+            var startingSolarSystem = UniverseGenerator.SolarSystems.ToArray()[index]?.Name;
 
             _camera = new Camera();
             _player = new Player(new TestShip1(FactionType.Player, Vector2.Zero, 0), startingSolarSystem);
@@ -77,9 +71,7 @@ namespace SpaceGame.Scenes
 
             if (_isPaused) return;
             if (_player.Ship.IsExpired) MainGame.SwitchToScene(SceneNames.GameOver);
-            if (_player.Ship.IsJumping && _player.Ship.Velocity.LengthSquared() > Constants.JumpSpeed * Constants.JumpSpeed)
-                FinishJumpToSystem();
-            if (!_solarSystemNameLookup.TryGetValue(_player.CurrentSolarSystemName, out _currentSolarSystem)) return;
+            if (!UniverseGenerator.SolarSystemLookup.TryGetValue(_player.CurrentSolarSystemName, out _currentSolarSystem)) return;
 
             if (_isLanded)
             {
@@ -104,7 +96,7 @@ namespace SpaceGame.Scenes
                 _playerDebugEntries["Velocity Heading"] = $"{Math.Round(_player.Ship.Velocity.ToAngle(), 2)}";
                 _playerDebugEntries["Current Turn Rate"] = $"{Math.Round(_player.Ship.CurrentTurnRate, 2)}";
                 _playerDebugEntries["Current Solar System"] = $"{_player.CurrentSolarSystemName}";
-                _playerDebugEntries["Selected Solar System"] = $"{_selectedSolarSystem?.Name}";
+                _playerDebugEntries["Selected Solar System"] = $"{_player.SelectedSolarSystemName}";
 
                 _systemDebugEntries["Mouse World Position"] = $"{Math.Round(Input.WorldMousePosition.X)}, {Math.Round(Input.WorldMousePosition.Y)}";
                 _systemDebugEntries["Camera Focus"] = $"{_camera.Focus?.GetType().Name}";
@@ -159,12 +151,6 @@ namespace SpaceGame.Scenes
                 spriteBatch.Draw(Art.Misc.Pixel, Vector2.Zero, new Rectangle(0, 0, MainGame.Viewport.Width, MainGame.Viewport.Height), Color.White * 0.5f);
                 spriteBatch.End();
             }
-        }
-
-        public void HandleSolarSystemSelectionChanged(SolarSystem selectedSolarSystem)
-        {
-            _selectedSolarSystem = selectedSolarSystem;
-            _angleToSelectedSolarSystem = (_selectedSolarSystem.MapLocation - _currentSolarSystem.MapLocation).ToAngle();
         }
 
         private void DrawMinimapTexture(GameTime gameTime, SpriteBatch spriteBatch)
@@ -285,10 +271,6 @@ namespace SpaceGame.Scenes
             {
                 MainGame.SwitchToScene(SceneNames.UniverseMap);
             }
-            if (Input.WasKeyPressed(Keys.J))
-            {
-                StartJumpToSystem();
-            }
 
             if (!_isLanded)
             {
@@ -318,29 +300,12 @@ namespace SpaceGame.Scenes
             _isLanded = true;
         }
 
-        private void StartJumpToSystem()
-        {
-            if (_selectedSolarSystem != null)
-            {
-                _player.Ship.StartJump(_angleToSelectedSolarSystem);
-            }
-        }
-
-        private void FinishJumpToSystem()
-        {
-            if (_selectedSolarSystem != null)
-            {
-                _player.CurrentSolarSystemName = _selectedSolarSystem.Name;
-                _player.Ship.FinishJump();
-            }
-        }
-
         #region Dispose
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
-                UniverseMapScene.SolarSystemSelectionChanged -= HandleSolarSystemSelectionChanged;
+                _player.Dispose();
                 disposedValue = true;
             }
         }

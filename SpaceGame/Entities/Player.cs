@@ -1,13 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SpaceGame.Behaviors;
 using SpaceGame.Common;
+using SpaceGame.Generators;
+using SpaceGame.Scenes;
+using SpaceGame.Scenes.Components;
 using SpaceGame.Ships;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpaceGame.Entities
 {
-    public class Player : IFocusable, IEntity
+    public class Player : IFocusable, IEntity, IDisposable
     {
         public Vector2 Position => Ship?.Position ?? Vector2.Zero;
         public bool IsExpired => Ship?.IsExpired ?? false;
@@ -15,7 +21,10 @@ namespace SpaceGame.Entities
 
         public ShipBase Ship { get; }
 
-        public string CurrentSolarSystemName {
+        public string SelectedSolarSystemName { get; set; }
+
+        public string CurrentSolarSystemName
+        {
             get
             {
                 return Ship.CurrentSolarSystemName;
@@ -29,10 +38,16 @@ namespace SpaceGame.Entities
 
         public static event Action<string> CurrentSolarSystemNameChanged;
 
+        private List<IEnumerator<int>> _behaviours = new();
+        private float _angleToSelectedSolarSystem;
+        private bool disposedValue;
+
         public Player(ShipBase ship, string solarSystemName)
         {
             Ship = ship;
             CurrentSolarSystemName = solarSystemName;
+
+            UniverseMapScene.SolarSystemSelectionChanged += HandleSolarSystemSelectionChanged;
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)
@@ -40,6 +55,10 @@ namespace SpaceGame.Entities
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (!Ship.AreControlsLocked)
                 HandleInput(deltaTime);
+
+            if (_behaviours.Any())
+                ApplyBehaviours();
+
             Ship.Update(gameTime, parentTransform);
         }
 
@@ -71,6 +90,50 @@ namespace SpaceGame.Entities
             {
                 Ship.FireWeapons();
             }
+
+            if (Input.WasKeyPressed(Keys.J) && !string.IsNullOrWhiteSpace(SelectedSolarSystemName))
+            {
+                JumpToSystem(deltaTime);
+            }
         }
+
+        public void HandleSolarSystemSelectionChanged(SolarSystem selectedSolarSystem)
+        {
+            SelectedSolarSystemName = selectedSolarSystem.Name;
+            if (UniverseGenerator.SolarSystemLookup.TryGetValue(CurrentSolarSystemName, out var currentSolarSystem))
+                _angleToSelectedSolarSystem = (selectedSolarSystem.MapLocation - currentSolarSystem.MapLocation).ToAngle();
+        }
+
+        private void ApplyBehaviours()
+        {
+            for (int i = 0; i < _behaviours.Count; i++)
+            {
+                if (!_behaviours[i].MoveNext())
+                    _behaviours.RemoveAt(i--);
+            }
+        }
+
+        private void JumpToSystem(float deltaTime)
+        {
+            var behavior = new JumpToSolarSystem(this, Ship, SelectedSolarSystemName, _angleToSelectedSolarSystem);
+            _behaviours.Add(behavior.Perform(deltaTime).GetEnumerator());
+        }
+
+        #region Dispose
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                UniverseMapScene.SolarSystemSelectionChanged -= HandleSolarSystemSelectionChanged;
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

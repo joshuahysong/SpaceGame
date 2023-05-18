@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SpaceGame.Behaviors;
 using SpaceGame.Common;
 using SpaceGame.Ships;
 using System.Collections.Generic;
@@ -25,16 +26,14 @@ namespace SpaceGame.Entities
             }
         }
 
-        private List<IEnumerator<int>> _behaviours;
-        private ShipBase _target;
+        private List<IEnumerator<int>> _behaviours = new();
 
         public Enemy(ShipBase ship, ShipBase target, string solarSystemName)
         {
             Ship = ship;
             CurrentSolarSystemName = solarSystemName;
-            _target = target;
-            _behaviours = new();
-            AddBehavior(HuntPlayer());
+            var huntTargetBehavior = new HuntTarget(ship, target);
+            AddBehavior(huntTargetBehavior.Perform());
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)
@@ -58,48 +57,8 @@ namespace SpaceGame.Entities
             for (int i = 0; i < _behaviours.Count; i++)
             {
                 if (!_behaviours[i].MoveNext())
-                {
                     _behaviours.RemoveAt(i--);
-                }
             }
-        }
-
-        private IEnumerable<int> HuntPlayer()
-        {
-            while (true && _target != null)
-            {
-                float distanceToTarget = (Ship.Position - _target.Position).Length();
-                double degreesToTarget = GetDegreesToTarget();
-                if (distanceToTarget > 100)
-                {
-                    Ship.ApplyForwardThrust();
-                }
-                if (degreesToTarget > 175 && degreesToTarget < 185)
-                {
-                    Ship.FireWeapons();
-                }
-                if (degreesToTarget <= 178)
-                {
-                    Ship.ApplyPortManeuveringThrusters();
-                }
-                else if (degreesToTarget > 182)
-                {
-                    Ship.ApplyStarboardManeuveringThrusters();
-                }
-                else
-                {
-                    Ship.IsManeuvering = false;
-                }
-                yield return 0;
-            }
-        }
-
-        private double GetDegreesToTarget()
-        {
-            float angleToTarget = (Ship.Position - _target.Position).ToAngle();
-            double degreesToTarget = angleToTarget.ToDegrees();
-            double headingDegrees = Ship.Heading.ToDegrees();
-            return headingDegrees < degreesToTarget ? headingDegrees + 360 - degreesToTarget : headingDegrees - degreesToTarget;
         }
     }
 }

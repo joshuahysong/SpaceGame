@@ -63,10 +63,6 @@ namespace SpaceGame.Ships
         private float _currentShield;
         private float _shieldRegen;
         private bool _showHealthBars;
-        private bool _isManeuveringToStartJump;
-        private bool _isSlowingToFinishJump;
-        private float _jumpHeading;
-        private float _jumpThrust = 2000f;
 
         public ShipBase(
             FactionType faction,
@@ -112,9 +108,6 @@ namespace SpaceGame.Ships
         {
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (_isManeuveringToStartJump || IsJumping)
-                DoJumpManeuvers(deltaTime);
-
             // Continue rotation until turn rate reaches zero to simulate slowing
             if (CurrentTurnRate > 0)
             {
@@ -128,7 +121,7 @@ namespace SpaceGame.Ships
             Velocity += _acceleration * deltaTime;
 
             // Cap velocity to max velocity
-            if (!IsJumping && Velocity.LengthSquared() > _maxVelocity * _maxVelocity)
+            if (!IsJumping && !IsBelowMaxVelocity())
             {
                 Velocity.Normalize();
                 Velocity *= _maxVelocity;
@@ -136,8 +129,6 @@ namespace SpaceGame.Ships
             _acceleration.X = 0;
             _acceleration.Y = 0;
             Position += Velocity * deltaTime;
-
-            if (IsJumping) return;
 
             if (!IsManeuvering)
             {
@@ -222,9 +213,20 @@ namespace SpaceGame.Ships
 
         public void ApplyForwardThrust()
         {
-            _acceleration.X += _thrust * (float)Math.Cos(Heading);
-            _acceleration.Y += _thrust * (float)Math.Sin(Heading);
+            ApplyForwardThrust(_thrust);
+        }
+
+        public void ApplyForwardThrust(float thrust)
+        {
+            _acceleration.X += thrust * (float)Math.Cos(Heading);
+            _acceleration.Y += thrust * (float)Math.Sin(Heading);
             _isThrusting = true;
+        }
+
+        public void ApplyRetroThrust(float thrust)
+        {
+            _acceleration.X -= thrust * (float)Math.Cos(Heading);
+            _acceleration.Y -= thrust * (float)Math.Sin(Heading);
         }
 
         public void ApplyPortManeuveringThrusters()
@@ -303,52 +305,9 @@ namespace SpaceGame.Ships
             }
         }
 
-        public void StartJump(float jumpHeading)
+        public bool IsBelowMaxVelocity()
         {
-            AreControlsLocked = true;
-            _isManeuveringToStartJump = true;
-            _jumpHeading = jumpHeading;
-        }
-
-        public void FinishJump()
-        {
-            _isSlowingToFinishJump = true;
-            var distanceFromCenter = 4000;
-            Position = -new Vector2(distanceFromCenter * (float)Math.Cos(Heading), distanceFromCenter * (float)Math.Sin(Heading));
-        }
-
-        private void DoJumpManeuvers(float deltaTime)
-        {
-            if (_isManeuveringToStartJump && Velocity != Vector2.Zero)
-            {
-                RotateToRetro(deltaTime, true);
-            }
-            else
-            {
-                if (Heading != _jumpHeading)
-                {
-                    RotateToHeading(_jumpHeading, deltaTime, false);
-                }
-                else if (_isSlowingToFinishJump && Velocity.LengthSquared() > _maxVelocity * _maxVelocity)
-                {
-                    _acceleration.X -= _jumpThrust * (float)Math.Cos(Heading);
-                    _acceleration.Y -= _jumpThrust * (float)Math.Sin(Heading);
-                }
-                else if (_isSlowingToFinishJump && Velocity.LengthSquared() <= _maxVelocity * _maxVelocity)
-                {
-                    IsJumping = false;
-                    _isSlowingToFinishJump = false;
-                    AreControlsLocked = false;
-                }
-                else
-                {
-                    _isManeuveringToStartJump = false;
-                    IsJumping = true;
-                    _acceleration.X += _jumpThrust * (float)Math.Cos(Heading);
-                    _acceleration.Y += _jumpThrust * (float)Math.Sin(Heading);
-                    _isThrusting = true;
-                }
-            }
+            return Velocity.LengthSquared() <= _maxVelocity * _maxVelocity;
         }
 
         private void RotateClockwise(float deltaTime)

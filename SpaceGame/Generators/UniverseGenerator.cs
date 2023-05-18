@@ -8,7 +8,10 @@ namespace SpaceGame.Generators
 {
     public static class UniverseGenerator
     {
-        public static List<SolarSystem> GenerateSolarSystems()
+        public static List<SolarSystem> SolarSystems { get; private set; }
+        public static Dictionary<string, SolarSystem> SolarSystemLookup { get; private set; }
+
+        public static void GenerateSolarSystems()
         {
             var random = new Random();
             var minimumDistance = 50;
@@ -46,7 +49,8 @@ namespace SpaceGame.Generators
 
             SetupPaths(solarSystems);
 
-            return solarSystems;
+            SolarSystems = solarSystems;
+            SolarSystemLookup = SolarSystems.ToDictionary(x => x.Name, y => y);
         }
 
         private static Vector2 GetRandomPoint(Random random, int universeRadius)
@@ -106,17 +110,6 @@ namespace SpaceGame.Generators
 
             // TODO Generated text
             var description = new List<string>();
-            //description.Add($"The sun beats down on the empty spaceport, its harsh rays reflecting off the sand dunes." +
-            //    $"The only sound is the wind whistling through the abandoned buildings." +
-            //    $"The spaceport is a reminder of a time when this planet was thriving, but now it is nothing more than a ghost town.");
-            //description.Add($"The once-busy spaceport is now deserted. The docking bays are empty, the hangars are closed, and the control tower is silent." +
-            //    $"The only signs of life are the occasional sand lizards that scuttle across the tarmac.");
-            //description.Add($"The spaceport is a relic of a bygone era." +
-            //    $"It was once a hub of commerce and trade, but now it is nothing more than a monument to a lost civilization. The buildings are crumbling," +
-            //    $"the ships are rusting, and the sand is slowly encroaching on the tarmac.");
-            //description.Add($"The spaceport is a reminder of the fragility of life." +
-            //    $"It is a reminder that even the most prosperous civilizations can be brought to ruin. It is a reminder that nothing lasts forever.");
-
             description.Add($"System Name: {solarSystemName}");
             description.Add($"Some interesting description here...");
             return new List<Planet> { new Planet(FactionType.None, Vector2.Zero, texture, description, solarSystemName) };
