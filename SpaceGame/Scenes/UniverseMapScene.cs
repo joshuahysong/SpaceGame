@@ -67,7 +67,12 @@ namespace SpaceGame.Scenes
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null, _camera.GetTransform(MainGame.ScreenCenter));
             foreach (var lineToDraw in _linesToDraw)
             {
-                Art.DrawLine(spriteBatch, lineToDraw.Item1, lineToDraw.Item2, Color.Gray, 2);
+                var color = Color.Gray;
+                if (_selectedSolarSystem != null && _playerCurrentSolarSystem != null &&
+                    ((lineToDraw.Item1 == _playerCurrentSolarSystem.MapLocation && lineToDraw.Item2 == _selectedSolarSystem.MapLocation) ||
+                    (lineToDraw.Item1 == _selectedSolarSystem.MapLocation && lineToDraw.Item2 == _playerCurrentSolarSystem.MapLocation)))
+                    color = Color.Cyan;
+                Art.DrawLine(spriteBatch, lineToDraw.Item1, lineToDraw.Item2, color, 2);
             }
             foreach (var solarSystem in UniverseGenerator.SolarSystems)
             {
