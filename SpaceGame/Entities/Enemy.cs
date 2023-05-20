@@ -33,7 +33,7 @@ namespace SpaceGame.Entities
             Ship = ship;
             CurrentSolarSystemName = solarSystemName;
             var huntTargetBehavior = new HuntTarget(ship, target);
-            AddBehavior(huntTargetBehavior.Perform());
+            //AddBehavior(huntTargetBehavior.Perform());
         }
 
         public void Update(GameTime gameTime, Matrix parentTransform)

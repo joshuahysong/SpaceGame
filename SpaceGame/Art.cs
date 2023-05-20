@@ -365,6 +365,7 @@ namespace SpaceGame
         public static class Parts
         {
             public static Texture2D Thruster1 { get; set; }
+            public static Texture2D Turret1 { get; set; }
         }
         #endregion
 
@@ -531,6 +532,7 @@ namespace SpaceGame
             Projectiles.OrangeLaser = content.Load<Texture2D>("Projectiles/orange_laser");
 
             Parts.Thruster1 = content.Load<Texture2D>("Parts/thruster-1");
+            Parts.Turret1 = content.Load<Texture2D>("Parts/turret-1");
 
             Fonts.DebugFont = content.Load<SpriteFont>("Fonts/Debug");
             Fonts.HeaderFont = content.Load<SpriteFont>("Fonts/Header");

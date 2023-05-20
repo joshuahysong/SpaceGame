@@ -106,6 +106,7 @@ namespace SpaceGame.Ships
 
         public void Update(GameTime gameTime, Matrix parentTransform)
         {
+            Matrix globalTransform = LocalTransform * parentTransform;
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Continue rotation until turn rate reaches zero to simulate slowing
@@ -141,7 +142,7 @@ namespace SpaceGame.Ships
 
             foreach (var weapon in _weapons)
             {
-                weapon.Update(gameTime);
+                weapon.Update(gameTime, globalTransform);
             }
 
             HandleCollisions();
@@ -187,6 +188,11 @@ namespace SpaceGame.Ships
 
             spriteBatch.Draw(Texture, Position, null, Color.White, Heading, _origin, Scale, SpriteEffects.None, 0);
 
+            foreach (var weapon in _weapons)
+            {
+                weapon.Draw(spriteBatch, globalTransform);
+            }
+
             if (_showHealthBars && _currentHealth < _maxHealth || _currentShield < _maxShield)
             {
                 var healthBarLength = 60f * _currentHealth / _maxHealth;
@@ -206,11 +212,6 @@ namespace SpaceGame.Ships
         }
 
         #region Movement
-        public void FireWeapons()
-        {
-            _weapons.ForEach(weapon => weapon.Fire(Faction, Heading, Velocity, Position, CurrentSolarSystemName));
-        }
-
         public void ApplyForwardThrust()
         {
             ApplyForwardThrust(_thrust);
@@ -346,6 +347,11 @@ namespace SpaceGame.Ships
             return Velocity.X < brakingRange && Velocity.X > -brakingRange && Velocity.Y < brakingRange && Velocity.Y > -brakingRange;
         }
         #endregion
+
+        public void FireWeapons()
+        {
+            _weapons.ForEach(weapon => weapon.Fire(Faction, Velocity, CurrentSolarSystemName, LocalTransform));
+        }
 
         private void HandleCollisions()
         {

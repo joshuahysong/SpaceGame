@@ -4,9 +4,9 @@ using SpaceGame.ParticleEffects;
 
 namespace SpaceGame.Projectiles
 {
-    public class TestProjectile : ProjectileBase
+    public class OrangeLaser : ProjectileBase
     {
-        public TestProjectile(FactionType faction, Vector2 position, Vector2 velocity, float heading, string solarSystemName)
+        public OrangeLaser(FactionType faction, Vector2 position, Vector2 velocity, float heading, string solarSystemName)
             : base(faction,
                   position,
                   velocity,
